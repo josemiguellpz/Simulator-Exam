@@ -33,12 +33,6 @@ const ThemePalette = {
   white: {
     main: "#ffffff",
   },
-  info: {
-    main: "#00B1E0",
-    light: "#D7F6F9",
-    dark: "#38D3E3",
-    contrast: "#ffffff",
-  },
   success: {
     main: "#2e7d32",
     light: "#4caf50",
@@ -50,10 +44,6 @@ const ThemePalette = {
     light: "#ef5350",
     dark: "c62828",
     contrastText: "#ffffff",
-  },
-  grey: {
-    50: "#E5E5E5",
-    100: "#BABABA",
   },
 };
 
