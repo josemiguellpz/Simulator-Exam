@@ -4,14 +4,12 @@ import AppBar from '@mui/material/AppBar';
 import Container from '@mui/material/Container';
 import Toolbar from '@mui/material/Toolbar';
 import Box from '@mui/material/Box';
-import Drawer from '@mui/material';
+import Drawer from '@mui/material/Drawer';
 import MenuItem from '@mui/material/MenuItem';
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
 import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
-import Menu from '@mui/material/Menu';
-import Avatar from '@mui/material/Avatar';
-import Button from '@mui/material/Button';
-import Tooltip from '@mui/material/Tooltip';
 
 import Brightness4Icon from '@mui/icons-material/Brightness4';
 import Brightness7Icon from '@mui/icons-material/Brightness7';
@@ -30,6 +28,14 @@ import MenuIcon from '@mui/icons-material/Menu';
 import QuizIcon from '@mui/icons-material/Quiz';
 
 const useStyles = makeStyles((theme) =>({
+  background:({role}) => ({
+    background:
+      role === "user"
+        ? `${theme.palette.primary.main} !important`
+        : role === "student" 
+          ? `${theme.palette.secondary.main} !important`
+          : `${theme.palette.tertiary.main} !important`
+  }),
   navBox:{
     right: 5,
     display: "flex",
@@ -45,26 +51,57 @@ const useStyles = makeStyles((theme) =>({
       display: "flex",
       justifyContent: "center",
     },
-  }
+  },
+  drawer: ({ role }) => ({
+    color: "#fff !important",
+    zIndex: 1,
+    marginTop: "60px",
+    width: "240px",
+    flexShrink: 0,
+    "& .MuiDrawer-paper": {
+      width: "240px",
+      height: "fit-content",
+      background:
+        role === "user"
+          ? `${theme.palette.primary.main} !important`
+          : role === "student" 
+            ? `${theme.palette.secondary.main} !important`
+            : `${theme.palette.tertiary.main} !important`
+    },
+  }),
+  drawerItem: ({ role }) => ({
+    color: "#fff !important",
+    background:
+      role === "user"
+        ? `${theme.palette.primary.main} !important`
+        : role === "student" 
+          ? `${theme.palette.secondary.main} !important`
+          : `${theme.palette.tertiary.main} !important`,
+    "&:hover": {
+      background:
+        role === "user"
+          ? `${theme.palette.primary.dark} !important`
+          : role === "student" 
+            ? `${theme.palette.secondary.dark} !important`
+            : `${theme.palette.tertiary.dark} !important`,
+    },
+  }),
 }))
 
 export default function NavBar(){
   localStorage.setItem("role", "user");
   const role = localStorage.getItem("role");
-  const classes = useStyles();
+  const classes = useStyles({role});
   const [open, setOpen] = useState(false);
-  const pages = ['Products', 'Pricing', 'Blog'];
-  const settings = ['Profile', 'Account', 'Dashboard', 'Logout'];
-
+  const [mode, setMode] = useState(false);
+  const band = () => setOpen(!open);
   const handlePage = () => null;
-
-  const aux = () => {
-    setOpen(!open)
-    console.log("Helloowwwww")
-  }
+  const changeMode = () => {
+    setMode(!mode)
+  };
 
   return(
-    <AppBar position="static" >
+    <AppBar className={classes.background} position="static" >
     <Container>
       <Toolbar disableGutters>
         <Typography variant="h4" sx={{ display: { xs: 'none', md: 'flex' } }}>
@@ -143,8 +180,15 @@ export default function NavBar(){
               </MenuItem>
             </Box>
           )}
-          <MenuItem>
-            <Brightness7Icon onClick={null}/>
+          <MenuItem onClick={changeMode}>
+            {mode ? 
+              <Box sx={{display: "flex", gap: .5}}>
+                <Brightness4Icon/> 
+              </Box>
+            : <Box sx={{display: "flex", gap: .5}}>
+                <Brightness7Icon/> 
+              </Box>
+            }
           </MenuItem>
         </Box>
 
@@ -157,80 +201,101 @@ export default function NavBar(){
             sx={{ display: { md: "none" } }}
             color="inherit"
             edge="end"
-            onClick={aux}
+            onClick={band}
           >
             {open ? <CloseIcon/> : <MenuIcon/>}
           </IconButton>
-          {open === true && (
-            <Box sx={{display: "flex"}}>
-              <MenuItem className={classes.navItem} onClick={null}>
-                <HomeIcon/>
-                <Typography>Inicio</Typography>
-              </MenuItem>
-              <MenuItem className={classes.navItem} onClick={handlePage}>
-                <TopicIcon/>
-                <Typography>Temas</Typography>
-              </MenuItem>
-              <MenuItem className={classes.navItem} onClick={handlePage}>
-                <PersonIcon/>
-                <Typography>Registro</Typography>
-              </MenuItem>
-              <MenuItem className={classes.navItem} onClick={handlePage}>
-                <LoginIcon/>
-                <Typography>Iniciar sesión</Typography>
-              </MenuItem>
-            </Box>
-          )}
+          <Drawer className={classes.drawer} open={open} onClose={band} anchor="right">
+            <List>
+              {role === "user" &&(
+                <Box>
+                  <ListItem button className={classes.drawerItem} onClick={null} sx={{gap: .5}}>
+                    <HomeIcon/>
+                    <Typography>Inicio</Typography>
+                  </ListItem>
+                  <ListItem button className={classes.drawerItem} onClick={null} sx={{gap: .5}}>
+                    <TopicIcon/>
+                    <Typography>Temas</Typography>
+                  </ListItem>
+                  <ListItem button className={classes.drawerItem} onClick={null} sx={{gap: .5}}>
+                    <PersonIcon/>
+                    <Typography>Registro</Typography>
+                  </ListItem>
+                  <ListItem button className={classes.drawerItem} onClick={null} sx={{gap: .5}}>
+                    <LoginIcon/>
+                    <Typography>Iniciar sesión</Typography>
+                  </ListItem>
+                </Box>
+              )}
+              {role === "student" &&(
+                <Box>
+                  <ListItem button className={classes.drawerItem} onClick={null} sx={{gap: .5}}>
+                    <HomeIcon/>
+                    <Typography>Inicio</Typography>
+                  </ListItem>
+                  <ListItem button className={classes.drawerItem} onClick={null} sx={{gap: .5}}>
+                    <TopicIcon/>
+                    <Typography>Temas</Typography>
+                  </ListItem>
+                  <ListItem button className={classes.drawerItem} onClick={null} sx={{gap: .5}}>
+                    <QuizIcon/>
+                    <Typography>Examen</Typography>
+                  </ListItem>
+                  <ListItem button className={classes.drawerItem} onClick={null} sx={{gap: .5}}>
+                    <InsightsIcon/>
+                    <Typography>Rendimiento</Typography>
+                  </ListItem>
+                  <ListItem button className={classes.drawerItem} onClick={null} sx={{gap: .5}}>
+                    <LogoutIcon/>
+                    <Typography>Salir</Typography>
+                  </ListItem>
+                </Box>
+              )}
+              {role === "teacher" &&(
+                <Box>
+                  <ListItem button className={classes.drawerItem} onClick={null} sx={{gap: .5}}>
+                    <HomeIcon/>
+                    <Typography>Inicio</Typography>
+                  </ListItem>
+                  <ListItem button className={classes.drawerItem} onClick={null} sx={{gap: .5}}>
+                    <AddBoxIcon/>
+                    <Typography>Alta</Typography>
+                  </ListItem>
+                  <ListItem button className={classes.drawerItem} onClick={null} sx={{gap: .5}}>
+                    <DeleteIcon/>
+                    <Typography>Baja</Typography>
+                  </ListItem>
+                  <ListItem button className={classes.drawerItem} onClick={null} sx={{gap: .5}}>
+                    <EditIcon/>
+                    <Typography>Modificar</Typography>
+                  </ListItem>
+                  <ListItem button className={classes.drawerItem} onClick={null} sx={{gap: .5}}>
+                    <GroupIcon/>
+                    <Typography>Alumnos</Typography>
+                  </ListItem>
+                  <ListItem button className={classes.drawerItem} onClick={null} sx={{gap: .5}}>
+                    <LogoutIcon/>
+                    <Typography>Salir</Typography>
+                  </ListItem>
+                </Box>
+              )}
+              <ListItem button className={classes.drawerItem} onClick={changeMode}>
+                {mode ? 
+                  <Box sx={{display: "flex", gap: .5}}>
+                    <Brightness4Icon/> 
+                    <Typography>Aspecto: Oscuro</Typography>
+                  </Box>
+                : <Box sx={{display: "flex", gap: .5}}>
+                    <Brightness7Icon/> 
+                    <Typography>Aspecto: Claro</Typography>
+                  </Box>
+                }
+              </ListItem>
+            </List>
+          </Drawer>
         </Box>
       </Toolbar>
     </Container>
     </AppBar>
   );
 }
-
-/*
-MOVIL
-
-          <Box sx={{ flexGrow: 1, display: { xs: 'none', md: 'flex' } }}>
-            {pages.map((page) => (
-              <Button
-                key={page}
-                onClick={null}
-                sx={{ my: 2, color: 'white', display: 'block' }}
-              >
-                {page}
-              </Button>
-            ))}
-          </Box>
-
-          <Box sx={{ flexGrow: 0 }}>
-            <Tooltip title="Open settings">
-              <IconButton onClick={null} sx={{ p: 0 }}>
-                <Avatar alt="Remy Sharp" src="/static/images/avatar/2.jpg" />
-              </IconButton>
-            </Tooltip>
-            <Menu
-              sx={{ mt: '45px' }}
-              id="menu-appbar"
-              anchorEl={anchorElUser}
-              anchorOrigin={{
-                vertical: 'top',
-                horizontal: 'right',
-              }}
-              keepMounted
-              transformOrigin={{
-                vertical: 'top',
-                horizontal: 'right',
-              }}
-              open={Boolean(anchorElUser)}
-              onClose={handleCloseUserMenu}
-            >
-              {settings.map((setting) => (
-                <MenuItem key={setting} onClick={null}>
-                  <Typography textAlign="center">{setting}</Typography>
-                </MenuItem>
-              ))}
-            </Menu>
-          </Box>
-
-*/
