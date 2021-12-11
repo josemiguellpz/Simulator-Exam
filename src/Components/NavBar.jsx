@@ -97,8 +97,10 @@ export default function NavBar(){
   const band = () => setOpen(!open);
   const handlePage = () => null;
   const changeMode = () => {
-    setMode(!mode)
+    setMode(!mode);
   };
+
+  /* TODO: Modo Nocturno y enlaces */
 
   return(
     <AppBar className={classes.background} position="static" >
