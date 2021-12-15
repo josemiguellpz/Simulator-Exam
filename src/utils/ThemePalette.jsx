@@ -1,11 +1,18 @@
 const ThemePalette = {
   primary: {
-    main: "#7ed957",
+    main: "#0fa600",
     light: "#E3FAF6",
-    dark: "#0fa600",
-    contrastText: "#ffffff",
+    dark: "#3ad126",
+    contrastText: "#000000",
     back: "#E3FAF6",
   },
+  /* primary: {
+    main: "#ffffff",
+    light: "#E3FAF6",
+    dark: "#222222",
+    contrastText: "#000000",
+    back: "#E3FAF6",
+  }, */
   secondary: {
     main: "#8c52ff",
     light: "#D7F6F9",
@@ -39,7 +46,9 @@ const ThemePalette = {
     contrastText: "#ffffff",
   },
   black: {
-    main: "#000000",
+    main: "#222222",
+    contrastText: "#ffffff",
+    dark: "#deddd1",
   },
   white: {
     main: "#ffffff",

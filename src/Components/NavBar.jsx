@@ -29,6 +29,7 @@ import QuizIcon from '@mui/icons-material/Quiz';
 
 const useStyles = makeStyles((theme) =>({
   background:({role}) => ({
+    color: "#fff !important",
     background:
       role === "user"
         ? `${theme.palette.primary.main} !important`
