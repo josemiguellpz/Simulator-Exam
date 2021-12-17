@@ -3,7 +3,7 @@ import { makeStyles } from "@mui/styles";
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 
-import Card from '../../Components/Card';
+// import Card from '../../Components/Card';
 import Button from '../../Components/ButtonSimple';
 import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
 import Fondo1 from '../../Assets/phrase.jpg';
@@ -45,6 +45,7 @@ const useStyles = makeStyles((theme) => ({
     height: 350,
     borderRadius: "6px",
     position: "absolute",
+    objectFit: "cover",
     top: 100,
     boxShadow: "0px 15px 25px rgba(0,0,0,0.50)",
     [theme.breakpoints.down("md")]:{
@@ -56,6 +57,7 @@ const useStyles = makeStyles((theme) => ({
     height: 350,
     borderRadius: "6px",
     position: "absolute",
+    objectFit: "cover",
     top: 150,
     right: 250,
     boxShadow: "0px 15px 25px rgba(0,0,0,0.50)",
@@ -68,6 +70,7 @@ const useStyles = makeStyles((theme) => ({
     height: 350,
     borderRadius: "6px",
     position: "absolute",
+    objectFit: "cover",
     top: 200,
     right: 30,
     boxShadow: "0px 15px 25px rgba(0,0,0,0.50)",

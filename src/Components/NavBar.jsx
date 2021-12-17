@@ -1,4 +1,5 @@
 import React, {useState} from 'react';
+import { useNavigate } from 'react-router-dom';
 import { makeStyles } from "@mui/styles";
 import AppBar from '@mui/material/AppBar';
 import Container from '@mui/material/Container';
@@ -92,11 +93,12 @@ const useStyles = makeStyles((theme) =>({
 export default function NavBar(){
   localStorage.setItem("role", "user");
   const role = localStorage.getItem("role");
+  const navigate = useNavigate();
   const classes = useStyles({role});
   const [open, setOpen] = useState(false);
   const [mode, setMode] = useState(false);
   const band = () => setOpen(!open);
-  const handlePage = () => null;
+  const handlePage = (route) => (event) => navigate(route);
   const changeMode = () => {
     setMode(!mode);
   };
@@ -113,19 +115,19 @@ export default function NavBar(){
         <Box className={classes.navBox} sx={{ flexGrow: 1, }}>
           {role === "user" &&(
             <Box sx={{display: "flex"}}>
-              <MenuItem className={classes.navItem} onClick={null}>
+              <MenuItem className={classes.navItem} onClick={handlePage('/')}>
                 <HomeIcon/>
                 <Typography>Inicio</Typography>
               </MenuItem>
-              <MenuItem className={classes.navItem} onClick={handlePage}>
+              <MenuItem className={classes.navItem} onClick={handlePage('/topics')}>
                 <TopicIcon/>
                 <Typography>Temas</Typography>
               </MenuItem>
-              <MenuItem className={classes.navItem} onClick={handlePage}>
+              <MenuItem className={classes.navItem} onClick={handlePage('/register')}>
                 <PersonIcon/>
                 <Typography>Registro</Typography>
               </MenuItem>
-              <MenuItem className={classes.navItem} onClick={handlePage}>
+              <MenuItem className={classes.navItem} onClick={handlePage('/login')}>
                 <LoginIcon/>
                 <Typography>Iniciar sesión</Typography>
               </MenuItem>
@@ -212,19 +214,19 @@ export default function NavBar(){
             <List>
               {role === "user" &&(
                 <Box>
-                  <ListItem button className={classes.drawerItem} onClick={null} sx={{gap: .5}}>
+                  <ListItem button className={classes.drawerItem} onClick={handlePage('/')} sx={{gap: .5}}>
                     <HomeIcon/>
                     <Typography>Inicio</Typography>
                   </ListItem>
-                  <ListItem button className={classes.drawerItem} onClick={null} sx={{gap: .5}}>
+                  <ListItem button className={classes.drawerItem} onClick={handlePage('/topics')} sx={{gap: .5}}>
                     <TopicIcon/>
                     <Typography>Temas</Typography>
                   </ListItem>
-                  <ListItem button className={classes.drawerItem} onClick={null} sx={{gap: .5}}>
+                  <ListItem button className={classes.drawerItem} onClick={handlePage('/register')} sx={{gap: .5}}>
                     <PersonIcon/>
                     <Typography>Registro</Typography>
                   </ListItem>
-                  <ListItem button className={classes.drawerItem} onClick={null} sx={{gap: .5}}>
+                  <ListItem button className={classes.drawerItem} onClick={handlePage('/login')} sx={{gap: .5}}>
                     <LoginIcon/>
                     <Typography>Iniciar sesión</Typography>
                   </ListItem>

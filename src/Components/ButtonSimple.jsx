@@ -28,6 +28,7 @@ const useStyles = makeStyles((theme) => ({
 
 export default function ButtonSimple({
   title,
+  type,
   size,
   onClick,
   startIcon,
@@ -42,6 +43,7 @@ export default function ButtonSimple({
     <Button
       className={classes.root}
       color="primary"
+      type={type}
       size={size}
       onClick={onClick}
       variant="contained"
@@ -62,7 +64,8 @@ ButtonSimple.defaultProps = {
 
 ButtonSimple.propTypes ={
   title: PropTypes.string.isRequired,
-  onClick: PropTypes.func.isRequired,
+  onClick: PropTypes.func,
+  type: PropTypes.string,
   size: PropTypes.string,
   disabled: PropTypes.bool,
 }
