@@ -10,8 +10,10 @@ const useStyles = makeStyles((theme)=>({
 
 export default function InputText({
   type,
+  name,
   label,
   placeholder,
+  value,
   onChange,
   helperText,
   widthText,
@@ -24,8 +26,10 @@ export default function InputText({
     <TextField
       className={classes.root}
       type={type}
+      name={name}
       label={label}
       placeholder={placeholder}
+      value={value}
       onChange={onChange}
       helperText={helperText}
       disabled={disabled}
@@ -39,6 +43,8 @@ export default function InputText({
 
 
 InputText.defaultProps = {
+  name: "",
+  value: "",
   onChange: () => null,
   helperText: "",
   disabled: false,
@@ -48,8 +54,10 @@ InputText.defaultProps = {
 
 InputText.propTypes={
   type: PropTypes.string.isRequired,
+  name: PropTypes.string.isRequired,
   label: PropTypes.string.isRequired,
   placeholder: PropTypes.string.isRequired,
+  value: PropTypes.string.isRequired,
   onChange: PropTypes.func,
   helperText: PropTypes.string,
   disabled: PropTypes.bool,

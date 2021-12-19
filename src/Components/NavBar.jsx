@@ -27,6 +27,7 @@ import EditIcon from '@mui/icons-material/Edit';
 import HomeIcon from '@mui/icons-material/Home';
 import MenuIcon from '@mui/icons-material/Menu';
 import QuizIcon from '@mui/icons-material/Quiz';
+import Login from './ModalLogin';
 
 const useStyles = makeStyles((theme) =>({
   background:({role}) => ({
@@ -93,15 +94,24 @@ const useStyles = makeStyles((theme) =>({
 export default function NavBar(){
   localStorage.setItem("role", "user");
   const role = localStorage.getItem("role");
-  const navigate = useNavigate();
   const classes = useStyles({role});
+
+  // Drawer
   const [open, setOpen] = useState(false);
-  const [mode, setMode] = useState(false);
   const band = () => setOpen(!open);
+  
+  //Mode Dark
+  const [mode, setMode] = useState(false); 
+  const changeMode = () => setMode(!mode);
+  
+  // Modal Login
+  const [modal, setModal] = useState(false);
+  const handleOpen = () => setModal(true);
+  const handleClose = () => setModal(false);
+  
+  // Navigate
+  const navigate = useNavigate();
   const handlePage = (route) => (event) => navigate(route);
-  const changeMode = () => {
-    setMode(!mode);
-  };
 
   /* TODO: Modo Nocturno y enlaces */
 
@@ -127,7 +137,7 @@ export default function NavBar(){
                 <PersonIcon/>
                 <Typography>Registro</Typography>
               </MenuItem>
-              <MenuItem className={classes.navItem} onClick={handlePage('/login')}>
+              <MenuItem className={classes.navItem} onClick={handleOpen}>
                 <LoginIcon/>
                 <Typography>Iniciar sesión</Typography>
               </MenuItem>
@@ -226,7 +236,7 @@ export default function NavBar(){
                     <PersonIcon/>
                     <Typography>Registro</Typography>
                   </ListItem>
-                  <ListItem button className={classes.drawerItem} onClick={handlePage('/login')} sx={{gap: .5}}>
+                  <ListItem button className={classes.drawerItem} onClick={handleOpen} sx={{gap: .5}}>
                     <LoginIcon/>
                     <Typography>Iniciar sesión</Typography>
                   </ListItem>
@@ -298,6 +308,7 @@ export default function NavBar(){
               </ListItem>
             </List>
           </Drawer>
+          <Login open={modal} handleClose={handleClose}/> 
         </Box>
       </Toolbar>
     </Container>

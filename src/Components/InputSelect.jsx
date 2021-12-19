@@ -10,6 +10,7 @@ const useStyles = makeStyles((theme)=>({
 
 export default function InputSelect({
   label,
+  name,
   onChange,
   select,
   widthText,
@@ -20,6 +21,7 @@ export default function InputSelect({
     <TextField
       className={classes.root}
       label={label}
+      name={name}
       onChange={onChange}
       select={select}
       variant="standard"
@@ -31,12 +33,14 @@ export default function InputSelect({
 
 
 InputSelect.defaultProps = {
+  name: "",
   onChange: () => null,
   select: true,
 };
 
 InputSelect.propTypes={
   label: PropTypes.string.isRequired,
+  name: PropTypes.string.isRequired,
   select: PropTypes.bool.isRequired,
   onChange: PropTypes.func,
 }

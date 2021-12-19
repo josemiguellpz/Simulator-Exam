@@ -36,6 +36,9 @@ const useStyles = makeStyles((theme) => ({
       height: 180,
     },
   },
+  title:{
+    color: `${theme.palette.primary.main} !important`,
+  },
   options:{
     display: "flex",
     gap: 10,
@@ -105,27 +108,46 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function Register() {
-  const [student, setStudent] = useState(true);
-  const [teacher, setTeacher] = useState(false);
-  const classes = useStyles({teacher});
   const carrers = [
     {value: "Ingeniería en Ciencias de la Computación", },
     {value: "Licenciatura en Ciencias de la Computación", },
     {value: "Ingeniería en Tecnologías de la Información", },
   ];
+  
+  const [student, setStudent] = useState(true);
   const handleStudent = () =>{ 
     setStudent(true)
     setTeacher(false)
   };
+  
+  const [teacher, setTeacher] = useState(false);
   const handleTeacher = () =>{ 
     setStudent(false)
     setTeacher(true)
   };
+
+  const classes = useStyles({teacher});
+  const [data, setData] = useState({
+    matricula: "",
+    name: "",
+    lastName: "",
+    email: "",
+    password: "",
+    password2: "",
+    carrer: "",
+  });
+  const handleInputChange=(e) => setData({ ...data, [e.target.name]: e.target.value });
+  async function handleRegister(e) {
+    e.preventDefault();
+    // TODO: Send Data
+    console.log(data)
+  }
+
   return(
     <>
       <Box className={classes.root}>
         <Box className={classes.info}>
-          <Typography variant="h4">
+          <Typography className={classes.title} variant="h4" sx={{fontWeight: "bold",}}>
             Formulario de Registro
           </Typography><br/>
           <Typography variant="h6" sx={{alignText: "center"}}>
@@ -159,14 +181,17 @@ export default function Register() {
 
         <Box className={classes.cardForm}>
           {student && (
-            <form className={classes.containerFrom}>
+            <form className={classes.containerFrom} onSubmit={handleRegister}>
               <img className={classes.imgForm}src={BackStudent} alt="back"/>
               <Typography className={classes.user} variant="h3">Alumno</Typography>
               <Box className={classes.items}>
                 <Box>
                   <InputSelect
                     select
+                    name="carrer"
                     label="Carrera"
+                    value={data.carrer}
+                    onChange={handleInputChange}
                     widthText={400}
                   >
                     {carrers.map((option) =>(
@@ -179,97 +204,133 @@ export default function Register() {
                 <Box sx={{display: "flex", gap: 5}}>
                   <InputText
                     type="text"
+                    name="name"
                     label="Nombre"
                     placeholder="Ingrese su nombre"
+                    value={data.name}
+                    onChange={handleInputChange}
                     widthText={200}
                   />
                   <InputText
                     type="text"
+                    name="lastName"
                     label="Apellidos"
                     placeholder="Ingrese sus apellidos"
+                    value={data.lastName}
+                    onChange={handleInputChange}
                     widthText={200}
                     />
                 </Box>
                 <Box sx={{display: "flex", gap: 5}}>
                   <InputText
-                    type="number"
+                    type="text"
+                    name="matricula"
                     label="Matrícula"
                     placeholder="Ingrese su matrícula"
+                    value={data.matricula}
+                    onChange={handleInputChange}
                     widthText={200}
                   />
                   <InputText
                     type="email"
+                    name="email"
                     label="Correo Institucional"
                     placeholder="Ingrese su email"
+                    value={data.email}
+                    onChange={handleInputChange}
                     widthText={200}
                     />
                 </Box>
                 <Box sx={{display: "flex", gap: 5}}>
                   <InputText
                     type="password"
+                    name="password"
                     label="Contraseña"
-                    placeholder="Ingrese su matrícula"
+                    placeholder="Ingrese su contraseña"
+                    value={data.password}
+                    onChange={handleInputChange}
                     widthText={200}
                     />
                   <InputText
                     type="password"
+                    name="password2"
                     label="Confirmar Contraseña"
-                    placeholder="Ingrese su matrícula nuevamente"
+                    placeholder="Ingrese su contraseña nuevamente"
+                    value={data.password2}
+                    onChange={handleInputChange}
                     widthText={200}
                     />
                 </Box>
                 <Button
                   title="Enviar"
                   type="submit"
-                  onClick={null}
+                  onClick={handleRegister}
                 />
               </Box>
             </form>
           )}
           {teacher && (
-            <form className={classes.containerFrom}>
+            <form className={classes.containerFrom} onSubmit={handleRegister}>
             <img className={classes.imgForm}src={BackTeacher} alt="back"/>
             <Typography className={classes.user} variant="h3">Docente</Typography>
             <Box className={classes.items}>
               <Box sx={{display: "flex", gap: 5}}>
                 <InputText
                   type="text"
+                  name="name"
                   label="Nombre"
                   placeholder="Ingrese su nombre"
+                  value={data.name}
+                  onChange={handleInputChange}
                   widthText={200}
                 />
                 <InputText
                   type="text"
+                  name="lastName"
                   label="Apellidos"
                   placeholder="Ingrese sus apellidos"
+                  value={data.lastName}
+                  onChange={handleInputChange}
                   widthText={200}
                   />
               </Box>
               <Box sx={{display: "flex", gap: 5}}>
                 <InputText
-                  type="number"
+                  type="text"
+                  name="matricula"
                   label="Matrícula"
                   placeholder="Ingrese su matrícula"
+                  value={data.matricula}
+                  onChange={handleInputChange}
                   widthText={200}
                 />
                 <InputText
                   type="email"
+                  name="email"
                   label="Correo Institucional"
                   placeholder="Ingrese su email"
+                  value={data.email}
+                  onChange={handleInputChange}
                   widthText={200}
                   />
               </Box>
               <Box sx={{display: "flex", gap: 5}}>
                 <InputText
                   type="password"
+                  name="password"
                   label="Contraseña"
                   placeholder="Ingrese su matrícula"
+                  value={data.password}
+                  onChange={handleInputChange}
                   widthText={200}
                   />
                 <InputText
                   type="password"
+                  name="password2"
                   label="Confirmar Contraseña"
                   placeholder="Ingrese su matrícula nuevamente"
+                  value={data.password2}
+                  onChange={handleInputChange}
                   widthText={200}
                   />
               </Box>
