@@ -2,6 +2,11 @@ import React, {useState} from "react";
 import PropTypes from "prop-types";
 import { makeStyles } from "@mui/styles";
 import Modal from "@mui/material/Modal";
+import IconButton from '@mui/material/IconButton';
+import CloseIcon from '@mui/icons-material/Close';
+import Alert from '@mui/material/Alert';
+
+import {UserLogin} from "../User/Application/User.logic";
 import Button from "./ButtonSimple";
 import InputText from "./InputText";
 import Back from "../Assets/back-login.jpg";
@@ -60,25 +65,85 @@ const useStyles = makeStyles((theme) => ({
 
 export default function ModalLogin({ 
   open,
-  handleClose 
+  handleClose,
 }) {
   const widthMax = 500;
   const classes = useStyles({widthMax});
+
+  // Data User
   const [data, setData] = useState({
     matricula: "",
     password: "",
   });
+
+  // Inputs Values
   const handleInputChange=(e) => setData({ ...data, [e.target.name]: e.target.value });
-  async function handleRegister(e) {
+  
+  // Login User
+  async function handleLogin(e) {
     e.preventDefault();
-    // TODO: Send Data
-    console.log(data)
+    const {status, info} = UserLogin(data);
+    if(status){ // Success
+      setBand(true)
+      setAlert(true)
+      setAlertContent(info)
+    }
+    else{ // Error
+      setBand(true)
+      setAlert(false)
+      setAlertContent(info)
+    }
   }
+
+  // Alert
+  const [band, setBand] = useState(false);
+  const [alert, setAlert] = useState(false);
+  const [alertContent, setAlertContent] = useState('');
+
+  const showAlert = (alert, alertContent) => {
+    return(
+      <>
+      {alert ? (
+        <Alert className={classes.alert} variant="filled" severity="success" action={
+          <IconButton
+            aria-label="close"
+            color="inherit"
+            size="small"
+            onClick={() => {
+              setBand(false);
+            }}
+          >
+            <CloseIcon fontSize="inherit" />
+          </IconButton>
+        }>
+          {alertContent}
+        </Alert>
+      ):(
+        <Alert className={classes.alert} variant="filled" severity="error" action={
+          <IconButton
+            aria-label="close"
+            color="inherit"
+            size="small"
+            onClick={() => {
+              setBand(false);
+            }}
+          >
+            <CloseIcon fontSize="inherit" />
+          </IconButton>
+        }>
+          {alertContent}
+        </Alert>
+      )}
+      </>
+    );
+  };
+
   return (
     <Modal open={open} onClose={handleClose}>
-      <form className={classes.container} onSubmit={handleRegister}>
+      <form className={classes.container} onSubmit={handleLogin}>
         <img className={classes.img}src={Back} alt="font-login"/>
         <h2 className={classes.title}>Inicio de Sesión</h2>
+        {band && ( showAlert(alert, alertContent) )}
         <InputText
           type="text"
           label="Matrícula"
@@ -100,7 +165,7 @@ export default function ModalLogin({
         <Button
           type="submit"
           title="Iniciar"
-          onClick={handleRegister}
+          onClick={handleLogin}
         />
       </form>
     </Modal>

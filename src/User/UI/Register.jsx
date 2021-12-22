@@ -1,9 +1,13 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import { makeStyles } from "@mui/styles";
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
+import IconButton from '@mui/material/IconButton';
+import CloseIcon from '@mui/icons-material/Close';
 import MenuItem from '@mui/material/MenuItem';
+import Alert from '@mui/material/Alert';
 
+import {UserRegister} from '../Application/User.logic';
 import Button from '../../Components/ButtonSimple';
 import InputSelect from '../../Components/InputSelect';
 import InputText from '../../Components/InputText';
@@ -65,6 +69,11 @@ const useStyles = makeStyles((theme) => ({
       display: "flex",
     },
   },
+  alert:({teacher})=>({
+    position: "absolute",
+    top: teacher ? 211 : 197,
+    width: 520,
+  }),
   cardForm:({teacher})=>({
     width: 520,
     height: teacher ? 440 : 490,
@@ -113,21 +122,27 @@ export default function Register() {
     {value: "Licenciatura en Ciencias de la Computación", },
     {value: "Ingeniería en Tecnologías de la Información", },
   ];
-  
+
+  // Button Student
   const [student, setStudent] = useState(true);
   const handleStudent = () =>{ 
     setStudent(true)
     setTeacher(false)
   };
   
+  // Button Teacher
   const [teacher, setTeacher] = useState(false);
   const handleTeacher = () =>{ 
     setStudent(false)
     setTeacher(true)
   };
-
+  
+  // Styles
   const classes = useStyles({teacher});
+
+  // Data User
   const [data, setData] = useState({
+    role: "",
     matricula: "",
     name: "",
     lastName: "",
@@ -136,12 +151,73 @@ export default function Register() {
     password2: "",
     carrer: "",
   });
+  
+  
+  // Alert
+  const [open, setOpen] = useState(false);
+  const [alert, setAlert] = useState(false);
+  const [alertContent, setAlertContent] = useState('');
+
+  // Inputs Values
   const handleInputChange=(e) => setData({ ...data, [e.target.name]: e.target.value });
+  
+  // Register
   async function handleRegister(e) {
     e.preventDefault();
-    // TODO: Send Data
-    console.log(data)
+    if(student)
+      data.role="Alumno";
+    else
+      data.role="Docente";
+    const {status, info} = UserRegister(data); // await Send Data and Response
+    if(status){ // Success
+      setOpen(true)
+      setAlert(true)
+      setAlertContent(info)
+    }
+    else{ // Error
+      setOpen(true)
+      setAlert(false)
+      setAlertContent(info)
+    }
   }
+
+  const showAlert = (alert, alertContent) => {
+    return(
+      <>
+      {alert ? (
+        <Alert className={classes.alert} variant="filled" severity="success" action={
+          <IconButton
+            aria-label="close"
+            color="inherit"
+            size="small"
+            onClick={() => {
+              setOpen(false);
+            }}
+          >
+            <CloseIcon fontSize="inherit" />
+          </IconButton>
+        }>
+          {alertContent}
+        </Alert>
+      ):(
+        <Alert className={classes.alert} variant="filled" severity="error" action={
+          <IconButton
+            aria-label="close"
+            color="inherit"
+            size="small"
+            onClick={() => {
+              setOpen(false);
+            }}
+          >
+            <CloseIcon fontSize="inherit" />
+          </IconButton>
+        }>
+          {alertContent}
+        </Alert>
+      )}
+      </>
+    );
+  };
 
   return(
     <>
@@ -184,6 +260,7 @@ export default function Register() {
             <form className={classes.containerFrom} onSubmit={handleRegister}>
               <img className={classes.imgForm}src={BackStudent} alt="back"/>
               <Typography className={classes.user} variant="h3">Alumno</Typography>
+              {open && ( showAlert(alert, alertContent) )}
               <Box className={classes.items}>
                 <Box>
                   <InputSelect
@@ -271,76 +348,77 @@ export default function Register() {
           )}
           {teacher && (
             <form className={classes.containerFrom} onSubmit={handleRegister}>
-            <img className={classes.imgForm}src={BackTeacher} alt="back"/>
-            <Typography className={classes.user} variant="h3">Docente</Typography>
-            <Box className={classes.items}>
-              <Box sx={{display: "flex", gap: 5}}>
-                <InputText
-                  type="text"
-                  name="name"
-                  label="Nombre"
-                  placeholder="Ingrese su nombre"
-                  value={data.name}
-                  onChange={handleInputChange}
-                  widthText={200}
+              <img className={classes.imgForm}src={BackTeacher} alt="back"/>
+              <Typography className={classes.user} variant="h3">Docente</Typography>
+              {open && ( showAlert(alert, alertContent) )}
+              <Box className={classes.items}>
+                <Box sx={{display: "flex", gap: 5}}>
+                  <InputText
+                    type="text"
+                    name="name"
+                    label="Nombre"
+                    placeholder="Ingrese su nombre"
+                    value={data.name}
+                    onChange={handleInputChange}
+                    widthText={200}
+                  />
+                  <InputText
+                    type="text"
+                    name="lastName"
+                    label="Apellidos"
+                    placeholder="Ingrese sus apellidos"
+                    value={data.lastName}
+                    onChange={handleInputChange}
+                    widthText={200}
+                    />
+                </Box>
+                <Box sx={{display: "flex", gap: 5}}>
+                  <InputText
+                    type="text"
+                    name="matricula"
+                    label="Matrícula"
+                    placeholder="Ingrese su matrícula"
+                    value={data.matricula}
+                    onChange={handleInputChange}
+                    widthText={200}
+                  />
+                  <InputText
+                    type="email"
+                    name="email"
+                    label="Correo Institucional"
+                    placeholder="Ingrese su email"
+                    value={data.email}
+                    onChange={handleInputChange}
+                    widthText={200}
+                    />
+                </Box>
+                <Box sx={{display: "flex", gap: 5}}>
+                  <InputText
+                    type="password"
+                    name="password"
+                    label="Contraseña"
+                    placeholder="Ingrese su matrícula"
+                    value={data.password}
+                    onChange={handleInputChange}
+                    widthText={200}
+                    />
+                  <InputText
+                    type="password"
+                    name="password2"
+                    label="Confirmar Contraseña"
+                    placeholder="Ingrese su matrícula nuevamente"
+                    value={data.password2}
+                    onChange={handleInputChange}
+                    widthText={200}
+                    />
+                </Box>
+                <Button
+                  title="Enviar"
+                  type="submit"
+                  onClick={null}
                 />
-                <InputText
-                  type="text"
-                  name="lastName"
-                  label="Apellidos"
-                  placeholder="Ingrese sus apellidos"
-                  value={data.lastName}
-                  onChange={handleInputChange}
-                  widthText={200}
-                  />
               </Box>
-              <Box sx={{display: "flex", gap: 5}}>
-                <InputText
-                  type="text"
-                  name="matricula"
-                  label="Matrícula"
-                  placeholder="Ingrese su matrícula"
-                  value={data.matricula}
-                  onChange={handleInputChange}
-                  widthText={200}
-                />
-                <InputText
-                  type="email"
-                  name="email"
-                  label="Correo Institucional"
-                  placeholder="Ingrese su email"
-                  value={data.email}
-                  onChange={handleInputChange}
-                  widthText={200}
-                  />
-              </Box>
-              <Box sx={{display: "flex", gap: 5}}>
-                <InputText
-                  type="password"
-                  name="password"
-                  label="Contraseña"
-                  placeholder="Ingrese su matrícula"
-                  value={data.password}
-                  onChange={handleInputChange}
-                  widthText={200}
-                  />
-                <InputText
-                  type="password"
-                  name="password2"
-                  label="Confirmar Contraseña"
-                  placeholder="Ingrese su matrícula nuevamente"
-                  value={data.password2}
-                  onChange={handleInputChange}
-                  widthText={200}
-                  />
-              </Box>
-              <Button
-                title="Enviar"
-                type="submit"
-                onClick={null}
-              />
-            </Box>
-          </form>
+            </form>
           )}
         </Box>
       </Box>
