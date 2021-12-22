@@ -73,6 +73,9 @@ const useStyles = makeStyles((theme) => ({
     position: "absolute",
     top: teacher ? 211 : 197,
     width: 520,
+    [theme.breakpoints.down("md")]:{
+      top: teacher ? 211 : 440,
+    },
   }),
   cardForm:({teacher})=>({
     width: 520,

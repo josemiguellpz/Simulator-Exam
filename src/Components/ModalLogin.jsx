@@ -1,22 +1,23 @@
 import React, {useState} from "react";
 import PropTypes from "prop-types";
 import { makeStyles } from "@mui/styles";
-import Modal from "@mui/material/Modal";
-import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
+import IconButton from '@mui/material/IconButton';
 import Alert from '@mui/material/Alert';
+import Modal from "@mui/material/Modal";
 
 import {UserLogin} from "../User/Application/User.logic";
+import Back from "../Assets/back-login.jpg";
 import Button from "./ButtonSimple";
 import InputText from "./InputText";
-import Back from "../Assets/back-login.jpg";
 
 const useStyles = makeStyles((theme) => ({
-  container:({widthMax})=> ({
+  container:{
     position: "absolute",
     top: "50%",
     left: "50%",
     transform: "translate(-50%, -50%)",
+    width: "400px",
     minHeight: "400px",
     borderRadius: "30px",
     background: "#fff",
@@ -27,39 +28,18 @@ const useStyles = makeStyles((theme) => ({
     alignItems: "center",
     flexDirection: "column",
     padding: "20px",
-    [theme.breakpoints.up("sm")]: {
-      width: "300px",
-    },
-    [theme.breakpoints.up("md")]: {
-      width: "400px",
-    },
-    [theme.breakpoints.up("lg")]: {
-      width: widthMax,
-    },
-  }),
-  img:({widthMax}) => ({
+  },
+  img:{
     position: "absolute",
-    width: widthMax,
+    width: "400px",
     height: 400,
     borderRadius: "30px",
     objectFit: "cover",
     zIndex: -1,
-    [theme.breakpoints.up("sm")]: {
-      width: "300px",
-    },
-    [theme.breakpoints.up("md")]: {
-      width: "400px",
-    },
-    [theme.breakpoints.up("lg")]: {
-      width: widthMax,
-    },
-  }),
-  title: ({ type }) => ({
+  },
+  title:{
     fontWeight: "bold",
     color: "#419F00",
-  }),
-  center: {
-    textAlign: "center",
   },
 }));
 
@@ -67,8 +47,7 @@ export default function ModalLogin({
   open,
   handleClose,
 }) {
-  const widthMax = 500;
-  const classes = useStyles({widthMax});
+  const classes = useStyles();
 
   // Data User
   const [data, setData] = useState({
@@ -104,7 +83,7 @@ export default function ModalLogin({
     return(
       <>
       {alert ? (
-        <Alert className={classes.alert} variant="filled" severity="success" action={
+        <Alert variant="filled" severity="success" action={
           <IconButton
             aria-label="close"
             color="inherit"
@@ -119,7 +98,7 @@ export default function ModalLogin({
           {alertContent}
         </Alert>
       ):(
-        <Alert className={classes.alert} variant="filled" severity="error" action={
+        <Alert variant="filled" severity="error" action={
           <IconButton
             aria-label="close"
             color="inherit"
