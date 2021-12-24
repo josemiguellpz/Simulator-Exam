@@ -1,15 +1,15 @@
 import React, {useState, useEffect} from 'react';
 import { makeStyles } from "@mui/styles";
-import Typography from '@mui/material/Typography';
-import Box from '@mui/material/Box';
-import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
+import IconButton from '@mui/material/IconButton';
+import Typography from '@mui/material/Typography';
 import MenuItem from '@mui/material/MenuItem';
 import Alert from '@mui/material/Alert';
+import Box from '@mui/material/Box';
 
 import {UserRegister} from '../Application/User.logic';
-import Button from '../../Components/ButtonSimple';
 import InputSelect from '../../Components/InputSelect';
+import Button from '../../Components/ButtonSimple';
 import InputText from '../../Components/InputText';
 import BackStudent from '../../Assets/back-student.jpg';
 import BackTeacher from '../../Assets/back-teacher.jpg';
@@ -143,6 +143,10 @@ export default function Register() {
   // Styles
   const classes = useStyles({teacher});
 
+  useEffect(() => {
+    
+  }, []);
+
   // Data User
   const [data, setData] = useState({
     role: "",
@@ -154,7 +158,6 @@ export default function Register() {
     password2: "",
     carrer: "",
   });
-  
   
   // Alert
   const [open, setOpen] = useState(false);

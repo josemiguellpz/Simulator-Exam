@@ -1,13 +1,13 @@
-import React, {useState} from "react";
+import React, {useState, useEffect} from "react";
 import { makeStyles } from "@mui/styles";
+import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 
-// import Card from '../../Components/Card';
+import LoadingSpinner from '../../Components/LoadingSpinner';
 import Login from '../../Components/ModalLogin';
 import Button from '../../Components/ButtonSimple';
-import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
-import Fondo1 from '../../Assets/phrase.jpg';
+import Fondo1 from '../../Assets/exam.jpg';
 import Fondo2 from '../../Assets/team.jpg';
 import Fondo3 from '../../Assets/phone.jpg';
 
@@ -101,6 +101,24 @@ export default function Home (){
   const [open, setOpen] = useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
+  const [loading, setLoading] = useState(false);
+  
+  useEffect(() => {
+    const load = async () => {
+      setLoading(true)
+      await setTimeout(function(){
+        setLoading(false)
+      }, 3000);
+    }
+    load()
+  }, []);
+
+  if(loading){
+    return(
+      <LoadingSpinner />
+    )
+  }
+
   return(
     <>
       <Box className={classes.root}>

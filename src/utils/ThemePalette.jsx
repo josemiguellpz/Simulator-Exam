@@ -1,7 +1,7 @@
 const ThemePalette = {
   primary: {
     main: "#0fa600",
-    light: "#E3FAF6",
+    light: "#b4fdaa",
     dark: "#3ad126",
     contrastText: "#000000",
     back: "#E3FAF6",

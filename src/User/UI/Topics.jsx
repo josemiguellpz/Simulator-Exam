@@ -1,14 +1,18 @@
-import React from "react";
-import { makeStyles } from "@mui/styles";
+import React, {useState} from "react";
+import { makeStyles, styled } from "@mui/styles";
+import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
+import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableCell, { tableCellClasses } from '@mui/material/TableCell';
+import TableContainer from '@mui/material/TableContainer';
+import TableHead from '@mui/material/TableHead';
+import TableRow from '@mui/material/TableRow';
+import Paper from '@mui/material/Paper';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 
-// import Card from '../../Components/Card';
+import Login from '../../Components/ModalLogin';
 import Button from '../../Components/ButtonSimple';
-import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
-import Fondo1 from '../../Assets/phrase.jpg';
-import Fondo2 from '../../Assets/team.jpg';
-import Fondo3 from '../../Assets/phone.jpg';
 
 const useStyles = makeStyles((theme) => ({
   root:{
@@ -16,84 +20,117 @@ const useStyles = makeStyles((theme) => ({
     width: "100%",
     height: "calc(100vh - 64px)",
     display: "flex",
-    justifyContent: "space-between",
     alignItems: "center",
     [theme.breakpoints.down("md")]:{
       flexDirection: "column",
     },
   },
   info:{
-    width: "500px",
-    height: "250px",
+    width: 500,
+    height: 250,
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
     gap: 15,
     marginLeft: 50,
+    marginTop: -70,
     [theme.breakpoints.down("md")]:{
-      marginTop: 100,
-      zIndex: 1,
+      marginTop: 50,
     },
   },
   title:{
     color: `${theme.palette.primary.main} !important`,
   },
-  footer:{
-    width: 700,
-    height: 500,
-    marginRight: 50,
-  },
-  img3:{
-    width: 300,
-    height: 350,
-    borderRadius: "6px",
-    position: "absolute",
-    objectFit: "cover",
-    top: 100,
-    boxShadow: "0px 15px 25px rgba(0,0,0,0.50)",
+  topics:{
+    width: 600,
+    height: 400,
+    display: "flex",
+    flexDirection: "column",
+    marginLeft: 100,
+    marginTop: 40,
     [theme.breakpoints.down("md")]:{
-      display: "none"
+      width: 500,
+      marginLeft: 50,
+      marginTop: 50,
+      marginButtom: 50,
     },
   },
-  imgMobile:{
-    [theme.breakpoints.up("md")]:{
-      display: "none"
-    },
-    [theme.breakpoints.down("md")]:{
-      position: "absolute",
-      width: "100%",
-      height: "calc(100vh - 64px)",
-      opacity: 0.5,
-      objectFit: "cover",
-    },
+}));
+
+// Table styles
+const StyledTableCell = styled(TableCell)(({ theme }) => ({
+  [`&.${tableCellClasses.head}`]: {
+    backgroundColor: theme.palette.primary.main,
+    color: theme.palette.common.white,
+  },
+  [`&.${tableCellClasses.body}`]: {
+    fontSize: 14,
+  },
+}));
+
+const StyledTableRow = styled(TableRow)(({ theme }) => ({
+  '&:nth-of-type(odd)': {
+    backgroundColor: theme.palette.primary.light,
+  },
+  // hide last border
+  '&:last-child td, &:last-child th': {
+    border: 0,
   },
 }));
 
 export default function Topic (){
   const classes = useStyles();
-  const aux = () => console.log("asasasasasasas")
+  const topics = [
+    {id: 1, value: "Calidad", },
+    {id: 2, value: "Seguridad", },
+    {id: 3, value: "Integridad", },
+    {id: 4, value: "Metodologias", },
+    {id: 5, value: "Metodologias agiles", },
+    {id: 6, value: "SCRUM", },
+  ];
+  const [open, setOpen] = useState(false);
+  const handleOpen = () => setOpen(true);
+  const handleClose = () => setOpen(false);
   return(
     <>
       <Box className={classes.root}>
-      {/* <img className={classes.imgMobile} src={Fondo3} alt="fondo-mobile"/> */}
         <Box className={classes.info}>
           <Typography className={classes.title} variant="h4" sx={{fontWeight: "bold",}}>
             Listado de temas
           </Typography><br/>
           <Typography variant="h6" >
-            En este apartado puedes consultar el temario disponible.<br/>
-            
+            En este apartado puedes consultar una vista preliminar de algunos temas
+            disponibles.<br/>
+            Inicia sesión para tener acceso a más información.
           </Typography><br/>
           <Button
             title="Iniciar"
-            onClick={aux}
+            onClick={handleOpen}
             size="large"
             endIcon={<KeyboardArrowRightIcon/>}
             />
         </Box>
-        <Box className={classes.footer}>
-          <img className={classes.img3} src={Fondo3} alt="img3"/>
+        <Box className={classes.topics}>
+          <TableContainer component={Paper}>
+            <Table>
+              <TableHead>
+                <TableRow>
+                  <StyledTableCell>Temario</StyledTableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {topics.map((row) => (
+                  <StyledTableRow key={row.id}>
+                    <StyledTableCell scope="row">
+                      {row.value}
+                    </StyledTableCell>
+                  </StyledTableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
         </Box>
+        <Login open={open} handleClose={handleClose}/> 
       </Box>
     </>
   );
