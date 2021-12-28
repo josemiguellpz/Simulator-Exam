@@ -1,10 +1,7 @@
-// import { createOne, updateOne, getOne } from "../../Provider.new";
-
-//TODO: PROVIDER and Update User
+import {postOne, getUser} from '../../Axios/Provider';
 
 export function RegisterUser(body){
-  console.log(body)
-  return {status: true, info: "¡Registro Exitoso! Puede iniciar sesión"}
+  return postOne("users", body)
 }
 
 export function GetUser(matricula, password){
@@ -12,8 +9,7 @@ export function GetUser(matricula, password){
     matricula: matricula,
     password: password,
   }
-  console.log(body)
-  return {status: true, info: "Sesión Iniciada"}
+  return getUser(body)
 }
 
 export function GetUsers(){

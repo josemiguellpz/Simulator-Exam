@@ -61,7 +61,7 @@ export default function ModalLogin({
   // Login User
   async function handleLogin(e) {
     e.preventDefault();
-    const {status, info} = UserLogin(data);
+    const {status, info} = await UserLogin(data);
     if(status){ // Success
       setBand(true)
       setAlert(true)
