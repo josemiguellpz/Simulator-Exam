@@ -80,6 +80,7 @@ const useStyles = makeStyles((theme) => ({
   cardForm:({teacher})=>({
     width: 520,
     height: teacher ? 440 : 490,
+    marginBottom: teacher ? 0 : 10,
     marginTop: 30,
     borderRadius: "30px",
     background: "#fff",
@@ -87,6 +88,7 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     flexDirection: "column",
     [theme.breakpoints.down("md")]:{
+      marginBottom: 30,
       marginTop: 10,
     },
   }),

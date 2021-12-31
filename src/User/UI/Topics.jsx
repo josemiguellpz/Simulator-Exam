@@ -18,7 +18,7 @@ const useStyles = makeStyles((theme) => ({
   root:{
     /* border: "solid 1px", */
     width: "100%",
-    height: "calc(100vh - 64px)",
+    /* height: "calc(100vh - 64px)", */
     display: "flex",
     alignItems: "center",
     [theme.breakpoints.down("md")]:{
@@ -51,7 +51,7 @@ const useStyles = makeStyles((theme) => ({
     [theme.breakpoints.down("md")]:{
       width: 500,
       marginLeft: 50,
-      marginTop: 50,
+      marginTop: 30,
       marginButtom: 50,
     },
   },

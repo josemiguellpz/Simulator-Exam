@@ -145,19 +145,19 @@ export default function NavBar(){
           )}
           {role === "student" &&(
             <Box sx={{display: "flex"}}>
-              <MenuItem className={classes.navItem} onClick={null}>
+              <MenuItem className={classes.navItem} onClick={handlePage('/student/')}>
                 <HomeIcon/>
                 <Typography>Inicio</Typography>
               </MenuItem>
-              <MenuItem className={classes.navItem} onClick={handlePage}>
+              <MenuItem className={classes.navItem} onClick={handlePage('/student/topics')}>
                 <TopicIcon/>
                 <Typography>Temas</Typography>
               </MenuItem>
-              <MenuItem className={classes.navItem} onClick={handlePage}>
+              <MenuItem className={classes.navItem} onClick={handlePage('/student/exam')}>
                 <QuizIcon/>
                 <Typography>Examen</Typography>
               </MenuItem>
-              <MenuItem className={classes.navItem} onClick={handlePage}>
+              <MenuItem className={classes.navItem} onClick={handlePage('/student/historial')}>
                 <InsightsIcon/>
                 <Typography>Rendimiento</Typography>
               </MenuItem>
@@ -244,19 +244,19 @@ export default function NavBar(){
               )}
               {role === "student" &&(
                 <Box>
-                  <ListItem button className={classes.drawerItem} onClick={null} sx={{gap: .5}}>
+                  <ListItem button className={classes.drawerItem} onClick={handlePage('/student/')} sx={{gap: .5}}>
                     <HomeIcon/>
                     <Typography>Inicio</Typography>
                   </ListItem>
-                  <ListItem button className={classes.drawerItem} onClick={null} sx={{gap: .5}}>
+                  <ListItem button className={classes.drawerItem} onClick={handlePage('/student/topics')} sx={{gap: .5}}>
                     <TopicIcon/>
                     <Typography>Temas</Typography>
                   </ListItem>
-                  <ListItem button className={classes.drawerItem} onClick={null} sx={{gap: .5}}>
+                  <ListItem button className={classes.drawerItem} onClick={handlePage('/student/exam')} sx={{gap: .5}}>
                     <QuizIcon/>
                     <Typography>Examen</Typography>
                   </ListItem>
-                  <ListItem button className={classes.drawerItem} onClick={null} sx={{gap: .5}}>
+                  <ListItem button className={classes.drawerItem} onClick={handlePage('/student/historial')} sx={{gap: .5}}>
                     <InsightsIcon/>
                     <Typography>Rendimiento</Typography>
                   </ListItem>
