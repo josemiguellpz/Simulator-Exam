@@ -7,7 +7,7 @@ import UserModel, {
 import {
   RegisterUser, 
   GetUser
-} from "../Infrastructure/Register.service";
+} from "../Infrastructure/User.service";
 
 export function UserRegister({
   role,

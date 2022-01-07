@@ -176,7 +176,9 @@ export default function Register() {
       data.role="Alumno";
     else
       data.role="Docente";
-    const {status, info} = await UserRegister(data);
+    const response = await UserRegister(data);
+    console.log(response)
+    const {status, info} = response.data;
     // TODO: Redireccionar segun el Rol
     if(status){ // Success
       setOpen(true)

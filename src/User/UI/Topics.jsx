@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {useState, useEffect} from "react";
 import { makeStyles, styled } from "@mui/styles";
 import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
 import Table from '@mui/material/Table';
@@ -11,8 +11,11 @@ import Paper from '@mui/material/Paper';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 
+import LoadingSpinner from '../../Components/LoadingSpinner';
 import Login from '../../Components/ModalLogin';
 import Button from '../../Components/ButtonSimple';
+
+import {GetTopics} from '../Infrastructure/User.service';
 
 const useStyles = makeStyles((theme) => ({
   root:{
@@ -80,17 +83,61 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
 
 export default function Topic (){
   const classes = useStyles();
-  const topics = [
-    {id: 1, value: "Calidad", },
-    {id: 2, value: "Seguridad", },
-    {id: 3, value: "Integridad", },
-    {id: 4, value: "Metodologias", },
-    {id: 5, value: "Metodologias agiles", },
-    {id: 6, value: "SCRUM", },
+  const x = [
+    {id: 10, value: "Calidad", },
+    {id: 20, value: "Seguridad", },
+    {id: 30, value: "Integridad", },
+    {id: 40, value: "Metodologias", },
+    {id: 50, value: "Metodologias agiles", },
+    {id: 60, value: "SCRUM", },
   ];
+  
+  // Modal-Login
   const [open, setOpen] = useState(false);
   const handleOpen = () => setOpen(true);
   const handleClose = () => setOpen(false);
+  
+  // Request Topics at Backend
+  const [loading, setLoading] = useState(false);
+  //let topics = []
+  const [topics, setTopics] = useState([]);
+  useEffect(() => {
+    const request = async () => {
+      setLoading(true)    
+      const response = await GetTopics();
+      console.log(response.data.topics)
+      processData(response.data.topics)
+      setLoading(false)
+    }
+    request()
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+  
+  function processData(arrayTopics){
+    console.log(topics)
+    console.log(x)
+    for(let element of arrayTopics){
+      /* topics.push({ id: element[0], value: element[1]},) */
+      const pushTopic = {
+        id: element[0],
+        value: element[1],
+      }
+      setTopics([...topics, pushTopic]);
+      console.log(pushTopic)
+    }
+    console.log(topics)
+  }
+  /* const myObj = topics.reduce((obj, item) => {
+    obj[item['id']] = item.value
+    return obj
+  }, {}) */
+
+  if(loading){
+    return(
+      <LoadingSpinner />
+    )
+  }
+
   return(
     <>
       <Box className={classes.root}>

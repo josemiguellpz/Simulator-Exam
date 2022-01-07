@@ -1,14 +1,15 @@
-import {postOne, getUser} from '../../Axios/Provider';
+import {postOne, getUser, getTopics} from '../../Axios/Provider';
 
-export function RegisterUser(body){
+export function RegisterUser(data){
+  const body = JSON.stringify(data);
   return postOne("users", body)
 }
 
 export function GetUser(matricula, password){
-  const body = {
+  const body = JSON.stringify({
     matricula: matricula,
     password: password,
-  }
+  })
   return getUser(body)
 }
 
@@ -18,6 +19,10 @@ export function GetUsers(){
 
 export function DeleteUser(){
 
+}
+
+export function GetTopics(){
+  return getTopics('/topics')
 }
 
 /* export function DeleteVetService(id, password) {
