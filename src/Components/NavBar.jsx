@@ -26,7 +26,7 @@ import TopicIcon from '@mui/icons-material/Topic';
 import EditIcon from '@mui/icons-material/Edit';
 import HomeIcon from '@mui/icons-material/Home';
 import MenuIcon from '@mui/icons-material/Menu';
-import QuizIcon from '@mui/icons-material/Quiz';
+// import QuizIcon from '@mui/icons-material/Quiz';
 import Login from './ModalLogin';
 
 const useStyles = makeStyles((theme) =>({
@@ -153,10 +153,6 @@ export default function NavBar(){
                 <TopicIcon/>
                 <Typography>Temas</Typography>
               </MenuItem>
-              <MenuItem className={classes.navItem} onClick={handlePage('/student/exam')}>
-                <QuizIcon/>
-                <Typography>Examen</Typography>
-              </MenuItem>
               <MenuItem className={classes.navItem} onClick={handlePage('/student/historial')}>
                 <InsightsIcon/>
                 <Typography>Rendimiento</Typography>
@@ -169,23 +165,23 @@ export default function NavBar(){
           )}
           {role === "teacher" &&(
             <Box sx={{display: "flex"}}>
-              <MenuItem className={classes.navItem} onClick={null}>
+              <MenuItem className={classes.navItem} onClick={handlePage('/teacher')}>
                 <HomeIcon/>
                 <Typography>Inicio</Typography>
               </MenuItem>
-              <MenuItem className={classes.navItem} onClick={handlePage}>
+              <MenuItem className={classes.navItem} onClick={handlePage('/teacher/topics-up')}>
                 <AddBoxIcon/>
                 <Typography>Alta</Typography>
               </MenuItem>
-              <MenuItem className={classes.navItem} onClick={handlePage}>
+              <MenuItem className={classes.navItem} onClick={handlePage('/teacher/topics-down')}>
                 <DeleteIcon/>
                 <Typography>Baja</Typography>
               </MenuItem>
-              <MenuItem className={classes.navItem} onClick={handlePage}>
+              <MenuItem className={classes.navItem} onClick={handlePage('/teacher/topics-edit')}>
                 <EditIcon/>
                 <Typography>Modificar</Typography>
               </MenuItem>
-              <MenuItem className={classes.navItem} onClick={handlePage}>
+              <MenuItem className={classes.navItem} onClick={handlePage('/teacher/students')}>
                 <GroupIcon/>
                 <Typography>Alumnos</Typography>
               </MenuItem>
@@ -252,10 +248,6 @@ export default function NavBar(){
                     <TopicIcon/>
                     <Typography>Temas</Typography>
                   </ListItem>
-                  <ListItem button className={classes.drawerItem} onClick={handlePage('/student/exam')} sx={{gap: .5}}>
-                    <QuizIcon/>
-                    <Typography>Examen</Typography>
-                  </ListItem>
                   <ListItem button className={classes.drawerItem} onClick={handlePage('/student/historial')} sx={{gap: .5}}>
                     <InsightsIcon/>
                     <Typography>Rendimiento</Typography>
@@ -268,23 +260,23 @@ export default function NavBar(){
               )}
               {role === "teacher" &&(
                 <Box>
-                  <ListItem button className={classes.drawerItem} onClick={null} sx={{gap: .5}}>
+                  <ListItem button className={classes.drawerItem} onClick={handlePage('/teacher')} sx={{gap: .5}}>
                     <HomeIcon/>
                     <Typography>Inicio</Typography>
                   </ListItem>
-                  <ListItem button className={classes.drawerItem} onClick={null} sx={{gap: .5}}>
+                  <ListItem button className={classes.drawerItem} onClick={handlePage('/teacher/topics-up')} sx={{gap: .5}}>
                     <AddBoxIcon/>
                     <Typography>Alta</Typography>
                   </ListItem>
-                  <ListItem button className={classes.drawerItem} onClick={null} sx={{gap: .5}}>
+                  <ListItem button className={classes.drawerItem} onClick={handlePage('/teacher/topics-down')} sx={{gap: .5}}>
                     <DeleteIcon/>
                     <Typography>Baja</Typography>
                   </ListItem>
-                  <ListItem button className={classes.drawerItem} onClick={null} sx={{gap: .5}}>
+                  <ListItem button className={classes.drawerItem} onClick={handlePage('/teacher/topics-edit')} sx={{gap: .5}}>
                     <EditIcon/>
                     <Typography>Modificar</Typography>
                   </ListItem>
-                  <ListItem button className={classes.drawerItem} onClick={null} sx={{gap: .5}}>
+                  <ListItem button className={classes.drawerItem} onClick={handlePage('/teacher/students')} sx={{gap: .5}}>
                     <GroupIcon/>
                     <Typography>Alumnos</Typography>
                   </ListItem>

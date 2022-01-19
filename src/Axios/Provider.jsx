@@ -31,7 +31,7 @@ export async function getUser(body){
   console.log(body)
   console.log(route)
   
-  return axios.post(route, body, config);
+  return axios.get(route, body, config);
   /* return axios.post(route, body, config); */
 }
 

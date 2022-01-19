@@ -1,5 +1,5 @@
 import PropTypes from 'prop-types';
-import { makeStyles } from "@mui/styles";
+import { makeStyles, styled } from "@mui/styles";
 import TextField from '@mui/material/TextField';
 
 const useStyles = makeStyles((theme)=>({
@@ -21,10 +21,12 @@ export default function InputText({
   required,
   multiline,
 }) {
+  const role = localStorage.getItem("role");
   const classes = useStyles({widthText});
   return(
     <TextField
       className={classes.root}
+      color={role === "user" ? "primary" : role === "student" ? "secondary" : "tertiary"}
       type={type}
       name={name}
       label={label}

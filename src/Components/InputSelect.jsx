@@ -16,10 +16,12 @@ export default function InputSelect({
   widthText,
   children,
 }) {
+  const role = localStorage.getItem("role");
   const classes = useStyles({widthText});
   return(
     <TextField
       className={classes.root}
+      color={role === "user" ? "primary" : role === "student" ? "secondary" : "tertiary"}
       label={label}
       name={name}
       onChange={onChange}

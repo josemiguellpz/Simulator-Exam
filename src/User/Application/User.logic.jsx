@@ -44,6 +44,9 @@ export function UserRegister({
   const objectPasswordRepeat = confirmPassword(password, password2);
   if (!objectPasswordRepeat.status) return objectPasswordRepeat;
 
+  if(role === "Docente")
+    carrer = ""
+
   const user = new UserModel(role, matricula, name, lastName, email, password, carrer)
   return RegisterUser(user);
 }
