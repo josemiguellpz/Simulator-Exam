@@ -74,6 +74,8 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function Home(){
+  localStorage.setItem("role", "teacher")
+  
   const classes = useStyles();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);

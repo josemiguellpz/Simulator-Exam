@@ -97,6 +97,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function Home (){
+  localStorage.setItem("role", "user")
   const classes = useStyles();
   const [open, setOpen] = useState(false);
   const handleOpen = () => setOpen(true);

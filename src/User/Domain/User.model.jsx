@@ -25,7 +25,10 @@ export default UserModel;
 
 export function validateMatricula(matricula){
   if(matricula.length === 9){
-    return {status: true, info: ""}
+    if(!isNaN(matricula))
+      return {status: true, info: ""}
+    else
+      return {status: false, info: "La matrícula debe ser un valor numérico"}
   }
   return {status: false, info: "Matrícula debe estar compuesta de 9 caracteres"}
 }

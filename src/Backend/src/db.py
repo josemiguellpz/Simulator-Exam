@@ -4,4 +4,4 @@ def getConnectionDB():
     return Database.connect(host='localhost',
                             user='root',
                             password='',
-                            db='bdexamenes')
+                            db='dbexams')

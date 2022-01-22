@@ -56,13 +56,14 @@ export function UserLogin({
   password,
 }){
 
-  // Validaciones
+  // Validations
   
   const objectMatricula = validateMatricula(matricula);
   if (!objectMatricula.status) return objectMatricula;
   
   const objectPassword = validatePassword(password);
   if (!objectPassword.status) return objectPassword;
-   
+  
+  matricula = parseInt(matricula)
   return GetUser(matricula, password);
 }

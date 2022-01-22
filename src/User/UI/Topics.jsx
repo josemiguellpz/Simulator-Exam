@@ -82,6 +82,7 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
 }));
 
 export default function Topic (){
+  localStorage.setItem("role", "user")
   const classes = useStyles();
   const x = [
     {id: 10, value: "Calidad", },

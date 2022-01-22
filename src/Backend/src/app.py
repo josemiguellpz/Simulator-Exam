@@ -1,11 +1,15 @@
+from configparser import NoOptionError
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 from db import getConnectionDB
 
-'''Execution: .\src\Backend\src\app.py'''
+""" DEPENDENCIES BACKEND: flask, flask_cors, pymysql """
+""" Execution: .\src\Backend\src\app.py """
 
 app=Flask(__name__)
 CORS(app)
+
+KEYWORD="#irn15" #Auth for password
 
 @app.route('/users', methods=['POST'])
 def users():
@@ -17,7 +21,7 @@ def users():
     info = "Algo salio mal"
     with conexion.cursor() as cursor:
       # Check matrícula
-      query = 'SELECT matricula FROM usuario where matricula = %s'
+      query = 'SELECT matricula FROM usuario WHERE matricula = %s'
       cursor.execute(query, (matricula))
       rows = cursor.fetchall() 
       if (rows): # If exist data
@@ -27,7 +31,7 @@ def users():
           info = "Matrícula existente, por favor intente nuevamente"
       else:
         # Check email
-        query = 'SELECT correo FROM usuario where correo = %s'
+        query = 'SELECT email FROM usuario WHERE email = %s'
         cursor.execute(query, (email))
         rows = cursor.fetchall() 
         if (rows): # If exist data
@@ -37,8 +41,8 @@ def users():
             info = "Correo existente, por favor ingrese otro"
         else:
           # Insert query
-          """ query = 'INSERT INTO usuario (matricula, tipo, nombre, apellido, correo, contraseña) values(%s, %s, %s, %s, %s, %s)'
-          cursor.execute(query, (matricula, role, name, lastName, email, password)) """
+          query = 'INSERT INTO usuario (matricula, nombre, apellido, email, password, carrera, rol) values(%s, %s, %s, %s, aes_encrypt(%s, %s), %s, %s)'
+          cursor.execute(query, (matricula, name, lastName, email, password, KEYWORD, carrer, role))
           status = True
           info = "¡Registro Exitoso! Puede iniciar sesión"
     conexion.close()
@@ -46,32 +50,34 @@ def users():
   except Exception as ex:
     return jsonify({'info': ex, 'status': False})
 
-@app.route('/users/<matricula>', methods=['GET'])
+@app.route('/users/<matricula>', methods=['POST'])
 def getUser(matricula):
-  #No complete
   try:
     conexion = getConnectionDB()
-    _, password = request.json.values()
-    print(password)
-    status = False
-    info = "Algo salio mal"
+    password = request.get_json()
+    status = None
+    info = ""
+    role = None
+    id = None
     with conexion.cursor() as cursor:
-      query = 'SELECT tipo, contraseña FROM usuario WHERE matricula = %s'
-      cursor.execute(query, matricula)
+      query = 'SELECT rol, aes_decrypt(password, %s) FROM usuario WHERE matricula = %s'
+      cursor.execute(query, (KEYWORD, matricula))
       rows = cursor.fetchall()
       if (rows):
-        typeStore = rows[0][0]
-        passStore = rows[0][1]
+        roleStore = rows[0][0]
+        passStore = rows[0][1].decode("utf-8") #String in binary then decode
         if (str(passStore) == str(password)):
           status = True
-          info = typeStore
+          role = str(roleStore)
+          id = matricula
         else:
           status = False
           info = "Contraseña incorrecta"
       else:
         status = False
-        info = "La matrícula ingresada no existe"
-    return jsonify({'status': status, 'info': info})
+        info = "Matrícula ingresada no existe"
+    conexion.close()
+    return jsonify({'status': status, 'info': info, 'role': role, 'id': id})
   except Exception as ex:
     return jsonify({'message': ex, 'status': False})
 

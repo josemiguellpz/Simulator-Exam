@@ -6,11 +6,8 @@ export function RegisterUser(data){
 }
 
 export function GetUser(matricula, password){
-  const body = JSON.stringify({
-    matricula: matricula,
-    password: password,
-  })
-  return getUser(body)
+  const body = JSON.stringify(password)
+  return getUser(matricula, body)
 }
 
 export function GetUsers(){

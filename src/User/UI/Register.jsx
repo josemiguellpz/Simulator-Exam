@@ -122,6 +122,7 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function Register() {
+  localStorage.setItem("role", "user")
   const carrers = [
     {value: "Ingeniería en Ciencias de la Computación", },
     {value: "Licenciatura en Ciencias de la Computación", },
@@ -146,7 +147,6 @@ export default function Register() {
   const classes = useStyles({teacher});
 
   useEffect(() => {
-    
   }, []);
 
   // Data User
@@ -177,9 +177,7 @@ export default function Register() {
     else
       data.role="Docente";
     const response = await UserRegister(data);
-    console.log(response)
     const {status, info} = response.data;
-    // TODO: Redireccionar segun el Rol
     if(status){ // Success
       setOpen(true)
       setAlert(true)

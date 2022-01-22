@@ -92,7 +92,7 @@ const useStyles = makeStyles((theme) =>({
 }))
 
 export default function NavBar(){
-  localStorage.setItem("role", "user");
+  // localStorage.setItem("role", "user");
   const role = localStorage.getItem("role");
   const classes = useStyles({role});
 

@@ -1,5 +1,6 @@
 import React, {useState} from "react";
 import PropTypes from "prop-types";
+import { useNavigate } from "react-router-dom";
 import { makeStyles } from "@mui/styles";
 import CloseIcon from '@mui/icons-material/Close';
 import IconButton from '@mui/material/IconButton';
@@ -7,7 +8,6 @@ import Alert from '@mui/material/Alert';
 import Modal from "@mui/material/Modal";
 
 import {UserLogin} from "../User/Application/User.logic";
-import Back from "../Assets/back-login.jpg";
 import Button from "./ButtonSimple";
 import InputText from "./InputText";
 
@@ -48,12 +48,10 @@ export default function ModalLogin({
   handleClose,
 }) {
   const classes = useStyles();
+  const navigate = useNavigate();
 
   // Data User
-  const [data, setData] = useState({
-    matricula: "",
-    password: "",
-  });
+  const [data, setData] = useState({ matricula: "", password: "", });
 
   // Inputs Values
   const handleInputChange=(e) => setData({ ...data, [e.target.name]: e.target.value });
@@ -61,11 +59,21 @@ export default function ModalLogin({
   // Login User
   async function handleLogin(e) {
     e.preventDefault();
-    const {status, info} = await UserLogin(data);
+    const response = await UserLogin(data);
+    const {status, info, role, id} = response.data;
     if(status){ // Success
-      setBand(true)
-      setAlert(true)
-      setAlertContent(info)
+      if(role === "Docente"){
+        navigate("/teacher/")
+        // localStorage.setItem("role", "teacher")
+        localStorage.setItem("id", id)
+        window.location.reload(false);
+      }else{
+        navigate("/student/")
+        // localStorage.setItem("role", "student")
+        localStorage.setItem("id", id)
+        window.location.reload(false);
+      }
+      open = false
     }
     else{ // Error
       setBand(true)
@@ -120,7 +128,6 @@ export default function ModalLogin({
   return (
     <Modal open={open} onClose={handleClose}>
       <form className={classes.container} onSubmit={handleLogin}>
-        <img className={classes.img}src={Back} alt="font-login"/>
         <h2 className={classes.title}>Inicio de Sesión</h2>
         {band && ( showAlert(alert, alertContent) )}
         <InputText
