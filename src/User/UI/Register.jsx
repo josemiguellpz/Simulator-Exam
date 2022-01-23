@@ -8,6 +8,7 @@ import Alert from '@mui/material/Alert';
 import Box from '@mui/material/Box';
 
 import {UserRegister} from '../Application/User.logic';
+import LoadingSpinner from '../../Components/LoadingSpinner';
 import InputSelect from '../../Components/InputSelect';
 import Button from '../../Components/ButtonSimple';
 import InputText from '../../Components/InputText';
@@ -143,11 +144,9 @@ export default function Register() {
     setTeacher(true)
   };
   
-  // Styles
+  // Styles and Loading
   const classes = useStyles({teacher});
-
-  useEffect(() => {
-  }, []);
+  const [loading, setLoading] = useState(false);
 
   // Data User
   const [data, setData] = useState({
@@ -227,6 +226,19 @@ export default function Register() {
       </>
     );
   };
+
+  useEffect(() => {
+    const load = async () => {
+      setLoading(true)
+      await setTimeout(function(){
+        setLoading(false)
+      }, 2000);
+    }
+    load()
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  if(loading) return <LoadingSpinner />
 
   return(
     <>

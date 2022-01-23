@@ -109,16 +109,12 @@ export default function Home (){
       setLoading(true)
       await setTimeout(function(){
         setLoading(false)
-      }, 3000);
+      }, 2000);
     }
     load()
   }, []);
 
-  if(loading){
-    return(
-      <LoadingSpinner />
-    )
-  }
+  if(loading) return <LoadingSpinner />
 
   return(
     <>

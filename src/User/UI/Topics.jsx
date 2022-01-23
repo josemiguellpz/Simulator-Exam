@@ -8,8 +8,8 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
-import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
+import Typography from '@mui/material/Typography';
 
 import LoadingSpinner from '../../Components/LoadingSpinner';
 import Login from '../../Components/ModalLogin';
@@ -84,14 +84,6 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
 export default function Topic (){
   localStorage.setItem("role", "user")
   const classes = useStyles();
-  const x = [
-    {id: 10, value: "Calidad", },
-    {id: 20, value: "Seguridad", },
-    {id: 30, value: "Integridad", },
-    {id: 40, value: "Metodologias", },
-    {id: 50, value: "Metodologias agiles", },
-    {id: 60, value: "SCRUM", },
-  ];
   
   // Modal-Login
   const [open, setOpen] = useState(false);
@@ -100,44 +92,24 @@ export default function Topic (){
   
   // Request Topics at Backend
   const [loading, setLoading] = useState(false);
-  //let topics = []
   const [topics, setTopics] = useState([]);
   useEffect(() => {
     const request = async () => {
-      setLoading(true)    
+      setLoading(true);
       const response = await GetTopics();
-      console.log(response.data.topics)
-      processData(response.data.topics)
-      setLoading(false)
+      setTopics(response.data.topics);
+      setLoading(false);
     }
-    request()
+    request();
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   
-  function processData(arrayTopics){
-    console.log(topics)
-    console.log(x)
-    for(let element of arrayTopics){
-      /* topics.push({ id: element[0], value: element[1]},) */
-      const pushTopic = {
-        id: element[0],
-        value: element[1],
-      }
-      setTopics([...topics, pushTopic]);
-      console.log(pushTopic)
-    }
-    console.log(topics)
-  }
   /* const myObj = topics.reduce((obj, item) => {
     obj[item['id']] = item.value
     return obj
   }, {}) */
 
-  if(loading){
-    return(
-      <LoadingSpinner />
-    )
-  }
+  if(loading) return <LoadingSpinner />
 
   return(
     <>

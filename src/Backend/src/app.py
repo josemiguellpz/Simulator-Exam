@@ -1,6 +1,7 @@
 from configparser import NoOptionError
 from flask import Flask, request, jsonify
 from flask_cors import CORS
+import json
 from db import getConnectionDB
 
 """ DEPENDENCIES BACKEND: flask, flask_cors, pymysql """
@@ -55,20 +56,22 @@ def getUser(matricula):
   try:
     conexion = getConnectionDB()
     password = request.get_json()
+    # Default response
     status = None
     info = ""
     role = None
     id = None
     with conexion.cursor() as cursor:
+      # Find matrícula
       query = 'SELECT rol, aes_decrypt(password, %s) FROM usuario WHERE matricula = %s'
       cursor.execute(query, (KEYWORD, matricula))
       rows = cursor.fetchall()
-      if (rows):
-        roleStore = rows[0][0]
-        passStore = rows[0][1].decode("utf-8") #String in binary then decode
-        if (str(passStore) == str(password)):
+      if (rows): # If exist data
+        role_Store = rows[0][0]
+        pass_Store = rows[0][1].decode("utf-8") #String in binary then decode
+        if (str(pass_Store) == str(password)):
           status = True
-          role = str(roleStore)
+          role = str(role_Store)
           id = matricula
         else:
           status = False
@@ -84,13 +87,16 @@ def getUser(matricula):
 @app.route('/topics', methods=['GET'])
 def topics():
   try:
-    conexion = getConnectionDB()
+    conexion = getConnectionDB()              
     topics = []
+    item = {} # Contains: id_tema and nombre_tema
     with conexion.cursor() as cursor:
       cursor.execute("SELECT id_tema, nombre_tema FROM tema LIMIT 0,6")
-      topics = cursor.fetchall()
+      response = cursor.fetchall()
     conexion.close()
-    print(topics)    
+    for element in response:
+      item = { 'id': element[0], 'value': element[1] }
+      topics.append(item)
     return jsonify({'status': True, 'topics': topics})
   except Exception as ex:
     return jsonify({'message': ex, 'status': False})
