@@ -13,6 +13,7 @@ import Button from '../../Components/ButtonSimple';
 const useStyles = makeStyles((theme) => ({
   root:{
     width: "100%",
+    height: "calc(100vh - 30px)",
     display: "flex",
     alignItems: "center",
     [theme.breakpoints.down("md")]:{
@@ -42,10 +43,13 @@ const useStyles = makeStyles((theme) => ({
     marginLeft: 100,
     marginTop: 40,
     marginBottom: 100,
-    animationName: "$slide",
-    webkitAnimationDuration: "5s",
-    webkitAnimationIterationCount: "infinite",
-    webkitAnimationDelay: "5s",
+    animation: "$slide",
+    animationDuration: "5s",
+    animationIterationCount: "infinite",
+    animationPlayState: "running",
+    animationDirection: "alternate-reverse",
+    animationTimingFunction: "linear",
+    animationDelay: "5s",
     [theme.breakpoints.down("md")]:{
       marginLeft: 50,
     },
@@ -54,7 +58,7 @@ const useStyles = makeStyles((theme) => ({
       height: 250,
     },
   },
-  "@-webkit-keyframes $slide": {
+  "@keyframes slide": ({Class, Classroom}) => ({
     "0%":{
       backgroundImage: `url(${Class})`,
     },
@@ -70,13 +74,13 @@ const useStyles = makeStyles((theme) => ({
     "100%":{
       backgroundImage: `url(${Class})`,
     }
-  },
+  }),
 }));
 
 export default function Home(){
   localStorage.setItem("role", "teacher")
   
-  const classes = useStyles();
+  const classes = useStyles({Class, Classroom});
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   
@@ -85,12 +89,12 @@ export default function Home(){
       setLoading(true)
       await setTimeout(function(){
         setLoading(false)
-      }, 3000);
+      }, 2000);
     }
     load()
   }, []);
   
-  if(loading) return<LoadingSpinner />
+  if(loading) return <LoadingSpinner />
   
     return(
     <>

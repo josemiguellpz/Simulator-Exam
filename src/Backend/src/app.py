@@ -51,34 +51,47 @@ def users():
   except Exception as ex:
     return jsonify({'info': ex, 'status': False})
 
-@app.route('/users/<matricula>', methods=['POST'])
+@app.route('/users/<matricula>', methods=['GET', 'POST'])
 def getUser(matricula):
   try:
     conexion = getConnectionDB()
-    password = request.get_json()
     # Default response
     status = None
     info = ""
     role = None
     id = None
     with conexion.cursor() as cursor:
-      # Find matrícula
-      query = 'SELECT rol, aes_decrypt(password, %s) FROM usuario WHERE matricula = %s'
-      cursor.execute(query, (KEYWORD, matricula))
-      rows = cursor.fetchall()
-      if (rows): # If exist data
-        role_Store = rows[0][0]
-        pass_Store = rows[0][1].decode("utf-8") #String in binary then decode
-        if (str(pass_Store) == str(password)):
-          status = True
-          role = str(role_Store)
-          id = matricula
+      if request.method == 'GET':
+        print(matricula)
+        query = 'SELECT rol, nombre, apellido, carrera FROM usuario WHERE matricula = %s'
+        cursor.execute(query, (matricula))
+        data = cursor.fetchall()
+        status = True
+        info = {
+          'role': data[0][0], 
+          'name': data[0][1], 
+          'lastName': data[0][2], 
+          'carrer': data[0][3], 
+        }
+      elif request.method == 'POST':
+        password = request.get_json()
+        # Find matrícula
+        query = 'SELECT rol, aes_decrypt(password, %s) FROM usuario WHERE matricula = %s'
+        cursor.execute(query, (KEYWORD, matricula))
+        rows = cursor.fetchall()
+        if (rows): # If exist data
+          role_Store = rows[0][0]
+          pass_Store = rows[0][1].decode("utf-8") #String in binary then decode
+          if (str(pass_Store) == str(password)):
+            status = True
+            role = str(role_Store)
+            id = matricula
+          else:
+            status = False
+            info = "Contraseña incorrecta"
         else:
           status = False
-          info = "Contraseña incorrecta"
-      else:
-        status = False
-        info = "Matrícula ingresada no existe"
+          info = "Matrícula ingresada no existe"
     conexion.close()
     return jsonify({'status': status, 'info': info, 'role': role, 'id': id})
   except Exception as ex:
@@ -91,7 +104,7 @@ def topics():
     topics = []
     item = {} # Contains: id_tema and nombre_tema
     with conexion.cursor() as cursor:
-      cursor.execute("SELECT id_tema, nombre_tema FROM tema LIMIT 0,6")
+      cursor.execute("SELECT id_tema, nombre_tema FROM tema") #LIMIT 0,6
       response = cursor.fetchall()
     conexion.close()
     for element in response:

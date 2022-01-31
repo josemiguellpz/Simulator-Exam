@@ -61,6 +61,7 @@ function generate(element) {
 }
 export default function TopicsStudent() {
   const classes = useStyles();
+  const description = "Para realizar la simulación del examen elige un tema para ser evaluado, puedes realizar varios intentos cuantas veces sea necesario. Al terminar tu evaluación tus resultados puedes consultarlos en el apartado de Rendimiento. Para dudas o aclaraciones contacta a tu profesor docente.";
   return(
     <>
       <Box className={classes.root}>
@@ -69,10 +70,7 @@ export default function TopicsStudent() {
             Temario Disponible
           </Typography><br/>
           <Typography variant="h6" sx={{textAlign: "justify"}}>
-            Para realizar la simulación del examen elige un tema para ser evaluado,
-            puedes realizar varios intentos cuantas veces sea necesario.
-            Al terminar tu evaluación tus resultados puedes consultarlos en el apartado de Rendimiento.
-            Para dudas o aclaraciones contacta a tu profesor docente.<br/>
+            {description}<br/>
           </Typography><br/>
         </Box>
         <Box className={classes.topics}>

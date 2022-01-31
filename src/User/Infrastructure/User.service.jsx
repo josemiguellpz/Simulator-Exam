@@ -1,13 +1,13 @@
-import {postOne, getUser, getTopics} from '../../Axios/Provider';
+import {postOne, login, getTopics} from '../../Axios/Provider';
 
 export function RegisterUser(data){
   const body = JSON.stringify(data);
   return postOne("users", body)
 }
 
-export function GetUser(matricula, password){
+export function Login(matricula, password){
   const body = JSON.stringify(password)
-  return getUser(matricula, body)
+  return login(matricula, body)
 }
 
 export function GetUsers(){

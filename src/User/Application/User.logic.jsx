@@ -6,7 +6,7 @@ import UserModel, {
 } from "../Domain/User.model";
 import {
   RegisterUser, 
-  GetUser
+  Login
 } from "../Infrastructure/User.service";
 
 export function UserRegister({
@@ -65,5 +65,5 @@ export function UserLogin({
   if (!objectPassword.status) return objectPassword;
   
   matricula = parseInt(matricula)
-  return GetUser(matricula, password);
+  return Login(matricula, password);
 }

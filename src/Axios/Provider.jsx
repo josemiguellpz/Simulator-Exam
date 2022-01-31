@@ -18,10 +18,16 @@ export async function postOne(source, body){
   return await axios.post(route, body, config);
 }
 
-export async function getUser(matricula, body){
+export async function login(matricula, body){
   const config = getConfig();
   const route = `${url}/users/${matricula}`;
   return await axios.post(route, body, config);
+}
+
+export async function getUser(matricula){
+  const config = getConfig();
+  const route = `${url}/users/${matricula}`;
+  return await axios.get(route, config);
 }
 
 export async function getTopics(source){
