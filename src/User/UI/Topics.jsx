@@ -15,7 +15,8 @@ import LoadingSpinner from '../../Components/LoadingSpinner';
 import Login from '../../Components/ModalLogin';
 import Button from '../../Components/ButtonSimple';
 
-import {GetTopics} from '../Infrastructure/User.service';
+import { useDispatch, useSelector } from "react-redux";
+import { acquireTopics }  from "../../Redux/Slices/Topics";
 
 const useStyles = makeStyles((theme) => ({
   root:{
@@ -84,7 +85,9 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
 export default function Topic (){
   localStorage.setItem("role", "user")
   const classes = useStyles();
-  
+  const dispatch = useDispatch();
+  const topics = useSelector(state => state.topics.topicsList)
+
   // Modal-Login
   const [open, setOpen] = useState(false);
   const handleOpen = () => setOpen(true);
@@ -92,12 +95,10 @@ export default function Topic (){
   
   // Request Topics at Backend
   const [loading, setLoading] = useState(false);
-  const [topics, setTopics] = useState([]);
   useEffect(() => {
     const request = async () => {
       setLoading(true);
-      const response = await GetTopics();
-      setTopics(response.data.topics);
+      dispatch(acquireTopics());
       setLoading(false);
     }
     request();

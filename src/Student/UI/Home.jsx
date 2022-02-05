@@ -10,6 +10,9 @@ import Class from '../../Assets/class.jpg';
 import LoadingSpinner from '../../Components/LoadingSpinner';
 import Button from '../../Components/ButtonSimple';
 import StudentModel from '../Domain/Student.model';
+
+import { useDispatch, useSelector } from 'react-redux';
+import { acquireUser, getModel } from '../../Redux/Slices/Users';
 import {getUser} from '../../Axios/Provider';
 
 const useStyles = makeStyles((theme) => ({
@@ -60,6 +63,8 @@ export default function Home() {
   const matricula = localStorage.getItem("id");
   const classes = useStyles();
   const navigate = useNavigate();
+  const dispatch = useDispatch();
+  const info = useSelector(state => state.users.data);
   const [loading, setLoading] = useState(false);
   const [student, setStudent] = useState(new StudentModel());
   
@@ -69,6 +74,8 @@ export default function Home() {
       const response = await getUser(matricula);
       const {role, name, lastName, carrer} = response.data.info;
       setStudent(new StudentModel(role, name, lastName, carrer));
+      dispatch(acquireUser());
+      console.log("SELECTOR", info)
       setLoading(false);
     }
     load()

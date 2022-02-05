@@ -62,17 +62,25 @@ def getUser(matricula):
     id = None
     with conexion.cursor() as cursor:
       if request.method == 'GET':
-        print(matricula)
         query = 'SELECT rol, nombre, apellido, carrera FROM usuario WHERE matricula = %s'
         cursor.execute(query, (matricula))
         data = cursor.fetchall()
-        status = True
-        info = {
-          'role': data[0][0], 
-          'name': data[0][1], 
-          'lastName': data[0][2], 
-          'carrer': data[0][3], 
-        }
+        if(data[0][0] == "Alumno"): 
+          status = True
+          info = {
+            'role': "student", 
+            'name': data[0][1], 
+            'lastName': data[0][2], 
+            'carrer': data[0][3], 
+          }
+        else:
+          status = True
+          info = {
+            'role': "teacher", 
+            'name': data[0][1], 
+            'lastName': data[0][2], 
+            'carrer': data[0][3], 
+          } 
       elif request.method == 'POST':
         password = request.get_json()
         # Find matrícula

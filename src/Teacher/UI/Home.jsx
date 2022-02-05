@@ -2,6 +2,7 @@ import React, {useState, useEffect} from 'react';
 import { useNavigate } from "react-router-dom";
 import { makeStyles } from "@mui/styles";
 import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
+import ArrowRightIcon from '@mui/icons-material/ArrowRight';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 
@@ -18,10 +19,11 @@ const useStyles = makeStyles((theme) => ({
     alignItems: "center",
     [theme.breakpoints.down("md")]:{
       flexDirection: "column",
+      height: "calc(100vh + 150px)",
     },
   },
   info:{
-    width: "500px",
+    width: "550px",
     height: "250px",
     display: "flex",
     flexDirection: "column",
@@ -37,12 +39,14 @@ const useStyles = makeStyles((theme) => ({
     color: `${theme.palette.tertiary.main} !important`,
   },
   images:{
-    border: "1px solid",
-    width: 500,
+    width: 600,
     height: 300,
-    marginLeft: 100,
+    marginLeft: 70,
     marginTop: 40,
     marginBottom: 100,
+    objectFit: "cover",
+    borderRadius: "6px",
+    boxShadow: "0px 15px 25px rgba(0,0,0,0.50)",
     animation: "$slide",
     animationDuration: "5s",
     animationIterationCount: "infinite",
@@ -51,7 +55,10 @@ const useStyles = makeStyles((theme) => ({
     animationTimingFunction: "linear",
     animationDelay: "5s",
     [theme.breakpoints.down("md")]:{
+      width: 500,
       marginLeft: 50,
+      marginTop: 50,
+      marginButtom: 50,
     },
     [theme.breakpoints.down("sm")]:{
       width: 450,
@@ -79,7 +86,6 @@ const useStyles = makeStyles((theme) => ({
 
 export default function Home(){
   localStorage.setItem("role", "teacher")
-  
   const classes = useStyles({Class, Classroom});
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
@@ -104,9 +110,9 @@ export default function Home(){
             ¡Bienvenido!
           </Typography><br/>
           <Typography variant="h6" >
-            Agrega nuevo contenido.<br/>
-            Actualiza el temario.<br/>
-            Consulta el rendimiento académico de los estudiantes.<br/>
+            <ArrowRightIcon/> Agrega nuevo contenido.<br/>
+            <ArrowRightIcon/> Actualiza el temario.<br/>
+            <ArrowRightIcon/> Consulta el rendimiento académico de los estudiantes.<br/>
           </Typography><br/>
           <Button
             title="Buscar Alumnos"
@@ -115,9 +121,7 @@ export default function Home(){
             endIcon={<KeyboardArrowRightIcon/>}
             />
         </Box>
-        <Box className={classes.images}>
-          {/* <img className={classes.images} src={Class} alt="background"/> */}
-        </Box>
+        <img className={classes.images} src={Class} alt="background"/>
       </Box>
     </>
   );
