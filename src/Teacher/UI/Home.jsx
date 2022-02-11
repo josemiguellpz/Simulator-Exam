@@ -11,6 +11,8 @@ import Classroom from '../../Assets/classroom.jpg';
 import LoadingSpinner from '../../Components/LoadingSpinner';
 import Button from '../../Components/ButtonSimple';
 
+import {getUser} from '../../Axios/Provider';
+
 const useStyles = makeStyles((theme) => ({
   root:{
     width: "100%",
@@ -86,19 +88,22 @@ const useStyles = makeStyles((theme) => ({
 
 export default function Home(){
   localStorage.setItem("role", "teacher")
+  const matricula = localStorage.getItem("id");
   const classes = useStyles({Class, Classroom});
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
-  
+  const [teacher, setTeacher] = useState({});
+
   useEffect(() => {
     const load = async () => {
-      setLoading(true)
-      await setTimeout(function(){
-        setLoading(false)
-      }, 2000);
+      setLoading(true);
+      const response = await getUser(matricula);
+      const {role, name, lastName, carrer} = response.data.info;
+      setTeacher({role, name, lastName, carrer});
+      setLoading(false)
     }
     load()
-  }, []);
+  }, [matricula]);
   
   if(loading) return <LoadingSpinner />
   
@@ -107,7 +112,7 @@ export default function Home(){
       <Box className={classes.root}>
         <Box className={classes.info}>
           <Typography className={classes.title} variant="h4" sx={{fontWeight: "bold",}}>
-            ¡Bienvenido!
+            ¡Bienvenido {teacher.name} {teacher.lastName}!
           </Typography><br/>
           <Typography variant="h6" >
             <ArrowRightIcon/> Agrega nuevo contenido.<br/>

@@ -1,14 +1,49 @@
 import React, {useState, useEffect} from 'react';
-import { makeStyles } from "@mui/styles";
+import { makeStyles, styled } from "@mui/styles";
 import Typography from '@mui/material/Typography';
+import Table from '@mui/material/Table';
+import TableBody from '@mui/material/TableBody';
+import TableCell, { tableCellClasses } from '@mui/material/TableCell';
+import TableContainer from '@mui/material/TableContainer';
+import TableHead from '@mui/material/TableHead';
+import TableRow from '@mui/material/TableRow';
+import Paper from '@mui/material/Paper';
 import Box from '@mui/material/Box';
 import MenuItem from '@mui/material/MenuItem';
 import InputSelect from '../../Components/InputSelect';
+import Alert from '@mui/material/Alert';
+import CloseIcon from '@mui/icons-material/Close';
+import IconButton from '@mui/material/IconButton';
 
 import LoadingSpinner from '../../Components/LoadingSpinner';
 import TipsAndUpdatesIcon from '@mui/icons-material/TipsAndUpdates';
 import InputText from '../../Components/InputText';
 import Button from '../../Components/ButtonSimple';
+
+import { useDispatch, useSelector } from 'react-redux';
+import {updateQuestionList, acquireTopics} from '../../Redux/Slices/Topics';
+import {TopicRegister, QuestionRegister} from '../Application/Teacher.logic';
+
+// Table styles
+const StyledTableCell = styled(TableCell)(({ theme }) => ({
+  [`&.${tableCellClasses.head}`]: {
+    backgroundColor: theme.palette.tertiary.main,
+    color: theme.palette.common.white,
+  },
+  [`&.${tableCellClasses.body}`]: {
+    fontSize: 14,
+  },
+}));
+
+const StyledTableRow = styled(TableRow)(({ theme }) => ({
+  '&:nth-of-type(odd)': {
+    backgroundColor: theme.palette.tertiary.light,
+  },
+  // hide last border
+  '&:last-child td, &:last-child th': {
+    border: 0,
+  },
+}));
 
 const useStyles = makeStyles((theme) => ({
   root:{  
@@ -64,36 +99,84 @@ const useStyles = makeStyles((theme) => ({
     alignItems: "center",
     gap: 20,
   },
+  review:{
+    marginTop: 50,
+    width: 800,
+    [theme.breakpoints.down("md")]:{
+      width: 500,
+    },
+  },
+  buttonsTable:{
+    display: "flex",
+    gap: 4,
+    [theme.breakpoints.down("md")]:{
+      flexWrap: "wrap"
+    },
+  },
 }));
 
 export default function TopicsUp(){
   const classes = useStyles();
-  const [loading, setLoading] = useState(false);
   const description = "En este apartado puedes dar de alta nuevos temas con sus respectivas preguntas, al terminar el proceso los alumnos podrán disponer de su contenido. Para continuar indica que tipo de operación desea realizar y llene los campos."
+  const options = [ {id: 0, value: "Tema existente", }, {id: 1, value: "Nuevo tema", }, ];
+  const [loading, setLoading] = useState(false);
+  const [bandQuestions, setBandQuestions] = useState(false); // Open Card Questions And Open Table
+  const dispatch = useDispatch();
+  const topics = useSelector(state => state.topics.topicsList);
+  // const subtopics = useSelector(state => state.topics.subtopicsList);
+  const subtopics = [];
+  const questionList = useSelector(state => state.topics.questionsList); // List in RunTime
   
-  const prueba = [
-    {id: 10, value: "Calidad", },
-    {id: 20, value: "Seguridad", },
-    {id: 30, value: "Integridad", },
-    {id: 40, value: "Metodologias", },
-    {id: 50, value: "Metodologias agiles", },
-    {id: 60, value: "SCRUM", },
-  ];
-  const options = [
-    {id: 0, value: "Tema existente", },
-    {id: 1, value: "Nuevo tema", },
-  ];
-
+  // Alert
+  const [open, setOpen] = useState(false);
+  const [alert, setAlert] = useState(false);
+  const [alertContent, setAlertContent] = useState('');
+  
+  const showAlert = (alert, alertContent) => {
+    return(
+      <>
+      {alert ? (
+        <Alert className={classes.alert} variant="filled" severity="success" action={
+          <IconButton
+            aria-label="close"
+            color="inherit"
+            size="small"
+            onClick={() => {
+              setOpen(false);
+            }}
+          >
+            <CloseIcon fontSize="inherit" />
+          </IconButton>
+        }>
+          {alertContent}
+        </Alert>
+      ):(
+        <Alert className={classes.alert} variant="filled" severity="error" action={
+          <IconButton
+            aria-label="close"
+            color="inherit"
+            size="small"
+            onClick={() => {
+              setOpen(false);
+            }}
+          >
+            <CloseIcon fontSize="inherit" />
+          </IconButton>
+        }>
+          {alertContent}
+        </Alert>
+      )}
+      </>
+    );
+  };
+  
   // Option: Select topic or new topic
   const [option, setOption] = useState(5); // Initial value its irrelevant
   const handleOption = (e) => {
     setOption(e.target.value);
     setBandQuestions(false);
   }
-
-  const [bandQuestions, setBandQuestions] = useState(false); // Open Card Questions
-  const [list, setList] = useState([]); // Save Questions and map out
-
+  
   // Data New Topic
   const [newTopic, setNewTopic] = useState({ topic: "", subtopic: "", });
   const [newQuestion, setQuestion] = useState({
@@ -106,12 +189,14 @@ export default function TopicsUp(){
   });
   const handleNewTopic=(e) => setNewTopic({ ...newTopic, [e.target.name]: e.target.value });
   const handleNewQuestion=(e) => setQuestion({ ...newQuestion, [e.target.name]: e.target.value });
-
+  
   async function handleRegisterTopic(e) {
     e.preventDefault();
-    if (newTopic.topic === "" && newTopic.subtopic === ""){
-      // show error
-    }else{
+    const {status, info} = await TopicRegister(newTopic);
+    setOpen(true);
+    setAlert(status);
+    setAlertContent(info);
+    if (status){
       console.log(newTopic)
       setOption(5);
       setBandQuestions(true);
@@ -120,29 +205,37 @@ export default function TopicsUp(){
   
   async function handleRegisterQuestion(e) {
     e.preventDefault();
-    if (newQuestion.question === "" && newQuestion.correct === "" && newQuestion.incorrect1 === "" && newQuestion.incorrect2 === "" && newQuestion.incorrect3 === "" && newQuestion.argument === ""){
-      // show error
-    }else{
-      // console.log(newQuestion)
-      setList(newQuestion.question)
-      console.log(list)
+    const {status, info, quest} = await QuestionRegister(newQuestion);
+    setOpen(true);
+    setAlert(status);
+    setAlertContent(info);
+    if(status){
+      console.log(quest)
+      dispatch(updateQuestionList(quest));
       setOption(5);
       setBandQuestions(true);
     }
   }
+  
+  const handleChangeTopic = () => {}
+  const handleChangeSubtopic = () => {}
+  const handleEdit = () => {}
+  const handleDelete = () => {}
+
   const handleClear = (e) => setQuestion({...newQuestion, question: "", correct: "", incorrect1: "", incorrect2: "", incorrect3: "", argument: "",})
   
   useEffect(() => {
-    const load = async () => {
-      setLoading(true)
-      await setTimeout(function(){
-        setLoading(false)
-      }, 3000);
+    const request = async () => {
+      setLoading(true);
+      dispatch(acquireTopics());
+      setLoading(false);
     }
-    // load()
+    request()
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   
   if(loading) return <LoadingSpinner />
+
 
   return(
     <>
@@ -155,6 +248,8 @@ export default function TopicsUp(){
             {description}<br/>
           </Typography><br/>
         </Box>
+
+        {/* Input: Type of operation */}
         <Box sx={{paddingTop: 3, paddingBottom: 3}}>
           <InputSelect
             select
@@ -170,9 +265,14 @@ export default function TopicsUp(){
             ))}
           </InputSelect>
         </Box>
+
+        {/* Generic Alert */}
+        {open && ( showAlert(alert, alertContent) )}
+
+          {/* If: Topic Exist */}
           {option === 0 &&(
             <Box>
-              <Typography>Selecciona un Tema SIN IMPLEMENTAR</Typography>
+              <Typography>Selecciona un Tema</Typography>
               <form className={classes.containerFrom} onSubmit={null}>
                 <InputSelect
                   select
@@ -181,8 +281,21 @@ export default function TopicsUp(){
                   widthText={300}
                   onChange={null}
                 >
-                  {prueba.map((option) =>(
-                    <MenuItem key={option.id} value={option.id}>
+                  {topics.map((option) =>(
+                    <MenuItem key={option.id} value={option.id} onClick={handleChangeTopic}>
+                      {option.value}
+                    </MenuItem>
+                  ))}
+                </InputSelect>
+                <InputSelect
+                  select
+                  name="id-topic"
+                  label="Listado de Subtemas"
+                  widthText={300}
+                  onChange={null}
+                >
+                  {subtopics.map((option) =>(
+                    <MenuItem key={option.id} value={option.id} onClick={handleChangeSubtopic}>
                       {option.value}
                     </MenuItem>
                   ))}
@@ -195,6 +308,8 @@ export default function TopicsUp(){
               </form>
             </Box>
           )}
+
+          {/* If: New Topic */}
           {option === 1 &&(
             <Box className={classes.cardForm}>
               <form className={classes.containerFrom} onSubmit={handleRegisterTopic}>
@@ -224,6 +339,8 @@ export default function TopicsUp(){
               </form>
             </Box>
           )}
+
+          {/* Inputs: New Question */}
           {bandQuestions &&(
             <>
             <Box className={classes.cardForm}>
@@ -296,11 +413,39 @@ export default function TopicsUp(){
                 </Box>
               </form>
             </Box>
-            <Box>
-              Aqui van las preguntas que se agregaron
-              {list.map((question) => (
-                <Typography>{question}</Typography>
-              ))}
+            
+            <Box className={classes.review}>
+              <TableContainer component={Paper}>
+              <Table>
+                <TableHead>
+                  <TableRow>
+                    <StyledTableCell>Tema: {newTopic.topic}</StyledTableCell>
+                  </TableRow>
+                  <TableRow>
+                    <StyledTableCell>Subtema: {newTopic.subtopic}</StyledTableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {questionList.map((row) => (
+                    <StyledTableRow key={row.id}>
+                      <StyledTableCell scope="row" sx={{display: "flex", justifyContent: "space-between", alignItems: "baseline"}}>
+                        {row.quest}
+                        <Box className={classes.buttonsTable}>
+                          <Button
+                            title="Editar"
+                            onClick={handleEdit}
+                            />
+                          <Button
+                            title="Eliminar"
+                            onClick={handleDelete}
+                            />
+                        </Box>
+                      </StyledTableCell>
+                    </StyledTableRow>
+                  ))}
+                </TableBody>
+              </Table>
+              </TableContainer>
             </Box>
             </>
           )}
