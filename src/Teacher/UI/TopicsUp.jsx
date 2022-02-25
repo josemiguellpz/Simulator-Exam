@@ -1,5 +1,6 @@
 import React, {useState, useEffect} from 'react';
 import { makeStyles, styled } from "@mui/styles";
+import TipsAndUpdatesIcon from '@mui/icons-material/TipsAndUpdates';
 import Typography from '@mui/material/Typography';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -10,19 +11,18 @@ import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
 import Box from '@mui/material/Box';
 import MenuItem from '@mui/material/MenuItem';
-import InputSelect from '../../Components/InputSelect';
 import Alert from '@mui/material/Alert';
-import CloseIcon from '@mui/icons-material/Close';
 import IconButton from '@mui/material/IconButton';
+import CloseIcon from '@mui/icons-material/Close';
 
 import LoadingSpinner from '../../Components/LoadingSpinner';
-import TipsAndUpdatesIcon from '@mui/icons-material/TipsAndUpdates';
+import InputSelect from '../../Components/InputSelect';
 import InputText from '../../Components/InputText';
 import Button from '../../Components/ButtonSimple';
 
+import {TopicRegister, QuestionRegister, QuestionUpdate, QuestionGet, QuestionDelete, SubtopicRegister} from '../Application/Teacher.logic';
+import {acquireTopics, acquireSubtopics, addItemQuestionList, updateItemQuestionList, deleteItemQuestionList, deleteAllQuestionList} from '../../Redux/Slices/Topics';
 import { useDispatch, useSelector } from 'react-redux';
-import {updateQuestionList, acquireTopics} from '../../Redux/Slices/Topics';
-import {TopicRegister, QuestionRegister} from '../Application/Teacher.logic';
 
 // Table styles
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
@@ -74,7 +74,7 @@ const useStyles = makeStyles((theme) => ({
     color: `${theme.palette.tertiary.main} !important`,
   },
   cardForm:{
-    width: 520,
+    width: 550,
     /* height: teacher ? 440 : 490,
     marginBottom: teacher ? 0 : 10, */
     marginTop: 30,
@@ -86,6 +86,7 @@ const useStyles = makeStyles((theme) => ({
     paddingTop: 50,
     paddingBottom: 30,
     [theme.breakpoints.down("md")]:{
+      width: 530,
       marginBottom: 30,
       marginTop: 10,
     },
@@ -99,11 +100,18 @@ const useStyles = makeStyles((theme) => ({
     alignItems: "center",
     gap: 20,
   },
+  selectForQuestions:{
+    width: 300,
+    display: "flex",
+    flexWrap: "wrap",
+    gap: 35,
+    justifyContent: "center",
+  },
   review:{
     marginTop: 50,
     width: 800,
     [theme.breakpoints.down("md")]:{
-      width: 500,
+      width: 600,
     },
   },
   buttonsTable:{
@@ -118,15 +126,17 @@ const useStyles = makeStyles((theme) => ({
 export default function TopicsUp(){
   const classes = useStyles();
   const description = "En este apartado puedes dar de alta nuevos temas con sus respectivas preguntas, al terminar el proceso los alumnos podrán disponer de su contenido. Para continuar indica que tipo de operación desea realizar y llene los campos."
-  const options = [ {id: 0, value: "Tema existente", }, {id: 1, value: "Nuevo tema", }, ];
+  const options = [ {id: 0, value: "Nuevo Tema", }, {id: 1, value: "Nuevo Subtema", }, {id: 2, value: "Nueva Pregunta", }, ];
   const [loading, setLoading] = useState(false);
   const [bandQuestions, setBandQuestions] = useState(false); // Open Card Questions And Open Table
   const dispatch = useDispatch();
   const topics = useSelector(state => state.topics.topicsList);
-  // const subtopics = useSelector(state => state.topics.subtopicsList);
-  const subtopics = [];
-  const questionList = useSelector(state => state.topics.questionsList); // List in RunTime
-  
+  const subtopics = useSelector(state => state.topics.subtopicsList);
+  const questionList = useSelector(state => state.topics.questionsList);  // List in RunTime
+  const [currentTopic, setCurrentTopic] = useState({});                   // Registered Topic
+  const [currentQuestion, setCurrentQuestion] = useState(Number);         // Save QuestionID for Update
+  const handleCurrentTopic    = (e) => setCurrentTopic({ ...currentTopic, 'subtopicID': e.target.value.id, 'subtopic': e.target.value.value });
+
   // Alert
   const [open, setOpen] = useState(false);
   const [alert, setAlert] = useState(false);
@@ -174,11 +184,18 @@ export default function TopicsUp(){
   const [option, setOption] = useState(5); // Initial value its irrelevant
   const handleOption = (e) => {
     setOption(e.target.value);
+    setNewTopic({topic: "", subtopic: ""});
+    setQuestion({question: "",correct: "",incorrect1: "",incorrect2: "",incorrect3: "",argument: "",});
+    setCurrentTopic({});
+    setOpen(false);
     setBandQuestions(false);
+    dispatch(deleteAllQuestionList());  // Delete QuestionList in Store
+    dispatch(acquireTopics());          // Refresh Topics List in Store
   }
   
-  // Data New Topic
-  const [newTopic, setNewTopic] = useState({ topic: "", subtopic: "", });
+  // Variables and Functions for New Topic and Subtopic
+  const [newTopic, setNewTopic] = useState({topic: "", subtopic: ""});              // Topic to register 
+  const [newSubtopic, setNewSubtopic] = useState({subtopicID: null, subtopic: ""}); // Subtopic to register 
   const [newQuestion, setQuestion] = useState({
     question: "",
     correct: "",
@@ -187,43 +204,120 @@ export default function TopicsUp(){
     incorrect3: "",
     argument: "",
   });
-  const handleNewTopic=(e) => setNewTopic({ ...newTopic, [e.target.name]: e.target.value });
-  const handleNewQuestion=(e) => setQuestion({ ...newQuestion, [e.target.name]: e.target.value });
-  
+  const [update, setUpdate] = useState(true); // Disable Button "Actualizar"
+  const handleNewTopic    = (e) => setNewTopic({ ...newTopic, [e.target.name]: e.target.value });
+  const handleNewSubtopic = (e) => setNewSubtopic({...newSubtopic, [e.target.name]: e.target.value});
+  const handleNewQuestion = (e) => setQuestion({ ...newQuestion, [e.target.name]: e.target.value });
+  const handleClear = (e) => setQuestion({...newQuestion, question: "", correct: "", incorrect1: "", incorrect2: "", incorrect3: "", argument: "",});
+
+  const handleChange = () => {
+    setOption(5);
+    setBandQuestions(true);
+  }
+
   async function handleRegisterTopic(e) {
     e.preventDefault();
-    const {status, info} = await TopicRegister(newTopic);
+    const response = await TopicRegister(newTopic);
+    const {status, info, ids} = response.data;
     setOpen(true);
     setAlert(status);
     setAlertContent(info);
     if (status){
-      console.log(newTopic)
-      setOption(5);
-      setBandQuestions(true);
+      setCurrentTopic(ids);
+      handleChange();
     }
   }
   
-  async function handleRegisterQuestion(e) {
+  async function handleRegisterSubtopic(e){
     e.preventDefault();
-    const {status, info, quest} = await QuestionRegister(newQuestion);
+    const response = await SubtopicRegister(currentTopic, newSubtopic);
+    const {status, info, topic} = response.data;
     setOpen(true);
     setAlert(status);
     setAlertContent(info);
     if(status){
-      console.log(quest)
-      dispatch(updateQuestionList(quest));
-      setOption(5);
-      setBandQuestions(true);
+      setCurrentTopic(topic);
+      handleChange();
     }
   }
-  
-  const handleChangeTopic = () => {}
-  const handleChangeSubtopic = () => {}
-  const handleEdit = () => {}
-  const handleDelete = () => {}
 
-  const handleClear = (e) => setQuestion({...newQuestion, question: "", correct: "", incorrect1: "", incorrect2: "", incorrect3: "", argument: "",})
+  async function handleRegisterQuestion(e) {
+    e.preventDefault();
+    const response = await QuestionRegister(currentTopic, newQuestion);
+    const {status, info, quest} = response.data;
+    setOpen(true);
+    setAlert(status);
+    setAlertContent(info);
+    if(status){
+      dispatch(addItemQuestionList(quest));
+      setUpdate(true);
+      handleChange();
+    }
+  }
+
+  async function handleUpdateQuestion(e){
+    e.preventDefault();
+    const {topicID, subtopicID} = currentTopic;
+    const response = await QuestionUpdate(newQuestion, topicID, subtopicID, currentQuestion);
+    const {status, info, quest} = response.data;
+    setOpen(true);
+    setAlert(status);
+    setAlertContent(info);
+    if(status){
+      dispatch(updateItemQuestionList(quest));
+      setUpdate(true);
+      handleChange();
+    }
+  }
+
+  async function handleDeleteQuestion(questionID){
+    const {topicID, subtopicID} = currentTopic;
+    const response = await QuestionDelete(topicID, subtopicID, questionID);
+    const {status, info} = response.data;
+    setOpen(true);
+    setAlert(status);
+    setAlertContent(info);
+    if(status){
+      dispatch(deleteItemQuestionList(questionID));
+      handleChange();
+    }
+  }
+
+  async function handleEdit (questionID){
+    const {topicID, subtopicID} = currentTopic;
+    const response = await QuestionGet(topicID, subtopicID, questionID);
+    const {dataQuestion} = response.data;
+    setCurrentQuestion(questionID);
+    setQuestion({
+      question: dataQuestion.question,
+      correct: dataQuestion.correct,
+      incorrect1: dataQuestion.incorrect1,
+      incorrect2: dataQuestion.incorrect2,
+      incorrect3: dataQuestion.incorrect3,
+      argument: dataQuestion.argument,
+    })
+    setUpdate(false);
+    handleChange();
+  }
   
+  async function handleFinish (){
+    dispatch(acquireTopics());
+    dispatch(deleteAllQuestionList()); // Delete QuestionList in Store
+    setNewTopic({topic: "", subtopic: ""});
+    setNewSubtopic({subtopicID: null, subtopic: ""});
+    setQuestion({question: "",correct: "",incorrect1: "",incorrect2: "",incorrect3: "",argument: "",});
+    setCurrentTopic({});
+    setOption(option)
+    setOpen(false);
+    setBandQuestions(false);
+    window.location.reload(false);
+  }
+
+  const handleCallSubtopics = (e) => {
+    dispatch(acquireSubtopics(e.target.value.id)); // Params: TopicID
+    setCurrentTopic({ ...currentTopic, 'topicID': e.target.value.id, 'topic': e.target.value.value });
+  } 
+
   useEffect(() => {
     const request = async () => {
       setLoading(true);
@@ -235,7 +329,6 @@ export default function TopicsUp(){
   }, []);
   
   if(loading) return <LoadingSpinner />
-
 
   return(
     <>
@@ -268,49 +361,9 @@ export default function TopicsUp(){
 
         {/* Generic Alert */}
         {open && ( showAlert(alert, alertContent) )}
-
-          {/* If: Topic Exist */}
-          {option === 0 &&(
-            <Box>
-              <Typography>Selecciona un Tema</Typography>
-              <form className={classes.containerFrom} onSubmit={null}>
-                <InputSelect
-                  select
-                  name="id-topic"
-                  label="Listado de Temas"
-                  widthText={300}
-                  onChange={null}
-                >
-                  {topics.map((option) =>(
-                    <MenuItem key={option.id} value={option.id} onClick={handleChangeTopic}>
-                      {option.value}
-                    </MenuItem>
-                  ))}
-                </InputSelect>
-                <InputSelect
-                  select
-                  name="id-topic"
-                  label="Listado de Subtemas"
-                  widthText={300}
-                  onChange={null}
-                >
-                  {subtopics.map((option) =>(
-                    <MenuItem key={option.id} value={option.id} onClick={handleChangeSubtopic}>
-                      {option.value}
-                    </MenuItem>
-                  ))}
-                </InputSelect>
-                <Button
-                  title="Continuar"
-                  type="submit"
-                  onClick={null}
-                />
-              </form>
-            </Box>
-          )}
-
+          
           {/* If: New Topic */}
-          {option === 1 &&(
+          {option === 0 &&(
             <Box className={classes.cardForm}>
               <form className={classes.containerFrom} onSubmit={handleRegisterTopic}>
                   <InputText
@@ -337,6 +390,73 @@ export default function TopicsUp(){
                   onClick={handleRegisterTopic}
                 />
               </form>
+            </Box>
+          )}
+
+          {/* If: New Subtopic */}
+          {option === 1 &&(
+            <Box className={classes.selectForQuestions}>
+              <InputSelect
+                select
+                name="id-topic"
+                label="Selecciona un Tema"
+                widthText={300}
+              >
+                {topics.map((option) =>(
+                  <MenuItem key={option.id} value={option.id} onClick={() => {setCurrentTopic({topicID: option.id, topic: option.value})}}>
+                    {option.value}
+                  </MenuItem>
+                ))}
+              </InputSelect>
+              <form className={classes.containerFrom} onSubmit={handleRegisterSubtopic}>
+                <InputText
+                  type="text"
+                  name="subtopic"
+                  label="Subtema"
+                  placeholder="Ingrese el nombre del subtema"
+                  value={newSubtopic.subtopic}
+                  onChange={handleNewSubtopic}
+                  widthText={300}
+                />
+                <Button
+                  title="Continuar"
+                  type="submit"
+                  onClick={handleRegisterSubtopic}
+                />
+              </form>
+            </Box>
+          )}
+          
+          {/* If: New Question */}
+          {option === 2 &&(
+            <Box className={classes.selectForQuestions}>
+              <InputSelect
+                select
+                name="topic"
+                label="Selecciona un Tema"
+                widthText={300}
+                onChange={handleCallSubtopics}
+              >
+                {topics.map((option) =>(
+                  <MenuItem key={option.id} value={option}>
+                    {option.value}
+                  </MenuItem>
+                ))}
+              </InputSelect>
+              <InputSelect
+                select
+                name="subtopic"
+                label="Selecciona un Subtema"
+                widthText={300}
+                onChange={handleCurrentTopic}
+              >
+                {subtopics.map((option) =>(
+                  <MenuItem key={option.id} value={option}>
+                    {option.value}
+                  </MenuItem>
+                ))}
+              </InputSelect>
+              <Button title="Continuar" onClick={handleChange} />
             </Box>
           )}
 
@@ -400,7 +520,7 @@ export default function TopicsUp(){
                   multiline
                   widthText={380}
                 />
-                <Box sx={{display: "flex", gap: 5}}>
+                <Box sx={{display: "flex", gap: 1}}>
                   <Button
                     title="Agregar"
                     type="submit"
@@ -409,6 +529,15 @@ export default function TopicsUp(){
                   <Button
                     title="Limpiar"
                     onClick={handleClear}
+                  />
+                  <Button
+                    title="Actualizar"
+                    disabled={update}
+                    onClick={handleUpdateQuestion}
+                  />
+                  <Button
+                    title="Finalizar"
+                    onClick={handleFinish}
                   />
                 </Box>
               </form>
@@ -419,10 +548,10 @@ export default function TopicsUp(){
               <Table>
                 <TableHead>
                   <TableRow>
-                    <StyledTableCell>Tema: {newTopic.topic}</StyledTableCell>
+                    <StyledTableCell>Tema: {currentTopic.topic}</StyledTableCell>
                   </TableRow>
                   <TableRow>
-                    <StyledTableCell>Subtema: {newTopic.subtopic}</StyledTableCell>
+                    <StyledTableCell>Subtema: {currentTopic.subtopic}</StyledTableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
@@ -433,11 +562,11 @@ export default function TopicsUp(){
                         <Box className={classes.buttonsTable}>
                           <Button
                             title="Editar"
-                            onClick={handleEdit}
+                            onClick={() => {handleEdit(row.id)}}
                             />
                           <Button
                             title="Eliminar"
-                            onClick={handleDelete}
+                            onClick={() => {handleDeleteQuestion(row.id)}}
                             />
                         </Box>
                       </StyledTableCell>

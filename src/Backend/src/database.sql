@@ -45,6 +45,32 @@ CREATE TABLE pregunta(
   foreign key (id_subtema) references subtema(id_subtema) on update cascade on delete cascade
 );
 
+DELIMITER //
+CREATE PROCEDURE insertTopic (IN topic VARCHAR(70), IN subtopic VARCHAR(70))
+BEGIN
+  INSERT INTO tema (nombre_tema) values (topic);
+  SET @a = LAST_INSERT_ID();
+  INSERT INTO subtema (id_tema, nombre_subtema) values (@a, subtopic);
+  SET @b = LAST_INSERT_ID();
+  SELECT * FROM tema INNER JOIN subtema WHERE tema.id_tema = @a and subtema.id_subtema = @b;
+END //
+
+DELIMITER //
+CREATE PROCEDURE insertQuestion (IN topicID INT, IN subtopicID INT, IN question text, IN correct text, IN incorrect1 text, IN incorrect2 text, IN incorrect3 text, IN argument text)
+BEGIN
+  INSERT INTO pregunta (id_tema, id_subtema, pregunta, correcta, incorrecta1, incorrecta2, incorrecta3, argumento) values (topicID, subtopicID, question, correct, incorrect1, incorrect2, incorrect3, argument);
+  SET @a = LAST_INSERT_ID();
+  SELECT id_pregunta FROM pregunta WHERE id_pregunta = @a;
+END //
+
+DELIMITER //
+CREATE PROCEDURE insertSubtopic (IN topicID INT, IN subtopic varchar(70))
+BEGIN
+  INSERT INTO subtema (id_tema, nombre_subtema) values (topicID, subtopic);
+  SET @a = LAST_INSERT_ID();
+  SELECT id_subtema FROM subtema WHERE id_subtema = @a;
+END //
+
 INSERT INTO usuario (matricula, nombre, apellido, email, password, carrera, rol) values (201772797, 'José Miguel', 'López', 'josemiguel.lml@gmail.com', aes_encrypt('Jose1234', '#irn15'), '', 'Docente');
 INSERT INTO usuario (matricula, nombre, apellido, email, password, carrera, rol) values (201772798, 'Miguel', 'Aguilera', 'josemiguel_3093@hotmail.com', aes_encrypt('Jose1234', '#irn15'), 'Ingeniería en Ciencias de la Computación', 'Alumno');
 SELECT * FROM usuario;
@@ -73,6 +99,8 @@ INSERT INTO pregunta (id_tema, id_subtema, pregunta, correcta, incorrecta1, inco
   values (4, 2, "Pregunta de prueba 4", "Correct Answer", "Bad Answer", "Bad Answer", "Bad Answer", "Argumento 1");
 
 DROP TABLE tema, subtema, pregunta;
+CALL insertTopic('TemaPrueba', 'subPrueba');
+
 
 /* DRAFT */
 
