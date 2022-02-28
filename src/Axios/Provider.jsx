@@ -60,3 +60,9 @@ export async function getSubtopics(source){
   return await axios.get(route, config);
 }
 
+export async function getQuestions(source){
+  const config = getConfig();
+  const route = `${url}/${source}`;
+  return await axios.get(route, config);
+}
+

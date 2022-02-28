@@ -56,7 +56,7 @@ def users():
     return jsonify({'info': ex, 'status': False})
 
 @app.route('/users/<matricula>', methods=['GET', 'POST']) # GET user / POST: login 
-def getUser(matricula):
+def user(matricula):
   try:
     conexion = getConnectionDB()
     # Default response
@@ -135,9 +135,20 @@ def topics():
   except Exception as ex:
     return jsonify({'message': ex, 'status': False})
 
-@app.route('/topics/<topicID>', methods=['GET', 'DELETE'])
+@app.route('/topics/<topicID>', methods=['DELETE', 'PUT'])
 def topic(topicID):
-  print(topicID)
+  try:
+    conexion = getConnectionDB()              
+    with conexion.cursor() as cursor:
+      if request.method == 'DELETE':
+        cursor.execute("DELETE FROM tema WHERE id_tema = %s", topicID)
+        conexion.commit()
+        conexion.close()
+        return jsonify({'status': True, 'info':"Tema eliminado"})
+      elif request.method == 'PUT':
+        return jsonify({'status': True, 'info':"Tema modificado"})
+  except Exception as ex:
+    return jsonify({'message': ex, 'status': False})
 
 @app.route('/topics/<topicID>/subtopics', methods=['GET', 'POST'])
 def subtopics(topicID):
@@ -146,7 +157,7 @@ def subtopics(topicID):
     with conexion.cursor() as cursor:
       if request.method == 'GET':
         subtopics = []
-        item = {} 
+        # item = {} 
         cursor.execute("SELECT id_subtema, nombre_subtema FROM subtema WHERE id_tema = %s", topicID)
         response = cursor.fetchall()
         for element in response:
@@ -165,13 +176,34 @@ def subtopics(topicID):
   except Exception as ex:
     return jsonify({'message': ex, 'status': False})
 
-@app.route('/topics/<topicID>/subtopics/<subtopicID>/questions', methods=['GET', 'POST'])
-def questions(topicID, subtopicID):
+@app.route('/topics/<topicID>/subtopics/<subtopicID>', methods=['DELETE', 'PUT'])
+def subtopic(topicID, subtopicID):
   try:
     conexion = getConnectionDB()              
     with conexion.cursor() as cursor:
+      if request.method == 'DELETE':
+        cursor.execute("DELETE FROM subtema WHERE id_tema = %s and id_subtema = %s", (topicID, subtopicID))
+        conexion.commit()
+        conexion.close()
+        return jsonify({'status': True, 'info':"Subtema eliminado"})
+      elif request.method == 'PUT':
+        return jsonify({'status': True, 'info':"Subtema modificado"})
+  except Exception as ex:
+    return jsonify({'message': ex, 'status': False})
+
+@app.route('/topics/<topicID>/subtopics/<subtopicID>/questions', methods=['GET', 'POST'])
+def questions(topicID, subtopicID):
+  try:
+    conexion = getConnectionDB()
+    with conexion.cursor() as cursor:
       if request.method == 'GET':
-        return False
+        questions = []
+        cursor.execute("SELECT id_pregunta, pregunta, correcta, incorrecta1, incorrecta2, incorrecta3, argumento FROM pregunta WHERE id_tema = %s and id_subtema = %s", (topicID, subtopicID))
+        result = cursor.fetchall()
+        for element in result:
+          item = {'id': int(element[0]), 'question': element[1], 'correct': element[2], 'incorrect1': element[3], 'incorrect2': element[4], 'incorrect3': element[5], 'argument': element[6]}
+          questions.append(item)
+        return jsonify({'questions': questions})
       elif request.method == 'POST':
         question, correct, incorrect1, incorrect2, incorrect3, argument = request.json.values()
         cursor.execute("CALL insertQuestion(%s, %s, %s, %s, %s, %s, %s, %s);", (topicID, subtopicID, question, correct, incorrect1, incorrect2, incorrect3, argument)) # Return id_pregunta

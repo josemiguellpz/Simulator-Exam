@@ -1,4 +1,4 @@
-import {RegisterTopic, RegisterSubtopic, RegisterQuestion, GetQuestion, DeleteQuestion, UpdateQuestion} from '../Infrastructure/Teacher.service';
+import {RegisterTopic, DeleteTopic, RegisterSubtopic, DeleteSubtopic, RegisterQuestion, GetQuestion, DeleteQuestion, UpdateQuestion} from '../Infrastructure/Teacher.service';
 
 export function TopicRegister({topic, subtopic}){
   if(topic === ""){
@@ -23,6 +23,10 @@ export function TopicRegister({topic, subtopic}){
   }  
   const newTopic = {'topic': topic,'subtopic': subtopic, }
   return RegisterTopic(newTopic);
+}
+
+export function TopicDelete(topicID){
+  return DeleteTopic(topicID);
 }
 
 export function SubtopicRegister(currentTopic, currentSubtopic){
@@ -51,6 +55,10 @@ export function SubtopicRegister(currentTopic, currentSubtopic){
     subtopic: subtopic,
   };
   return RegisterSubtopic(topicID, request);
+}
+
+export function SubtopicDelete(topicID, subtopicID){
+  return DeleteSubtopic(topicID, subtopicID);
 }
 
 export function QuestionRegister(currentTopic, newQuestion){

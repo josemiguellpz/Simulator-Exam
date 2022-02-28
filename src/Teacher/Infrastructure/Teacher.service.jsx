@@ -5,9 +5,17 @@ export function RegisterTopic(newTopic){
   return postOne("/topics", body);
 }
 
+export function DeleteTopic(topicID){
+  return deleteOne(`/topics/${topicID}`);
+}
+
 export function RegisterSubtopic(topicID, subtopic){
   const body = JSON.stringify(subtopic);
-  return postOne(`/topics/${topicID}/subtopics`, body)
+  return postOne(`/topics/${topicID}/subtopics`, body);
+}
+
+export function DeleteSubtopic(topicID, subtopicID){
+  return deleteOne(`/topics/${topicID}/subtopics/${subtopicID}`);
 }
 
 export function RegisterQuestion(topicID, subtopicID, newQuestion){
