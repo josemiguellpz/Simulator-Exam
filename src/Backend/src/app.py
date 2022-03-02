@@ -135,7 +135,7 @@ def topics():
   except Exception as ex:
     return jsonify({'message': ex, 'status': False})
 
-@app.route('/topics/<topicID>', methods=['DELETE', 'PUT'])
+@app.route('/topics/<topicID>', methods=['DELETE'])
 def topic(topicID):
   try:
     conexion = getConnectionDB()              
@@ -145,8 +145,6 @@ def topic(topicID):
         conexion.commit()
         conexion.close()
         return jsonify({'status': True, 'info':"Tema eliminado"})
-      elif request.method == 'PUT':
-        return jsonify({'status': True, 'info':"Tema modificado"})
   except Exception as ex:
     return jsonify({'message': ex, 'status': False})
 
@@ -187,7 +185,14 @@ def subtopic(topicID, subtopicID):
         conexion.close()
         return jsonify({'status': True, 'info':"Subtema eliminado"})
       elif request.method == 'PUT':
-        return jsonify({'status': True, 'info':"Subtema modificado"})
+        # Update Topic and Subtopic Name
+        topic, subtopic = request.json.values()
+        cursor.execute("UPDATE tema SET nombre_tema = %s WHERE id_tema = %s", (topic, topicID))
+        cursor.execute("UPDATE subtema SET nombre_subtema = %s WHERE id_tema = %s and id_subtema = %s", (subtopic, topicID, subtopicID))
+        result = {'topicID': topicID, 'topic': topic, 'subtopicID': subtopicID, 'subtopic': subtopic}
+        conexion.commit()
+        conexion.close()
+        return jsonify({'status': True, 'info':"Tema modificado", 'topic': result})
   except Exception as ex:
     return jsonify({'message': ex, 'status': False})
 

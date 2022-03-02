@@ -21,7 +21,7 @@ import InputText from '../../Components/InputText';
 import Button from '../../Components/ButtonSimple';
 
 import {TopicRegister, QuestionRegister, QuestionUpdate, QuestionGet, QuestionDelete, SubtopicRegister} from '../Application/Teacher.logic';
-import {acquireTopics, acquireSubtopics, addItemQuestionList, updateItemQuestionList, deleteItemQuestionList, deleteAllQuestionList} from '../../Redux/Slices/Topics';
+import {acquireTopics, acquireSubtopics, addItemQuestionList, updateItemQuestionList, deleteItemQuestionList, deleteAllQuestionList, acquireQuestions} from '../../Redux/Slices/Topics';
 import { useDispatch, useSelector } from 'react-redux';
 
 // Table styles
@@ -51,9 +51,6 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     alignItems: "center",
     flexDirection: "column",
-    /* [theme.breakpoints.down("md")]:{
-      flexDirection: "column",
-    }, */
   },
   info:{
     width: 1000,
@@ -75,8 +72,6 @@ const useStyles = makeStyles((theme) => ({
   },
   cardForm:{
     width: 550,
-    /* height: teacher ? 440 : 490,
-    marginBottom: teacher ? 0 : 10, */
     marginTop: 30,
     borderRadius: "30px",
     background: "#fff",
@@ -101,17 +96,31 @@ const useStyles = makeStyles((theme) => ({
     gap: 20,
   },
   selectForQuestions:{
-    width: 300,
+    width: 550,
     display: "flex",
     flexWrap: "wrap",
     gap: 35,
     justifyContent: "center",
+    borderRadius: "30px",
+    background: "#fff",
+    boxShadow: "0px 4px 4px rgba(0, 0, 0, 0.25), 4px 0px 5px rgba(0, 0, 0, 0.25);",
+    paddingTop: 50,
+    paddingBottom: 30,
+    marginTop: 30,
+  },
+  buttonsQuestion:{
+    [theme.breakpoints.down("sm")]:{
+      width: 400,
+    },
   },
   review:{
     marginTop: 50,
     width: 800,
     [theme.breakpoints.down("md")]:{
       width: 600,
+    },
+    [theme.breakpoints.down("sm")]:{
+      width: 500,
     },
   },
   buttonsTable:{
@@ -211,8 +220,19 @@ export default function TopicsUp(){
   const handleClear = (e) => setQuestion({...newQuestion, question: "", correct: "", incorrect1: "", incorrect2: "", incorrect3: "", argument: "",});
 
   const handleChange = () => {
-    setOption(5);
-    setBandQuestions(true);
+    if(option === 2){
+      if(Object.keys(currentTopic).length <= 2){
+        setOpen(true);
+        setAlert(false);
+        setAlertContent("Seleccione tema y subtema");
+      }else{
+        setOption(5);
+        setBandQuestions(true);
+      }
+    } else{
+      setOption(5);
+      setBandQuestions(true);
+    }
   }
 
   async function handleRegisterTopic(e) {
@@ -400,7 +420,7 @@ export default function TopicsUp(){
                 select
                 name="id-topic"
                 label="Selecciona un Tema"
-                widthText={300}
+                widthText={450}
               >
                 {topics.map((option) =>(
                   <MenuItem key={option.id} value={option.id} onClick={() => {setCurrentTopic({topicID: option.id, topic: option.value})}}>
@@ -416,7 +436,7 @@ export default function TopicsUp(){
                   placeholder="Ingrese el nombre del subtema"
                   value={newSubtopic.subtopic}
                   onChange={handleNewSubtopic}
-                  widthText={300}
+                  widthText={450}
                 />
                 <Button
                   title="Continuar"
@@ -434,7 +454,7 @@ export default function TopicsUp(){
                 select
                 name="topic"
                 label="Selecciona un Tema"
-                widthText={300}
+                widthText={450}
                 onChange={handleCallSubtopics}
               >
                 {topics.map((option) =>(
@@ -447,7 +467,7 @@ export default function TopicsUp(){
                 select
                 name="subtopic"
                 label="Selecciona un Subtema"
-                widthText={300}
+                widthText={450}
                 onChange={handleCurrentTopic}
               >
                 {subtopics.map((option) =>(
@@ -520,7 +540,7 @@ export default function TopicsUp(){
                   multiline
                   widthText={380}
                 />
-                <Box sx={{display: "flex", gap: 1}}>
+                <Box className={classes.buttonsQuestion} sx={{display: "flex", gap: 1}}>
                   <Button
                     title="Agregar"
                     type="submit"

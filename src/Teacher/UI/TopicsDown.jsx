@@ -49,9 +49,6 @@ const useStyles = makeStyles((theme) => ({
     display: "flex",
     alignItems: "center",
     flexDirection: "column",
-    /* [theme.breakpoints.down("md")]:{
-      flexDirection: "column",
-    }, */
   },
   info:{
     width: 1000,
@@ -72,17 +69,35 @@ const useStyles = makeStyles((theme) => ({
     color: `${theme.palette.tertiary.main} !important`,
   },
   topics:{
-    width: 300,
+    width: 500,
     display: "flex",
-    flexWrap: "wrap",
-    gap: 30,
+    flexDirection: "column",
+    alignItems: "center",
+    gap: 20,
     justifyContent: "center",
+    borderRadius: "30px",
+    background: "#fff",
+    boxShadow: "0px 4px 4px rgba(0, 0, 0, 0.25), 4px 0px 5px rgba(0, 0, 0, 0.25);",
+    paddingTop: 50,
+    paddingBottom: 30,
+    marginTop: 30,
+  },
+  buttonsDelete:{
+    [theme.breakpoints.down("sm")]:{
+      width: 400,
+      display: "flex",
+      flexWrap: "wrap",
+      gap: 20,
+    },
   },
   review:{
-    marginTop: 50,
+    marginTop: 30,
     width: 900,
     [theme.breakpoints.down("md")]:{
-      width: 600,
+      width: 700,
+    },
+    [theme.breakpoints.down("sm")]:{
+      width: 400,
     },
   },
   buttonsTable:{
@@ -147,12 +162,39 @@ export default function TopicsDown(){
     );
   };
 
+  // First Card
+  const [topicDelete, setTopicDelete] = useState({});
+  const handleTopic = (e) => setTopicDelete({ ...topicDelete, 'topicID': e.target.value.id, 'topic': e.target.value.value });
+  async function handleDeleteTopicOne(){
+    if(Object.keys(topicDelete).length !== 2){
+      setOpen(true);
+      setAlert(false);
+      setAlertContent("Seleccione tema");
+    }
+    else{
+      const {topicID} = topicDelete;
+      const response = await TopicDelete(topicID);
+      const {status, info} = response.data;
+      setOpen(true);
+      setAlert(status);
+      setAlertContent(info);
+      if(status){
+        dispatch(acquireTopics());
+        setTopicDelete({});
+        window.location.reload(false);
+      }
+    }
+  }
+
+  // Second Card
   const [currentTopic, setCurrentTopic] = useState({});
   const handleCurrentTopic    = (e) => setCurrentTopic({ ...currentTopic, 'subtopicID': e.target.value.id, 'subtopic': e.target.value.value });
   const handleCallSubtopics = (e) => {
     dispatch(acquireSubtopics(e.target.value.id)); // Params: TopicID
     setCurrentTopic({ ...currentTopic, 'topicID': e.target.value.id, 'topic': e.target.value.value });
   }
+
+  
   const handleChange = () => {
     if(Object.keys(currentTopic).length <= 2){
       setOpen(true);
@@ -175,7 +217,9 @@ export default function TopicsDown(){
     if(status){
       dispatch(acquireTopics());
       dispatch(deleteAllQuestionList());
+      setCurrentTopic({});
       setBand(false);
+      window.location.reload(false);
     }
   }
   
@@ -188,7 +232,9 @@ export default function TopicsDown(){
     setAlertContent(info);
     if(status){
       dispatch(deleteAllQuestionList());
+      setCurrentTopic({});
       setBand(false);
+      window.location.reload(false);
     }
   }
 
@@ -234,7 +280,30 @@ export default function TopicsDown(){
         {open && ( showAlert(alert, alertContent) )}
 
         {band === false &&(
+          <>
           <Box className={classes.topics} sx={{paddingTop: "3vh"}}>
+            <Typography className={classes.title} variant="h6" sx={{fontWeight: "bold"}}>
+              Baja de Tema
+            </Typography>
+            <InputSelect
+              select
+              name="topic"
+              label="Selecciona un Tema"
+              widthText={300}
+              onChange={handleTopic}
+            >
+              {topics.map((option) =>(
+                <MenuItem key={option.id} value={option}>
+                  {option.value}
+                </MenuItem>
+              ))}
+            </InputSelect>
+            <Button title="Confirmar" onClick={handleDeleteTopicOne} />
+          </Box>
+          <Box className={classes.topics} sx={{paddingTop: "3vh"}}>
+            <Typography className={classes.title} variant="h6" sx={{fontWeight: "bold"}}>
+              Baja de Subtema y Preguntas
+            </Typography>
             <InputSelect
               select
               name="topic"
@@ -263,11 +332,19 @@ export default function TopicsDown(){
             </InputSelect>
             <Button title="Continuar" onClick={handleChange} />
           </Box>
+          </>
         )}
 
         {band &&(
           <Box className={classes.review}>
-            <Box sx={{display: "flex", paddingBottom: "5vh", justifyContent: "space-around"}}>
+            <Typography className={classes.title} variant="h6" sx={{fontWeight: "bold", textAlign: "justify", paddingBottom: "3vh"}}>
+              Tema: {currentTopic.topic}
+            </Typography>
+            <Typography className={classes.title} variant="h6" sx={{fontWeight: "bold", textAlign: "justify", paddingBottom: "3vh"}}>
+              Subtema: {currentTopic.subtopic}
+            </Typography>
+
+            <Box className={classes.buttonsDelete} sx={{display: "flex", paddingBottom: "5vh", justifyContent: "space-around"}}>
               <Button
                 title="Eliminar Tema"
                 onClick={() => {handleDeleteTopic()}}
@@ -281,13 +358,6 @@ export default function TopicsDown(){
                 onClick={() => {handleCancel()}}
               />
             </Box>
-
-            <Typography className={classes.title} variant="h6" sx={{fontWeight: "bold", textAlign: "justify", paddingBottom: "3vh"}}>
-              Tema: {currentTopic.topic}
-            </Typography>
-            <Typography className={classes.title} variant="h6" sx={{fontWeight: "bold", textAlign: "justify", paddingBottom: "3vh"}}>
-              Subtema: {currentTopic.subtopic}
-            </Typography>
 
             <TableContainer component={Paper}>
             <Table>

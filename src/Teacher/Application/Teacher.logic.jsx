@@ -1,4 +1,4 @@
-import {RegisterTopic, DeleteTopic, RegisterSubtopic, DeleteSubtopic, RegisterQuestion, GetQuestion, DeleteQuestion, UpdateQuestion} from '../Infrastructure/Teacher.service';
+import {RegisterTopic, DeleteTopic, RegisterSubtopic, DeleteSubtopic, RegisterQuestion, GetQuestion, DeleteQuestion, UpdateQuestion, UpdateTopicAndSubtopic} from '../Infrastructure/Teacher.service';
 
 export function TopicRegister({topic, subtopic}){
   if(topic === ""){
@@ -59,6 +59,35 @@ export function SubtopicRegister(currentTopic, currentSubtopic){
 
 export function SubtopicDelete(topicID, subtopicID){
   return DeleteSubtopic(topicID, subtopicID);
+}
+
+export function TopicAndSubtopicUpdate(newTopic){
+  if(newTopic.topic === ""){
+    const response = {
+      data: {
+        status: false, 
+        info: "El tema no puede quedar en blanco.", 
+        ids: null
+      }
+    }
+    return response 
+  }
+  if(newTopic.subtopic === ""){
+    const response = {
+      data: {
+        status: false, 
+        info: "El subtema no puede quedar en blanco.", 
+        ids: null
+      }
+    }
+    return response 
+  }
+  const {topicID, subtopicID} = newTopic;
+  const data = {
+    topic: newTopic.topic,
+    subtopic: newTopic.subtopic,
+  }
+  return UpdateTopicAndSubtopic(topicID, subtopicID, data);
 }
 
 export function QuestionRegister(currentTopic, newQuestion){

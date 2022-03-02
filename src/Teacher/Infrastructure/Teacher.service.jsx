@@ -5,17 +5,9 @@ export function RegisterTopic(newTopic){
   return postOne("/topics", body);
 }
 
-export function DeleteTopic(topicID){
-  return deleteOne(`/topics/${topicID}`);
-}
-
 export function RegisterSubtopic(topicID, subtopic){
   const body = JSON.stringify(subtopic);
   return postOne(`/topics/${topicID}/subtopics`, body);
-}
-
-export function DeleteSubtopic(topicID, subtopicID){
-  return deleteOne(`/topics/${topicID}/subtopics/${subtopicID}`);
 }
 
 export function RegisterQuestion(topicID, subtopicID, newQuestion){
@@ -27,9 +19,22 @@ export function GetQuestion(topicID, subtopicID, questionID){
   return getOne(`/topics/${topicID}/subtopics/${subtopicID}/questions/${questionID}`);
 }
 
+export function UpdateTopicAndSubtopic(topicID, subtopicID, data){
+  const body = JSON.stringify(data);
+  return putOne(`/topics/${topicID}/subtopics/${subtopicID}`, body);
+}
+
 export function UpdateQuestion(newQuestion, topicID, subtopicID, questionID){
   const body = JSON.stringify(newQuestion);
   return putOne(`/topics/${topicID}/subtopics/${subtopicID}/questions/${questionID}`, body);
+}
+
+export function DeleteTopic(topicID){
+  return deleteOne(`/topics/${topicID}`);
+}
+
+export function DeleteSubtopic(topicID, subtopicID){
+  return deleteOne(`/topics/${topicID}/subtopics/${subtopicID}`);
 }
 
 export function DeleteQuestion(topicID, subtopicID, questionID){

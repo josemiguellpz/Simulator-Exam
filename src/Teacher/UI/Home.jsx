@@ -23,10 +23,13 @@ const useStyles = makeStyles((theme) => ({
       flexDirection: "column",
       height: "calc(100vh + 150px)",
     },
+    [theme.breakpoints.down("sm")]:{
+    
+    },
   },
   info:{
-    width: "550px",
-    height: "250px",
+    width: 550,
+    height: 300,
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
@@ -35,6 +38,13 @@ const useStyles = makeStyles((theme) => ({
     [theme.breakpoints.down("md")]:{
       marginTop: 100,
       zIndex: 1,
+      marginLeft: 0,
+    },
+    [theme.breakpoints.down("sm")]:{
+      width: 400,
+      height: 400,
+      marginTop: 100,
+      marginLeft: 0,
     },
   },
   title:{
@@ -44,8 +54,6 @@ const useStyles = makeStyles((theme) => ({
     width: 600,
     height: 300,
     marginLeft: 70,
-    marginTop: 40,
-    marginBottom: 100,
     objectFit: "cover",
     borderRadius: "6px",
     boxShadow: "0px 15px 25px rgba(0,0,0,0.50)",
@@ -58,13 +66,14 @@ const useStyles = makeStyles((theme) => ({
     animationDelay: "5s",
     [theme.breakpoints.down("md")]:{
       width: 500,
-      marginLeft: 50,
-      marginTop: 50,
-      marginButtom: 50,
+      marginTop: 20,
+      marginLeft: 0,
     },
     [theme.breakpoints.down("sm")]:{
       width: 450,
       height: 250,
+      marginBottom: 50,
+      marginLeft: 0,
     },
   },
   "@keyframes slide": ({Class, Classroom}) => ({
@@ -111,8 +120,8 @@ export default function Home(){
     <>
       <Box className={classes.root}>
         <Box className={classes.info}>
-          <Typography className={classes.title} variant="h4" sx={{fontWeight: "bold",}}>
-            ¡Bienvenido {teacher.name} {teacher.lastName}!
+          <Typography className={classes.title} variant="h4" sx={{fontWeight: "bold", textAlign: "center"}}>
+            ¡Bienvenido <br/>{teacher.name} {teacher.lastName}!
           </Typography><br/>
           <Typography variant="h6" >
             <ArrowRightIcon/> Agrega nuevo contenido.<br/>
