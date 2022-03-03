@@ -107,7 +107,7 @@ export default function Home(){
     const load = async () => {
       setLoading(true);
       const response = await getUser(matricula);
-      const {role, name, lastName, carrer} = response.data.info;
+      const {role, name, lastName, carrer} = response.data.user;
       setTeacher({role, name, lastName, carrer});
       setLoading(false)
     }

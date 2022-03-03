@@ -19,7 +19,7 @@ import InputSelect from '../../Components/InputSelect';
 import Button from '../../Components/ButtonSimple';
 
 import { TopicDelete, SubtopicDelete, QuestionDelete } from '../Application/Teacher.logic';
-import {acquireTopics, acquireSubtopics, acquireQuestions, deleteItemQuestionList, deleteAllSubtopicList, deleteAllQuestionList} from '../../Redux/Slices/Topics';
+import {acquireTopics, acquireSubtopics, acquireQuestions, deleteItemQuestionList, deleteAllSubtopicList, deleteAllQuestionList} from '../../Redux/Slices';
 import { useDispatch, useSelector } from 'react-redux';
 
 // Table styles
@@ -115,9 +115,9 @@ export default function TopicsDown(){
   const tip = " Borrar un tema conlleva a eliminar todos los subtemas relacionados a dicho tema y por ende todas sus preguntas."
   const [band, setBand] = useState(false);
   const dispatch = useDispatch();
-  const topics = useSelector(state => state.topics.topicsList);
-  const subtopics = useSelector(state => state.topics.subtopicsList);
-  const questionList = useSelector(state => state.topics.questionsList);
+  const topics = useSelector(state => state.slices.topicsList);
+  const subtopics = useSelector(state => state.slices.subtopicsList);
+  const questionList = useSelector(state => state.slices.questionsList);
 
   // Alert
   const [open, setOpen] = useState(false);

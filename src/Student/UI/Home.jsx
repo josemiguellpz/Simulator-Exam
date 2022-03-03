@@ -12,7 +12,7 @@ import Button from '../../Components/ButtonSimple';
 import StudentModel from '../Domain/Student.model';
 
 import { useDispatch, useSelector } from 'react-redux';
-import { acquireUser, getModel } from '../../Redux/Slices/Users';
+import { acquireUser, getModel } from '../../Redux/Slices';
 import {getUser} from '../../Axios/Provider';
 
 const useStyles = makeStyles((theme) => ({

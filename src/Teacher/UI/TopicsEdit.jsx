@@ -19,7 +19,7 @@ import InputText from '../../Components/InputText';
 import Button from '../../Components/ButtonSimple';
 
 import {QuestionUpdate, QuestionGet, TopicAndSubtopicUpdate} from '../Application/Teacher.logic';
-import {acquireTopics, acquireSubtopics, acquireQuestions, deleteAllSubtopicList, deleteAllQuestionList} from '../../Redux/Slices/Topics';
+import {acquireTopics, acquireSubtopics, acquireQuestions, deleteAllSubtopicList, deleteAllQuestionList} from '../../Redux/Slices';
 import { useDispatch, useSelector } from 'react-redux';
 
 // Table styles
@@ -133,9 +133,9 @@ export default function TopicsUp(){
   const [bandTopic, setBandTopic] = useState(false); // Open Card Questions And Open Table
   const [bandQuestions, setBandQuestions] = useState(false); // Open Card Questions And Open Table
   const dispatch = useDispatch();
-  const topics = useSelector(state => state.topics.topicsList);
-  const subtopics = useSelector(state => state.topics.subtopicsList);
-  const questionList = useSelector(state => state.topics.questionsList);  // List in RunTime
+  const topics = useSelector(state => state.slices.topicsList);
+  const subtopics = useSelector(state => state.slices.subtopicsList);
+  const questionList = useSelector(state => state.slices.questionsList);  // List in RunTime
   const [currentTopic, setCurrentTopic] = useState({});                   // Registered Topic
   const [currentQuestion, setCurrentQuestion] = useState({});             // Save Question for Update
   const handleCurrentTopic    = (e) => setCurrentTopic({ ...currentTopic, 'subtopicID': e.target.value.id, 'subtopic': e.target.value.value });

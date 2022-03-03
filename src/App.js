@@ -20,6 +20,7 @@ import HomeTeacher from "./Teacher/UI/Home";
 import TopicsUp from "./Teacher/UI/TopicsUp";
 import TopicsDown from "./Teacher/UI/TopicsDown";
 import TopicsEdit from "./Teacher/UI/TopicsEdit";
+import ViewStudents from "./Teacher/UI/ViewStudents";
 
 function App() {
   return (
@@ -37,6 +38,7 @@ function App() {
         <Route index path="/teacher/topics-up/" element={<TopicsUp/>}/>
         <Route index path="/teacher/topics-down/" element={<TopicsDown/>}/>
         <Route index path="/teacher/topics-edit/" element={<TopicsEdit/>}/>
+        <Route index path="/teacher/students/" element={<ViewStudents/>}/>
         <Route path="*" element={<Error/>}/>
       </Routes>
     <Footer/>

@@ -3,8 +3,7 @@ import { combineReducers, compose } from 'redux';
 import { createStore, applyMiddleware } from '@reduxjs/toolkit';
 
 // Reducers
-import topics from '../Redux/Slices/Topics'
-import users from '../Redux/Slices/Users'
+import slices from './Slices/index'
 
 // Config Redux Thunk
 const middlewares = [thunk];
@@ -13,8 +12,7 @@ const enhancers = composeEnhancers(applyMiddleware(...middlewares));
 
 // This is Store Redux
 const reducers = combineReducers({ 
-  users, 
-  topics
+  slices
 });
 
 const store = createStore(

@@ -16,7 +16,7 @@ import Login from '../../Components/ModalLogin';
 import Button from '../../Components/ButtonSimple';
 
 import { useDispatch, useSelector } from "react-redux";
-import { acquireTopics }  from "../../Redux/Slices/Topics";
+import { acquireTopics }  from "../../Redux/Slices";
 
 const useStyles = makeStyles((theme) => ({
   root:{
@@ -86,7 +86,7 @@ export default function Topic (){
   localStorage.setItem("role", "user")
   const classes = useStyles();
   const dispatch = useDispatch();
-  const topics = useSelector(state => state.topics.topicsList)
+  const topics = useSelector(state => state.slices.topicsList)
 
   // Modal-Login
   const [open, setOpen] = useState(false);
