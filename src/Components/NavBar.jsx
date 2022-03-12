@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { makeStyles } from "@mui/styles";
 import AppBar from '@mui/material/AppBar';
@@ -12,8 +12,8 @@ import ListItem from '@mui/material/ListItem';
 import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 
-import Brightness4Icon from '@mui/icons-material/Brightness4';
-import Brightness7Icon from '@mui/icons-material/Brightness7';
+/* import Brightness4Icon from '@mui/icons-material/Brightness4';
+import Brightness7Icon from '@mui/icons-material/Brightness7'; */
 import InsightsIcon from '@mui/icons-material/Insights';
 import AddBoxIcon from '@mui/icons-material/AddBox';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -28,6 +28,9 @@ import HomeIcon from '@mui/icons-material/Home';
 import MenuIcon from '@mui/icons-material/Menu';
 // import QuizIcon from '@mui/icons-material/Quiz';
 import Login from './ModalLogin';
+
+import { deleteUser, deleteAllSubtopicList, deleteAllQuestionList } from '../Redux/Slices';
+import { useDispatch, /* useSelector */ } from 'react-redux';
 
 const useStyles = makeStyles((theme) =>({
   background:({role}) => ({
@@ -93,7 +96,9 @@ const useStyles = makeStyles((theme) =>({
 
 export default function NavBar(){
   // localStorage.setItem("role", "user");
+  //const {role} = useSelector(state => state.slices.user);
   const role = localStorage.getItem("role");
+  const dispatch = useDispatch();
   const classes = useStyles({role});
 
   // Drawer
@@ -101,8 +106,8 @@ export default function NavBar(){
   const band = () => setOpen(!open);
   
   //Mode Dark
-  const [mode, setMode] = useState(false); 
-  const changeMode = () => setMode(!mode);
+  /* const [mode, setMode] = useState(false); 
+  const changeMode = () => setMode(!mode); */
   
   // Modal Login
   const [modal, setModal] = useState(false);
@@ -113,8 +118,19 @@ export default function NavBar(){
   const navigate = useNavigate();
   const handlePage = (route) => (event) => navigate(route);
 
-  /* TODO: Modo Nocturno y enlaces */
+  useEffect(() => {
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+  
+  const handleLogout = () => {
+    dispatch(deleteUser());
+    dispatch(deleteAllSubtopicList());
+    dispatch(deleteAllQuestionList());
+    navigate("/");
+    window.location.reload(false);
+  }
 
+  /* TODO: Modo Nocturno y enlaces */
   return(
     <AppBar className={classes.background} position="static" >
     <Container>
@@ -157,7 +173,7 @@ export default function NavBar(){
                 <InsightsIcon/>
                 <Typography>Rendimiento</Typography>
               </MenuItem>
-              <MenuItem className={classes.navItem} onClick={handlePage}>
+              <MenuItem className={classes.navItem} onClick={handleLogout}>
                 <LogoutIcon/>
                 <Typography>Salir</Typography>
               </MenuItem>
@@ -185,13 +201,13 @@ export default function NavBar(){
                 <GroupIcon/>
                 <Typography>Alumnos</Typography>
               </MenuItem>
-              <MenuItem className={classes.navItem} onClick={handlePage}>
+              <MenuItem className={classes.navItem} onClick={handleLogout}>
                 <LogoutIcon/>
                 <Typography>Salir</Typography>
               </MenuItem>
             </Box>
           )}
-          <MenuItem onClick={changeMode}>
+          {/* <MenuItem onClick={changeMode}>
             {mode ? 
               <Box sx={{display: "flex", gap: .5}}>
                 <Brightness4Icon/> 
@@ -200,7 +216,7 @@ export default function NavBar(){
                 <Brightness7Icon/> 
               </Box>
             }
-          </MenuItem>
+          </MenuItem> */}
         </Box>
 
         <Box className={classes.mobile}>
@@ -252,7 +268,7 @@ export default function NavBar(){
                     <InsightsIcon/>
                     <Typography>Rendimiento</Typography>
                   </ListItem>
-                  <ListItem button className={classes.drawerItem} onClick={null} sx={{gap: .5}}>
+                  <ListItem button className={classes.drawerItem} onClick={handleLogout} sx={{gap: .5}}>
                     <LogoutIcon/>
                     <Typography>Salir</Typography>
                   </ListItem>
@@ -280,13 +296,13 @@ export default function NavBar(){
                     <GroupIcon/>
                     <Typography>Alumnos</Typography>
                   </ListItem>
-                  <ListItem button className={classes.drawerItem} onClick={null} sx={{gap: .5}}>
+                  <ListItem button className={classes.drawerItem} onClick={handleLogout} sx={{gap: .5}}>
                     <LogoutIcon/>
                     <Typography>Salir</Typography>
                   </ListItem>
                 </Box>
               )}
-              <ListItem button className={classes.drawerItem} onClick={changeMode}>
+              {/* <ListItem button className={classes.drawerItem} onClick={changeMode}>
                 {mode ? 
                   <Box sx={{display: "flex", gap: .5}}>
                     <Brightness4Icon/> 
@@ -297,7 +313,7 @@ export default function NavBar(){
                     <Typography>Aspecto: Claro</Typography>
                   </Box>
                 }
-              </ListItem>
+              </ListItem> */}
             </List>
           </Drawer>
           <Login open={modal} handleClose={handleClose}/> 

@@ -1,18 +1,28 @@
 import React, {useState, useEffect} from 'react';
 import { makeStyles } from "@mui/styles";
+import List from '@mui/material/List';
+import ListItem from '@mui/material/ListItem';
+import ListItemText from '@mui/material/ListItemText';
+import ListItemAvatar from '@mui/material/ListItemAvatar';
+import Avatar from '@mui/material/Avatar';
+import InputAdornment from '@mui/material/InputAdornment';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 import MenuItem from '@mui/material/MenuItem';
 import Alert from '@mui/material/Alert';
 import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
+import SearchIcon from '@mui/icons-material/Search';
+import PersonSearchIcon from '@mui/icons-material/PersonSearch';
+import PersonIcon from '@mui/icons-material/Person';
 
-import LoadingSpinner from '../../Components/LoadingSpinner';
 import InputSelect from '../../Components/InputSelect';
+import InputText from '../../Components/InputText';
 import Button from '../../Components/ButtonSimple';
 
+import { UserSearch } from '../Application/Teacher.logic';
 import { useDispatch, useSelector } from 'react-redux';
-import { acquireUser, acquireTopics } from '../../Redux/Slices';
+import { acquireUsers } from '../../Redux/Slices';
 
 const useStyles = makeStyles((theme) => ({
   root:{
@@ -39,6 +49,12 @@ const useStyles = makeStyles((theme) => ({
   title:{
     color: `${theme.palette.tertiary.main} !important`,
   },
+  resultSearch:{
+    width: 500,
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+  },
   selectStudent: {
     width: 500,
     display: "flex",
@@ -56,13 +72,10 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function Home(){
-  const classes = useStyles();
+  const classes = useStyles();  
   const description = "En esta sección puede consultar el rendimiento académico de los alumnos.";
-  const [loading, setLoading] = useState(false);
-  const [band, setBand] = useState(true);
   const dispatch = useDispatch();
-  const topics = useSelector(state => state.slices.topicsList);
-  const user = useSelector(state => state.slices.user);
+  const users = useSelector(state => state.slices.usersList);
 
   // Alert
   const [open, setOpen] = useState(false);
@@ -106,23 +119,43 @@ export default function Home(){
     );
   };
 
-  const [currentTopic, setCurrentTopic] = useState({});
-  const handleSelectTopic= (e) => setCurrentTopic({ ...currentTopic, 'topicID': e.target.value.id, 'topic': e.target.value.value });
-  const handleChange = () => {
-    console.log(user);
-    console.log(currentTopic);
+  // Search Student
+  const [studentsFound, setStudentsFound] = useState([]);
+  const [flag, setFlag] = useState(false);
+  const [dataSearch, setDataSearch] = useState("");
+  const handleDataSearch = (e) => setDataSearch(e.target.value);
+  async function handleSearch (e){
+    e.preventDefault();
+    const response = await UserSearch(dataSearch);
+    const {status, info, students} = response.data;
+    if(status){
+      if(students.length !== 0){
+        setFlag(true);
+        setStudentsFound(students);
+      }
+      else{
+        setOpen(true)
+        setAlert(false)
+        setAlertContent("No se encontraron coincidencias")  
+      }
+    }else{
+      setOpen(true)
+      setAlert(status)
+      setAlertContent(info)
+    }
   }
 
+  // Select Student
+  const [studentID, setStudentID] = useState(Number);
+  const handleSelectStudent= (e) => setStudentID(e.target.value.id);
+  const handleNext = () => console.log(studentID);
+
   useEffect(() => {
-    const matricula = localStorage.getItem('id');
-    dispatch(acquireTopics());
-    dispatch(acquireUser(matricula));
+    dispatch(acquireUsers());
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
   
-  if(loading) return <LoadingSpinner />
-  
-    return(
+  return(
     <>
       <Box className={classes.root} sx={{paddingBottom: "20vh"}}>
         <Box className={classes.info}>
@@ -137,25 +170,56 @@ export default function Home(){
         {/* Generic Alert */}
         {open && ( showAlert(alert, alertContent) )}
 
-        {band &&(
-          <Box className={classes.selectStudent}>
-            <InputSelect
-              select
-              name="topic"
-              label="Selecciona un Tema"
-              widthText={300}
-              onChange={handleSelectTopic}
-            >
-              {topics.map((option) =>(
-                <MenuItem key={option.id} value={option}>
-                  {option.value}
-                </MenuItem>
+        <Box sx={{display: "flex", gap: 5, marginTop: 5, marginBottom: 3}}>
+          <form onSubmit={handleSearch}>
+            <InputText
+              type="text"
+              name="dataSearch"
+              placeholder="Buscar por nombre"
+              value={dataSearch}
+              onChange={handleDataSearch}
+              widthText={350}
+              InputProps={{
+                startAdornment: <InputAdornment position="start"><SearchIcon/></InputAdornment>
+              }}
+            />
+          </form>
+          <Button title="Buscar" onClick={handleSearch} endIcon={<PersonSearchIcon/>} />
+        </Box>
+
+        {flag && (
+          <Box className={classes.resultSearch} sx={{}}>
+            <Typography className={classes.title} variant="h6" sx={{fontWeight: "bold"}}>Resultados encontrados</Typography>
+            <List sx={{ width: '100%',}}>
+              {studentsFound.map((person) => (
+                <ListItem key={person.id} onClick={() => {console.log(person)}}>
+                  <ListItemAvatar>
+                    <Avatar> <PersonIcon /> </Avatar>
+                  </ListItemAvatar>
+                  <ListItemText primary={person.fullName} secondary={person.id} />
+                </ListItem>
               ))}
-            </InputSelect>
-            <Button title="Continuar" onClick={handleChange} />
+            </List>
           </Box>
         )}
 
+        <Box className={classes.selectStudent}>
+          <Typography className={classes.title} variant="h6" sx={{fontWeight: "bold"}}>Seleccionar Alumno</Typography>
+          <InputSelect
+            select
+            name="users"
+            label="Lista de Alumnos"
+            widthText={350}
+            onChange={handleSelectStudent}
+          >
+            {users.map((option) =>(
+              <MenuItem key={option.id} value={option}>
+                {option.id} {option.name} {option.lastName}
+              </MenuItem>
+            ))}
+          </InputSelect>
+          <Button title="Continuar" onClick={handleNext} />
+        </Box>
       </Box>
     </>
   );

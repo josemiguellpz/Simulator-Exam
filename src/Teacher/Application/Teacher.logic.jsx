@@ -1,4 +1,17 @@
-import {RegisterTopic, DeleteTopic, RegisterSubtopic, DeleteSubtopic, RegisterQuestion, GetQuestion, DeleteQuestion, UpdateQuestion, UpdateTopicAndSubtopic} from '../Infrastructure/Teacher.service';
+import {RegisterTopic, DeleteTopic, RegisterSubtopic, DeleteSubtopic, RegisterQuestion, GetQuestion, DeleteQuestion, UpdateQuestion, UpdateTopicAndSubtopic, SearchStudents} from '../Infrastructure/Teacher.service';
+
+export function UserSearch(dataSearch){
+  if(dataSearch === ""){
+    const response = {
+      data: {
+        status: false,
+        info: "Sin referencia en la búsqueda"
+      }
+    }
+    return response
+  }
+  return SearchStudents(dataSearch);
+}
 
 export function TopicRegister({topic, subtopic}){
   if(topic === ""){

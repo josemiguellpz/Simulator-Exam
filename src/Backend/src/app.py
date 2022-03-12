@@ -16,42 +16,68 @@ CORS(app)
 
 KEYWORD="#irn15" #Auth for password
 
-@app.route('/users', methods=['POST'])
+@app.route('/search/students/<reference>', methods=['GET'])
+def searchStudents(reference):
+  try:
+    conexion = getConnectionDB()
+    with conexion.cursor() as cursor:
+      if request.method == 'GET':
+        students = []
+        query = "SELECT matricula, IF (nombre LIKE '%{0}%' OR apellido LIKE '%{0}%', CONCAT(nombre, ' ', apellido), null) AS alumno FROM usuario WHERE rol = 'Alumno';".format(reference)
+        cursor.execute(query)
+        result = cursor.fetchall()
+        for item in result:
+          if (item[1] != None):
+            item = {'id': item[0], 'fullName': item[1]}
+            students.append(item)
+        return jsonify({'status': True, 'students': students})
+  except Exception as ex:
+    return jsonify({'info': ex, 'status': False})
+
+@app.route('/users', methods=['GET','POST'])
 def users():
   try:
-    role, matricula, name, lastName, email, password, carrer = request.json.values()
     conexion = getConnectionDB()
-    # Default response
-    status = False
-    info = "Algo salio mal"
     with conexion.cursor() as cursor:
-      # Check matrícula
-      query = 'SELECT matricula FROM usuario WHERE matricula = %s'
-      cursor.execute(query, (matricula))
-      rows = cursor.fetchall() 
-      if (rows): # If exist data
-        matStore = rows[0][0]
-        if (str(matStore) == str(matricula)):
-          status = False 
-          info = "Matrícula existente, por favor intente nuevamente"
-      else:
-        # Check email
-        query = 'SELECT email FROM usuario WHERE email = %s'
-        cursor.execute(query, (email))
+      if request.method == 'GET':
+        users = []
+        cursor.execute("SELECT matricula, nombre, apellido, email, carrera FROM usuario WHERE rol = 'Alumno'")
+        result = cursor.fetchall()
+        for element in result:
+          item = {'id': element[0], 'name': element[1], 'lastName': element[2], 'email': element[3], 'carrer': element[4],}
+          users.append(item)
+        return jsonify({'users': users})
+      elif request.method == 'POST':
+        role, matricula, name, lastName, email, password, carrer = request.json.values()
+        status = False
+        info = "Algo salio mal"
+        # Check matrícula
+        query = 'SELECT matricula FROM usuario WHERE matricula = %s'
+        cursor.execute(query, (matricula))
         rows = cursor.fetchall() 
         if (rows): # If exist data
-          emailStore = rows[0][0]
-          if (str(emailStore) == str(email)):
+          matStore = rows[0][0]
+          if (str(matStore) == str(matricula)):
             status = False 
-            info = "Correo existente, por favor ingrese otro"
+            info = "Matrícula existente, por favor intente nuevamente"
         else:
-          # Insert query
-          query = 'INSERT INTO usuario (matricula, nombre, apellido, email, password, carrera, rol) values(%s, %s, %s, %s, aes_encrypt(%s, %s), %s, %s)'
-          cursor.execute(query, (matricula, name, lastName, email, password, KEYWORD, carrer, role))
-          status = True
-          info = "¡Registro Exitoso! Puede iniciar sesión"
-    conexion.close()
-    return jsonify({'status': status, 'info': info})
+          # Check email
+          cursor.execute('SELECT email FROM usuario WHERE email = %s', (email))
+          rows = cursor.fetchall() 
+          if (rows): # If exist data
+            emailStore = rows[0][0]
+            if (str(emailStore) == str(email)):
+              status = False 
+              info = "Correo existente, por favor ingrese otro"
+          else:
+            # Insert query
+            query = 'INSERT INTO usuario (matricula, nombre, apellido, email, password, carrera, rol) values(%s, %s, %s, %s, aes_encrypt(%s, %s), %s, %s)'
+            cursor.execute(query, (matricula, name, lastName, email, password, KEYWORD, carrer, role))
+            status = True
+            info = "¡Registro Exitoso! Puede iniciar sesión"
+        conexion.commit()
+        conexion.close()
+        return jsonify({'status': status, 'info': info})
   except Exception as ex:
     return jsonify({'info': ex, 'status': False})
 

@@ -1,6 +1,7 @@
 import React, {useState, useEffect} from "react";
 import { makeStyles, styled } from "@mui/styles";
 import KeyboardArrowRightIcon from '@mui/icons-material/KeyboardArrowRight';
+import ArrowRightIcon from '@mui/icons-material/ArrowRight';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell, { tableCellClasses } from '@mui/material/TableCell';
@@ -17,49 +18,6 @@ import Button from '../../Components/ButtonSimple';
 
 import { useDispatch, useSelector } from "react-redux";
 import { acquireTopics }  from "../../Redux/Slices";
-
-const useStyles = makeStyles((theme) => ({
-  root:{
-    /* border: "solid 1px", */
-    width: "100%",
-    /* height: "calc(100vh - 64px)", */
-    display: "flex",
-    alignItems: "center",
-    [theme.breakpoints.down("md")]:{
-      flexDirection: "column",
-    },
-  },
-  info:{
-    width: 500,
-    height: 250,
-    display: "flex",
-    flexDirection: "column",
-    alignItems: "center",
-    gap: 15,
-    marginLeft: 50,
-    marginTop: -70,
-    [theme.breakpoints.down("md")]:{
-      marginTop: 50,
-    },
-  },
-  title:{
-    color: `${theme.palette.primary.main} !important`,
-  },
-  topics:{
-    width: 600,
-    height: 400,
-    display: "flex",
-    flexDirection: "column",
-    marginLeft: 100,
-    marginTop: 40,
-    [theme.breakpoints.down("md")]:{
-      width: 500,
-      marginLeft: 50,
-      marginTop: 30,
-      marginButtom: 50,
-    },
-  },
-}));
 
 // Table styles
 const StyledTableCell = styled(TableCell)(({ theme }) => ({
@@ -79,6 +37,43 @@ const StyledTableRow = styled(TableRow)(({ theme }) => ({
   // hide last border
   '&:last-child td, &:last-child th': {
     border: 0,
+  },
+}));
+
+const useStyles = makeStyles((theme) => ({
+  root:{
+    width: "100%",
+    height: "calc(100vh - 64px)",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "space-evenly",
+    [theme.breakpoints.down("md")]:{
+      flexDirection: "column",
+      height: "calc(100vh + 180px)",
+    },
+  },
+  info:{
+    width: 600,
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    gap: 15,
+    [theme.breakpoints.down("md")]:{
+      marginTop: 50,
+    },
+  },
+  title:{
+    color: `${theme.palette.primary.main} !important`,
+  },
+  topics:{
+    width: 600,
+    display: "flex",
+    flexDirection: "column",
+    [theme.breakpoints.down("md")]:{
+      width: 600,
+      marginTop: 30,
+      marginBottom: 50,
+    },
   },
 }));
 
@@ -104,11 +99,6 @@ export default function Topic (){
     request();
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-  
-  /* const myObj = topics.reduce((obj, item) => {
-    obj[item['id']] = item.value
-    return obj
-  }, {}) */
 
   if(loading) return <LoadingSpinner />
 
@@ -117,12 +107,14 @@ export default function Topic (){
       <Box className={classes.root}>
         <Box className={classes.info}>
           <Typography className={classes.title} variant="h4" sx={{fontWeight: "bold",}}>
-            Listado de temas
+            Listado de Temas
           </Typography><br/>
-          <Typography variant="h6" >
+          <Typography variant="h6" sx={{textAlign: "justify"}}>
             En este apartado puedes consultar una vista preliminar de algunos temas
-            disponibles.<br/>
-            Inicia sesión para tener acceso a más información.
+            disponibles. <br/><br/>
+            <ArrowRightIcon/> Como docente: Mantener actualizado el contenido temático. <br />
+            <ArrowRightIcon/> Como alumno: Pon aprueba tus conocimientos. <br />
+            <ArrowRightIcon/> Inicia sesión para tener acceso a más información.
           </Typography><br/>
           <Button
             title="Iniciar"
@@ -136,14 +128,20 @@ export default function Topic (){
             <Table>
               <TableHead>
                 <TableRow>
-                  <StyledTableCell>Temario</StyledTableCell>
+                  <StyledTableCell>
+                    <Typography variant="h6" sx={{fontWeight: "bold",}}>
+                      Temario
+                    </Typography>
+                  </StyledTableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
                 {topics.map((row) => (
                   <StyledTableRow key={row.id}>
                     <StyledTableCell scope="row">
-                      {row.value}
+                      <Typography sx={{fontSize: "1rem",}}>
+                        {row.value}
+                      </Typography>
                     </StyledTableCell>
                   </StyledTableRow>
                 ))}

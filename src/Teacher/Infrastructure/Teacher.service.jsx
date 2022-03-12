@@ -1,5 +1,9 @@
 import { postOne, getOne, putOne, deleteOne } from "../../Axios/Provider";
 
+export function SearchStudents(data){
+  return getOne(`/search/students/${data}`)
+}
+
 export function RegisterTopic(newTopic){
   const body = JSON.stringify(newTopic);
   return postOne("/topics", body);

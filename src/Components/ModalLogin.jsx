@@ -11,6 +11,9 @@ import {UserLogin} from "../User/Application/User.logic";
 import Button from "./ButtonSimple";
 import InputText from "./InputText";
 
+import { useDispatch } from "react-redux";
+import { acquireUser } from "../Redux/Slices";
+
 const useStyles = makeStyles((theme) => ({
   container:{
     position: "absolute",
@@ -48,6 +51,7 @@ export default function ModalLogin({
   handleClose,
 }) {
   const classes = useStyles();
+  const dispatch = useDispatch();
   const navigate = useNavigate();
 
   // Data User
@@ -62,14 +66,15 @@ export default function ModalLogin({
     const response = await UserLogin(data);
     const {status, info, role, id} = response.data;
     if(status){ // Success
+      dispatch(acquireUser(id));
       if(role === "Docente"){
+        localStorage.setItem("role", "teacher")
         navigate("/teacher/")
-        // localStorage.setItem("role", "teacher")
         localStorage.setItem("id", id)
         window.location.reload(false);
       }else{
+        localStorage.setItem("role", "student")
         navigate("/student/")
-        // localStorage.setItem("role", "student")
         localStorage.setItem("id", id)
         window.location.reload(false);
       }
@@ -164,7 +169,6 @@ ModalLogin.defaultProps ={
 }
 
 ModalLogin.propTypes = {
-  /* open: PropTypes.oneOfType([PropTypes.object]).isRequired, */
   open: PropTypes.bool.isRequired,
   handleClose: PropTypes.func.isRequired,
 };

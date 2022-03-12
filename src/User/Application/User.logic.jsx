@@ -1,5 +1,5 @@
 import UserModel, {
-  validateMatricula,
+validateMatricula,
   validatePassword,
   confirmPassword,
   validateEmail,
@@ -23,26 +23,47 @@ export function UserRegister({
   // Validations 
 
   if (role === "Alumno") 
-    if (carrer === "")
-      return {status: false, info: "Indique su carrera universitaria"}
+    if (carrer === ""){
+      const response = {
+        data: {
+          status: false,
+          info: "Indique su carrera universitaria",
+        }
+      }
+      return response
+    }
 
-  if (name === "")
-    return {status: false, info: "Indique su nombre"}
+  if (name === ""){
+    const response = {
+      data: {
+        status: false,
+        info: "Indique su nombre",
+      }
+    }
+    return response
+  }
   
-  if (lastName === "")
-    return {status: false, info: "Indique sus apellidos"}
+  if (lastName === ""){
+    const response = {
+      data: {
+        status: false,
+        info: "Indique sus apellidos",
+      }
+    }
+    return response
+  }
 
   const objectMatricula = validateMatricula(matricula);
-  if (!objectMatricula.status) return objectMatricula;
+  if (!objectMatricula.data.status) return objectMatricula;
 
   const objectEmail = validateEmail(email);
-  if (!objectEmail.status) return objectEmail;
+  if (!objectEmail.data.status) return objectEmail;
 
   const objectPassword = validatePassword(password);
-  if (!objectPassword.status) return objectPassword;
+  if (!objectPassword.data.status) return objectPassword;
 
   const objectPasswordRepeat = confirmPassword(password, password2);
-  if (!objectPasswordRepeat.status) return objectPasswordRepeat;
+  if (!objectPasswordRepeat.data.status) return objectPasswordRepeat;
 
   if(role === "Docente")
     carrer = ""
@@ -59,10 +80,10 @@ export function UserLogin({
   // Validations
   
   const objectMatricula = validateMatricula(matricula);
-  if (!objectMatricula.status) return objectMatricula;
+  if (!objectMatricula.data.status) return objectMatricula;
   
   const objectPassword = validatePassword(password);
-  if (!objectPassword.status) return objectPassword;
+  if (!objectPassword.data.status) return objectPassword;
   
   matricula = parseInt(matricula)
   return Login(matricula, password);

@@ -101,6 +101,8 @@ INSERT INTO pregunta (id_tema, id_subtema, pregunta, correcta, incorrecta1, inco
 DROP TABLE tema, subtema, pregunta;
 CALL insertTopic('TemaPrueba', 'subPrueba');
 
+/* SEARCH STUDENT */
+SELECT matricula, IF (nombre LIKE '%leal%' OR apellido LIKE '%leal%', CONCAT(nombre, ' ', apellido), null) AS alumno FROM usuario WHERE rol = 'Alumno';
 
 /* DRAFT */
 

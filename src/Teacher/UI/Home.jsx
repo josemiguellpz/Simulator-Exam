@@ -11,7 +11,8 @@ import Classroom from '../../Assets/classroom.jpg';
 import LoadingSpinner from '../../Components/LoadingSpinner';
 import Button from '../../Components/ButtonSimple';
 
-import {getUser} from '../../Axios/Provider';
+import { useDispatch, useSelector } from 'react-redux';
+import { acquireUser } from '../../Redux/Slices';
 
 const useStyles = makeStyles((theme) => ({
   root:{
@@ -96,23 +97,24 @@ const useStyles = makeStyles((theme) => ({
 }));
 
 export default function Home(){
-  localStorage.setItem("role", "teacher")
-  const matricula = localStorage.getItem("id");
   const classes = useStyles({Class, Classroom});
+  const dispatch = useDispatch();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
-  const [teacher, setTeacher] = useState({});
+  const teacher = useSelector(state => state.slices.user);
 
   useEffect(() => {
+    const matricula = localStorage.getItem('id');
     const load = async () => {
       setLoading(true);
-      const response = await getUser(matricula);
-      const {role, name, lastName, carrer} = response.data.user;
-      setTeacher({role, name, lastName, carrer});
-      setLoading(false)
+      await setTimeout(function(){
+        dispatch(acquireUser(matricula))
+        setLoading(false)
+      }, 2000);
     }
     load()
-  }, [matricula]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
   
   if(loading) return <LoadingSpinner />
   

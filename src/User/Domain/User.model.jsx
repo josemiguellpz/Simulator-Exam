@@ -25,35 +25,91 @@ export default UserModel;
 
 export function validateMatricula(matricula){
   if(matricula.length === 9){
-    if(!isNaN(matricula))
-      return {status: true, info: ""}
-    else
-      return {status: false, info: "La matrícula debe ser un valor numérico"}
+    if(!isNaN(matricula)){
+      const response = {
+        data: {
+          status: true,
+          info: "",
+        }
+      }
+      return response
+    }
+    else{
+      const response = {
+        data: {
+          status: false,
+          info: "La matrícula debe ser un valor numérico",
+        }
+      }
+      return response
+    }
   }
-  return {status: false, info: "Matrícula debe estar compuesta de 9 caracteres"}
+  const response = {
+    data: {
+      status: false,
+      info: "Matrícula debe estar compuesta de 9 caracteres",
+    }
+  }
+  return response
 }
 
 export function validatePassword(password) {
   const expression = /(?=^.{8,}$)(?=.*\d)(?![.\n])(?=.*[A-Z])(?=.*[a-z]).*$/;
  
   if(!expression.test(password)){
-    return { status: false, info: "Contraseña de al menos 8 caracteres, una mayúscula, un número y una minúscula.",};
+    const response = {
+      data: {
+        status: false,
+        info: "Contraseña de al menos 8 caracteres, una mayúscula, un número y una minúscula.",
+      }
+    }
+    return response
   }
-  return { status: true, info: "" };
+  const response = {
+    data: {
+      status: true,
+      info: "",
+    }
+  }
+  return response
 }
 
 export function confirmPassword(password, passwordRepeat) {
   if (!password || !passwordRepeat || password !== passwordRepeat) {
-    return { status: false, info: "Las contraseñas no coinciden." };
+    const response = {
+      data: {
+        status: false,
+        info: "Las contraseñas no coinciden.",
+      }
+    }
+    return response
   }
-  return { status: true, info: "" };
+  const response = {
+    data: {
+      status: true,
+      info: "",
+    }
+  }
+  return response
 }
 
 export function validateEmail(email) {
   const expression = /^([a-zA-Z0-9_\-.]+)@([a-zA-Z0-9_\-.]+)\.([a-zA-Z]{2,5})$/;
 
   if (!expression.test(email)) {
-    return { status: false, info: "Formato de correo inválido." };
+    const response = {
+      data: {
+        status: false,
+        info: "Formato de correo inválido.",
+      }
+    }
+    return response
   }
-  return { status: true, info: "" };
+  const response = {
+    data: {
+      status: true,
+      info: "",
+    }
+  }
+  return response
 }

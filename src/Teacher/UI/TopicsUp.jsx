@@ -1,6 +1,5 @@
 import React, {useState, useEffect} from 'react';
 import { makeStyles, styled } from "@mui/styles";
-import TipsAndUpdatesIcon from '@mui/icons-material/TipsAndUpdates';
 import Typography from '@mui/material/Typography';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
@@ -72,14 +71,16 @@ const useStyles = makeStyles((theme) => ({
   },
   cardForm:{
     width: 550,
+    display: "flex",
+    flexDirection: "column",
+    justifyContent: "center",
+    alignItems: "center",
+    paddingTop: 50,
+    paddingBottom: 30,
     marginTop: 30,
     borderRadius: "30px",
     background: "#fff",
     boxShadow: "0px 4px 4px rgba(0, 0, 0, 0.25), 4px 0px 5px rgba(0, 0, 0, 0.25);",
-    display: "flex",
-    flexDirection: "column",
-    paddingTop: 50,
-    paddingBottom: 30,
     [theme.breakpoints.down("md")]:{
       width: 530,
       marginBottom: 30,
@@ -220,6 +221,7 @@ export default function TopicsUp(){
   const handleClear = (e) => setQuestion({...newQuestion, question: "", correct: "", incorrect1: "", incorrect2: "", incorrect3: "", argument: "",});
 
   const handleChange = () => {
+    /* Validation InputSelect */
     if(option === 2){
       if(Object.keys(currentTopic).length <= 2){
         setOpen(true);
@@ -321,6 +323,7 @@ export default function TopicsUp(){
   }
   
   async function handleFinish (){
+    /* Refresh Variables and Store */
     dispatch(acquireTopics());
     dispatch(deleteAllQuestionList()); // Delete QuestionList in Store
     setNewTopic({topic: "", subtopic: ""});
@@ -355,7 +358,7 @@ export default function TopicsUp(){
       <Box className={classes.root} sx={{paddingBottom: "20vh"}}>
         <Box className={classes.info}>
           <Typography className={classes.title} variant="h4" sx={{fontWeight: "bold",}}>
-            Dar de Alta Temas <TipsAndUpdatesIcon/>
+            Dar de Alta Temas
           </Typography><br/>
           <Typography variant="h6" sx={{textAlign: "justify"}}>
             {description}<br/>
@@ -385,25 +388,26 @@ export default function TopicsUp(){
           {/* If: New Topic */}
           {option === 0 &&(
             <Box className={classes.cardForm}>
+              <Typography className={classes.title} variant="h6" sx={{fontWeight: "bold"}}>Alta de Tema</Typography>
               <form className={classes.containerFrom} onSubmit={handleRegisterTopic}>
-                  <InputText
-                    type="text"
-                    name="topic"
-                    label="Tema"
-                    placeholder="Ingrese el nombre del tema"
-                    value={newTopic.topic}
-                    onChange={handleNewTopic}
-                    widthText={380}
+                <InputText
+                  type="text"
+                  name="topic"
+                  label="Tema"
+                  placeholder="Ingrese el nombre del tema"
+                  value={newTopic.topic}
+                  onChange={handleNewTopic}
+                  widthText={380}
+                />
+                <InputText
+                  type="text"
+                  name="subtopic"
+                  label="Subtema"
+                  placeholder="Ingrese el nombre del subtema"
+                  value={newTopic.subtopic}
+                  onChange={handleNewTopic}
+                  widthText={380}
                   />
-                  <InputText
-                    type="text"
-                    name="subtopic"
-                    label="Subtema"
-                    placeholder="Ingrese el nombre del subtema"
-                    value={newTopic.subtopic}
-                    onChange={handleNewTopic}
-                    widthText={380}
-                    />
                 <Button
                   title="Continuar"
                   type="submit"
@@ -416,6 +420,7 @@ export default function TopicsUp(){
           {/* If: New Subtopic */}
           {option === 1 &&(
             <Box className={classes.selectForQuestions}>
+              <Typography className={classes.title} variant="h6" sx={{fontWeight: "bold"}}>Alta de Subtema</Typography>
               <InputSelect
                 select
                 name="id-topic"
@@ -450,6 +455,7 @@ export default function TopicsUp(){
           {/* If: New Question */}
           {option === 2 &&(
             <Box className={classes.selectForQuestions}>
+              <Typography className={classes.title} variant="h6" sx={{fontWeight: "bold"}}>Alta de Preguntas</Typography>
               <InputSelect
                 select
                 name="topic"
@@ -568,17 +574,27 @@ export default function TopicsUp(){
               <Table>
                 <TableHead>
                   <TableRow>
-                    <StyledTableCell>Tema: {currentTopic.topic}</StyledTableCell>
+                    <StyledTableCell>
+                      <Typography variant="h6" sx={{fontWeight: "bold",}}>
+                        Tema: {currentTopic.topic}
+                      </Typography>
+                    </StyledTableCell>
                   </TableRow>
                   <TableRow>
-                    <StyledTableCell>Subtema: {currentTopic.subtopic}</StyledTableCell>
+                    <StyledTableCell>
+                      <Typography variant="h6" sx={{fontWeight: "bold",}}>
+                        Subtema: {currentTopic.subtopic}
+                      </Typography>
+                    </StyledTableCell>
                   </TableRow>
                 </TableHead>
                 <TableBody>
                   {questionList.map((row) => (
                     <StyledTableRow key={row.id}>
                       <StyledTableCell scope="row" sx={{display: "flex", justifyContent: "space-between", alignItems: "baseline"}}>
-                        {row.quest}
+                        <Typography sx={{fontSize: "1rem",}}>
+                          {row.quest}
+                        </Typography>
                         <Box className={classes.buttonsTable}>
                           <Button
                             title="Editar"

@@ -13,19 +13,17 @@ import Fondo3 from '../../Assets/phone.jpg';
 
 const useStyles = makeStyles((theme) => ({
   root:{
-    /* border: "solid 1px", */
     width: "100%",
     height: "calc(100vh - 64px)",
     display: "flex",
-    justifyContent: "space-between",
+    justifyContent: "space-evenly",
     alignItems: "center",
     [theme.breakpoints.down("md")]:{
       flexDirection: "column",
     },
   },
   info:{
-    width: "500px",
-    height: "250px",
+    width: 550,
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
@@ -40,45 +38,63 @@ const useStyles = makeStyles((theme) => ({
     color: `${theme.palette.primary.main} !important`,
   },
   footer:{
-    width: 700,
-    height: 500,
-    marginRight: 50,
+    [theme.breakpoints.up("lg")]:{
+      width: 710,
+      height: "90%",
+      display: "flex",
+      margin: "0 auto",
+    },
+    [theme.breakpoints.down("lg")]:{
+      width: 500,
+      height: "80%",
+      display: "flex",
+      margin: "0 auto",
+    },
   },
   img1:{
     width: 300,
     height: 350,
     borderRadius: "6px",
-    position: "absolute",
     objectFit: "cover",
-    top: 100,
     boxShadow: "0px 15px 25px rgba(0,0,0,0.50)",
     [theme.breakpoints.down("md")]:{
       display: "none"
+    },
+    [theme.breakpoints.down("lg")]:{
+      width: 300,
+      height: 320,
     },
   },
   img2:{
     width: 300,
     height: 350,
     borderRadius: "6px",
-    position: "absolute",
     objectFit: "cover",
-    top: 150,
-    right: 250,
+    position: "relative",
+    top: "calc(100% - 70vh)",
     boxShadow: "0px 15px 25px rgba(0,0,0,0.50)",
     [theme.breakpoints.down("md")]:{
       display: "none"
+    },
+    [theme.breakpoints.down("lg")]:{
+      width: 300,
+      height: 320,
+      position: "relative",
+      top: "calc(100% - 400px)",
     },
   },
   img3:{
     width: 300,
     height: 350,
     borderRadius: "6px",
-    position: "absolute",
     objectFit: "cover",
-    top: 200,
-    right: 30,
+    position: "relative",
+    top: "calc(100% - 350px)",
     boxShadow: "0px 15px 25px rgba(0,0,0,0.50)",
     [theme.breakpoints.down("md")]:{
+      display: "none"
+    },
+    [theme.breakpoints.down("lg")]:{
       display: "none"
     },
   },
@@ -93,7 +109,7 @@ const useStyles = makeStyles((theme) => ({
       opacity: 0.5,
       objectFit: "cover",
     },
-  },
+  }
 }));
 
 export default function Home (){
@@ -109,7 +125,7 @@ export default function Home (){
       setLoading(true)
       await setTimeout(function(){
         setLoading(false)
-      }, 2000);
+      }, 1000);
     }
     load()
   }, []);
@@ -122,7 +138,7 @@ export default function Home (){
         <img className={classes.imgMobile} src={Fondo3} alt="fondo-mobile"/>
         <Box className={classes.info}>
           <Typography className={classes.title} variant="h4" sx={{fontWeight: "bold",}}>
-            El conocimiento es poder
+            El Conocimiento es Poder
           </Typography><br/>
           <Typography variant="h6" >
             Mejora tu rendimiento académico con Express.<br/>

@@ -48,6 +48,12 @@ export async function getUser(matricula){
   return await axios.get(route, config);
 }
 
+export async function getUsers(){
+  const config = getConfig();
+  const route = `${url}/users`;
+  return await axios.get(route, config);
+}
+
 export async function getTopics(source){
   const config = getConfig();
   const route = `${url}/${source}`;

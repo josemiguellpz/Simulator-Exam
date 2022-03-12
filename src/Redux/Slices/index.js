@@ -1,10 +1,11 @@
-import {getUser, getTopics, getSubtopics, getQuestions} from '../../Axios/Provider';
+import {getUser, getUsers, getTopics, getSubtopics, getQuestions} from '../../Axios/Provider';
 import {createSlice} from '@reduxjs/toolkit';
 
 export const Slices = createSlice({
   name: 'slices',
   initialState: {
-    user: {},
+    user: {role: "user",},
+    usersList: [],
     topicsList: [],
     subtopicsList: [],
     questionsList: [],
@@ -12,6 +13,12 @@ export const Slices = createSlice({
   reducers:{
     setUser: (state, action) => {
       state.user = action.payload;
+    },
+    deleteUser: (state) => {
+      state.user = {role:"user"}
+    },
+    setUsers: (state, action) => {
+      state.usersList = action.payload;
     },
     setTopicsList: (state, action) => {
       state.topicsList = action.payload;
@@ -45,6 +52,8 @@ export default Slices.reducer; //to Store
 
 export const {
   setUser,
+  deleteUser,
+  setUsers,
   setTopicsList, 
   setSubtopicsList,
   setQuestionsList,
@@ -82,8 +91,12 @@ function deleteSubtopicList(array) {
 
 export const acquireUser = (matricula) => async (dispatch) => {
   const response = await getUser(matricula);
-  console.log("RESPONSE: ", response.data.user);
   dispatch(setUser(response.data.user));
+}
+
+export const acquireUsers = () => async (dispatch) => {
+  const response = await getUsers();
+  dispatch(setUsers(response.data.users));
 }
 
 export const acquireTopics = () => async (dispatch) => {

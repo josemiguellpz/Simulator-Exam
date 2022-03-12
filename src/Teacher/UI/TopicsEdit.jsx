@@ -1,6 +1,5 @@
 import React, {useState, useEffect} from 'react';
 import { makeStyles, styled } from "@mui/styles";
-import Typography from '@mui/material/Typography';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
 import TableCell, { tableCellClasses } from '@mui/material/TableCell';
@@ -8,11 +7,13 @@ import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
 import Paper from '@mui/material/Paper';
+import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 import MenuItem from '@mui/material/MenuItem';
 import Alert from '@mui/material/Alert';
 import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
+
 import LoadingSpinner from '../../Components/LoadingSpinner';
 import InputSelect from '../../Components/InputSelect';
 import InputText from '../../Components/InputText';
@@ -129,7 +130,7 @@ export default function TopicsUp(){
   const classes = useStyles();
   const [loading, setLoading] = useState(false);
   const description = "En este apartado puedes modificar temas, subtemas y preguntas." 
-  const [band, setBand] = useState(true); 
+  const [band, setBand] = useState(true); // Open and Close Main
   const [bandTopic, setBandTopic] = useState(false); // Open Card Questions And Open Table
   const [bandQuestions, setBandQuestions] = useState(false); // Open Card Questions And Open Table
   const dispatch = useDispatch();
@@ -144,7 +145,6 @@ export default function TopicsUp(){
   const [open, setOpen] = useState(false);
   const [alert, setAlert] = useState(false);
   const [alertContent, setAlertContent] = useState('');
-  
   const showAlert = (alert, alertContent) => {
     return(
       <>
@@ -183,6 +183,7 @@ export default function TopicsUp(){
     );
   };
 
+  // Data for Update Topic and Question
   const [newTopic, setNewTopic] = useState({});
   const [newQuestion, setQuestion] = useState({
     question: "",
@@ -202,6 +203,7 @@ export default function TopicsUp(){
   } 
 
   const handleContinue = () => {
+    /* Validate InputSelect */
     if(Object.keys(currentTopic).length <= 2){
       setOpen(true);
       setAlert(false);
@@ -263,6 +265,7 @@ export default function TopicsUp(){
   }
 
   const handleCancel = () =>{
+    /* Refresh Variables and Store */
     dispatch(acquireTopics());         // Refresh TopicList in Store
     dispatch(deleteAllQuestionList()); // Delete QuestionList in Store
     dispatch(deleteAllSubtopicList()); // Delete SubtopicList in Store
@@ -306,10 +309,11 @@ export default function TopicsUp(){
         {/* Select Topic and Subtopic */}
         {band &&(
           <Box className={classes.topics} sx={{paddingTop: "3vh"}}>
+            <Typography className={classes.title} variant="h6" sx={{fontWeight: "bold"}}>Seleccionar Tema y Subtema</Typography>
             <InputSelect
               select
               name="topic"
-              label="Selecciona un Tema"
+              label="Tema"
               widthText={450}
               onChange={handleCallSubtopics}
             >
@@ -322,7 +326,7 @@ export default function TopicsUp(){
             <InputSelect
               select
               name="subtopic"
-              label="Selecciona un Subtema"
+              label="Subtema"
               widthText={450}
               onChange={handleCurrentTopic}
             >
@@ -469,14 +473,20 @@ export default function TopicsUp(){
             <Table>
               <TableHead>
                 <TableRow>
-                  <StyledTableCell>Listado de Preguntas</StyledTableCell>
+                  <StyledTableCell>
+                    <Typography variant="h6" sx={{fontWeight: "bold",}}>
+                      Listado de Preguntas
+                    </Typography>
+                  </StyledTableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
                 {questionList.map((row) => (
                   <StyledTableRow key={row.id}>
                     <StyledTableCell scope="row" sx={{display: "flex", justifyContent: "space-between", alignItems: "baseline"}}>
-                      {row.question}
+                      <Typography sx={{fontSize: "1rem",}}>
+                        {row.question}
+                      </Typography>
                       <Box className={classes.buttonsTable}>
                         <Button
                           title="Editar"
@@ -484,22 +494,18 @@ export default function TopicsUp(){
                           />
                       </Box>
                     </StyledTableCell>
-                    <StyledTableCell scope="row" sx={{display: "flex", justifyContent: "space-around", alignItems: "baseline"}}>
-                      <li>
-                        <li>Respuesta Correcta: <br/> {row.correct} </li>
-                      </li>
-                      <li>
-                        <li>Respuesta Incorrecta: <br/> {row.incorrect1} </li>
-                      </li>
+                    <StyledTableCell scope="row" sx={{display: "flex", alignItems: "baseline"}}>
+                      <Typography sx={{fontSize: "1rem",}}>
+                        Respuesta Correcta: <br/> {row.correct} <br /> <br />
+                        Respuesta Incorrecta: <br/> {row.incorrect1} <br /> <br />
                       {/* <li>
                         <li>Respuesta Incorrecta: <br/> {row.incorrect2} </li>
                       </li>
                       <li>
                         <li>Respuesta Incorrecta: <br/> {row.incorrect3} </li>
                       </li> */}
-                      <li>
-                        <li>Argumento: <br/> {row.argument}</li>
-                      </li>
+                        Argumento: <br/> {row.argument}
+                      </Typography>
                     </StyledTableCell>
                   </StyledTableRow>
                 ))}

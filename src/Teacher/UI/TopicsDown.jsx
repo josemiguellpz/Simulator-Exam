@@ -363,14 +363,20 @@ export default function TopicsDown(){
             <Table>
               <TableHead>
                 <TableRow>
-                  <StyledTableCell>Listado de Preguntas</StyledTableCell>
+                  <StyledTableCell>
+                    <Typography variant="h6" sx={{fontWeight: "bold",}}>
+                      Listado de Preguntas
+                    </Typography>
+                  </StyledTableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
                 {questionList.map((row) => (
                   <StyledTableRow key={row.id}>
                     <StyledTableCell scope="row" sx={{display: "flex", justifyContent: "space-between", alignItems: "baseline"}}>
-                      {row.question}
+                      <Typography sx={{fontSize: "1rem",}}>
+                        {row.question}
+                      </Typography>
                       <Box className={classes.buttonsTable}>
                         <Button
                           title="Eliminar"
@@ -378,22 +384,18 @@ export default function TopicsDown(){
                           />
                       </Box>
                     </StyledTableCell>
-                    <StyledTableCell scope="row" sx={{display: "flex", justifyContent: "space-around", alignItems: "baseline"}}>
-                      <li>
-                        <li>Respuesta Correcta: <br/> {row.correct} </li>
-                      </li>
-                      <li>
-                        <li>Respuesta Incorrecta: <br/> {row.incorrect1} </li>
-                      </li>
+                    <StyledTableCell scope="row" sx={{display: "flex", alignItems: "baseline"}}>
+                      <Typography sx={{fontSize: "1rem",}}>
+                        Respuesta Correcta: <br/> {row.correct} <br /> <br />
+                        Respuesta Incorrecta: <br/> {row.incorrect1}  <br /> <br />
                       {/* <li>
-                        <li>Respuesta Incorrecta: <br/> {row.incorrect2} </li>
+                        <li>Respuesta Incorrecta: <br/> {row.incorrect2} </li> <br />
                       </li>
                       <li>
-                        <li>Respuesta Incorrecta: <br/> {row.incorrect3} </li>
+                        <li>Respuesta Incorrecta: <br/> {row.incorrect3} </li> <br />
                       </li> */}
-                      <li>
-                        <li>Argumento: <br/> {row.argument}</li>
-                      </li>
+                      Argumento: <br/> {row.argument}
+                      </Typography>
                     </StyledTableCell>
                   </StyledTableRow>
                 ))}

@@ -7,38 +7,39 @@ import MenuItem from '@mui/material/MenuItem';
 import Alert from '@mui/material/Alert';
 import Box from '@mui/material/Box';
 
-import {UserRegister} from '../Application/User.logic';
-import LoadingSpinner from '../../Components/LoadingSpinner';
-import InputSelect from '../../Components/InputSelect';
-import Button from '../../Components/ButtonSimple';
-import InputText from '../../Components/InputText';
 import BackStudent from '../../Assets/back-student.jpg';
 import BackTeacher from '../../Assets/back-teacher.jpg';
 import Student from '../../Assets/student.jpg';
 import Teacher from '../../Assets/teacher.jpg';
+import LoadingSpinner from '../../Components/LoadingSpinner';
+import InputSelect from '../../Components/InputSelect';
+import Button from '../../Components/ButtonSimple';
+import InputText from '../../Components/InputText';
+
+import {UserRegister} from '../Application/User.logic';
 
 const useStyles = makeStyles((theme) => ({
   root:{
     width: "100%",
+    height: "calc(100vh - 64px)",
     display: "flex",
     justifyContent: "center",
     alignItems: "center",
     gap: 40,
     [theme.breakpoints.down("md")]:{
       flexDirection: "column",
+      height: "calc(100vh + 200px)",
+      gap: 20,
     },
   },
   info:{
-    /* border: "1px solid", */
-    width: "500px",
-    height: "470px",
+    width: 500,
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
-    marginTop: 30,
-    gap: 10,
+    gap: 15,
     [theme.breakpoints.down("md")]:{
-      height: 180,
+      marginTop: 50,
     },
   },
   title:{
@@ -72,43 +73,33 @@ const useStyles = makeStyles((theme) => ({
   },
   alert:({teacher})=>({
     position: "absolute",
-    top: teacher ? 211 : 197,
     width: 520,
+    [theme.breakpoints.up("lg")]:{
+      top: teacher ? 225 : 195,
+    },
     [theme.breakpoints.down("md")]:{
-      top: teacher ? 211 : 440,
+      top: teacher ? 410 : 440,
     },
   }),
-  cardForm:({teacher})=>({
+  cardForm:{
+    display: "flex",
+    flexDirection: "column",
     width: 520,
-    height: teacher ? 440 : 490,
-    marginBottom: teacher ? 0 : 10,
-    marginTop: 30,
+    paddingBottom: 20,
     borderRadius: "30px",
     background: "#fff",
     boxShadow: "0px 4px 4px rgba(0, 0, 0, 0.25), 4px 0px 5px rgba(0, 0, 0, 0.25);",
-    display: "flex",
-    flexDirection: "column",
     [theme.breakpoints.down("md")]:{
-      marginBottom: 30,
       marginTop: 10,
+      marginBottom: 50,
     },
-  }),
+  },
   imgForm: {
-    borderRadius: "30px 30px 0px 0px",
     width: 520,
-    height:150,
+    height: 150,
+    borderRadius: "30px 30px 0px 0px",
     objectFit: "cover",
   },
-  user:({teacher})=>({
-    color: "#fff",
-    position: "absolute",
-    display: "flex",
-    alignSelf: "center",
-    top: teacher ? 150 : 130,
-    [theme.breakpoints.down("md")]:{
-      top: teacher ? 150 : 385,
-    },
-  }),  
   containerFrom:{
     display: "flex",
     flexDirection: "column",
@@ -133,15 +124,31 @@ export default function Register() {
   // Button Student
   const [student, setStudent] = useState(true);
   const handleStudent = () =>{ 
-    setStudent(true)
-    setTeacher(false)
+    setStudent(true);
+    setTeacher(false);
+    setData({role: "",
+    matricula: "",
+    name: "",
+    lastName: "",
+    email: "",
+    password: "",
+    password2: "",
+    carrer: "",});
   };
   
   // Button Teacher
   const [teacher, setTeacher] = useState(false);
   const handleTeacher = () =>{ 
-    setStudent(false)
-    setTeacher(true)
+    setStudent(false);
+    setTeacher(true);
+    setData({role: "",
+    matricula: "",
+    name: "",
+    lastName: "",
+    email: "",
+    password: "",
+    password2: "",
+    carrer: "",});
   };
   
   // Styles and Loading
@@ -164,31 +171,6 @@ export default function Register() {
   const [open, setOpen] = useState(false);
   const [alert, setAlert] = useState(false);
   const [alertContent, setAlertContent] = useState('');
-
-  // Inputs Values
-  const handleInputChange=(e) => setData({ ...data, [e.target.name]: e.target.value });
-  
-  // Register
-  async function handleRegister(e) {
-    e.preventDefault();
-    if(student)
-      data.role="Alumno";
-    else
-      data.role="Docente";
-    const response = await UserRegister(data);
-    const {status, info} = response.data;
-    if(status){ // Success
-      setOpen(true)
-      setAlert(true)
-      setAlertContent(info)
-    }
-    else{ // Error
-      setOpen(true)
-      setAlert(false)
-      setAlertContent(info)
-    }
-  }
-
   const showAlert = (alert, alertContent) => {
     return(
       <>
@@ -227,12 +209,37 @@ export default function Register() {
     );
   };
 
+  // Inputs Values
+  const handleInputChange=(e) => setData({ ...data, [e.target.name]: e.target.value });
+  
+  // Register
+  async function handleRegister(e) {
+    e.preventDefault();
+    if(student)
+      data.role="Alumno";
+    else
+      data.role="Docente";
+    console.log(data)
+    const response = await UserRegister(data);
+    const {status, info} = response.data;
+    if(status){ // Success
+      setOpen(true)
+      setAlert(true)
+      setAlertContent(info)
+    }
+    else{ // Error
+      setOpen(true)
+      setAlert(false)
+      setAlertContent(info)
+    }
+  }
+
   useEffect(() => {
     const load = async () => {
       setLoading(true)
       await setTimeout(function(){
         setLoading(false)
-      }, 2000);
+      }, 1000);
     }
     load()
   // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -244,12 +251,11 @@ export default function Register() {
     <>
       <Box className={classes.root}>
         <Box className={classes.info}>
-          <Typography className={classes.title} variant="h4" sx={{fontWeight: "bold",}}>
-            Formulario de Registro
-          </Typography><br/>
+          {student && (<Typography className={classes.title} variant="h4" sx={{fontWeight: "bold", textAlign: "center"}}>Formulario de Registro Alumno</Typography>)}
+          {teacher && (<Typography className={classes.title} variant="h4" sx={{fontWeight: "bold", textAlign: "center"}}>Formulario de Registro Docente</Typography>)}
           <Typography variant="h6" sx={{alignText: "center"}}>
             ¿Eres alumno o docente? Por favor, elige una opción.
-          </Typography><br/>
+          </Typography>
           <Box className={classes.options}>
             <img className={classes.img} src={Student} alt="student"/>
             <img className={classes.img} src={Teacher} alt="teacher"/>
@@ -264,23 +270,23 @@ export default function Register() {
               onClick={handleTeacher}
             />
           </Box>
-          <Box className={classes.selector}>
-            <InputSelect
-              select
-              label="Tipo de usuario"
-              widthText={200}
-            >
-              <MenuItem onClick={handleStudent}> Alumno </MenuItem>
-              <MenuItem onClick={handleTeacher}> Docente</MenuItem>
-            </InputSelect>
-          </Box>
+        </Box>
+        
+        <Box className={classes.selector}>
+          <InputSelect
+            select
+            label="Tipo de usuario"
+            widthText={200}
+          >
+            <MenuItem onClick={handleStudent} value="Alumno"> Alumno </MenuItem>
+            <MenuItem onClick={handleTeacher} value="Docente"> Docente</MenuItem>
+          </InputSelect>
         </Box>
 
         <Box className={classes.cardForm}>
           {student && (
             <form className={classes.containerFrom} onSubmit={handleRegister}>
               <img className={classes.imgForm}src={BackStudent} alt="back"/>
-              <Typography className={classes.user} variant="h3">Alumno</Typography>
               {open && ( showAlert(alert, alertContent) )}
               <Box className={classes.items}>
                 <Box>
@@ -370,7 +376,6 @@ export default function Register() {
           {teacher && (
             <form className={classes.containerFrom} onSubmit={handleRegister}>
               <img className={classes.imgForm}src={BackTeacher} alt="back"/>
-              <Typography className={classes.user} variant="h3">Docente</Typography>
               {open && ( showAlert(alert, alertContent) )}
               <Box className={classes.items}>
                 <Box sx={{display: "flex", gap: 5}}>
