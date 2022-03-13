@@ -92,14 +92,14 @@ def user(matricula):
     id = None
     with conexion.cursor() as cursor:
       if request.method == 'GET':
-        query = 'SELECT rol, nombre, apellido, carrera FROM usuario WHERE matricula = %s'
+        query = 'SELECT rol, nombre, apellido, carrera, email FROM usuario WHERE matricula = %s'
         cursor.execute(query, (matricula))
         data = cursor.fetchall()
         if(data[0][0] == "Alumno"):
           role = "student"
         else:
           role = "teacher"
-        user = {'id': matricula, 'role': role, 'name': data[0][1], 'lastName': data[0][2], 'carrer': data[0][3], }
+        user = {'id': matricula, 'role': role, 'name': data[0][1], 'lastName': data[0][2], 'carrer': data[0][3], 'email': data[0][4] }
         return jsonify({'status': True, 'user': user}) 
       elif request.method == 'POST':
         password = request.get_json()

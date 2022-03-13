@@ -1,4 +1,5 @@
 import React, {useState, useEffect} from 'react';
+import { useNavigate } from 'react-router-dom';
 import { makeStyles } from "@mui/styles";
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
@@ -74,6 +75,7 @@ const useStyles = makeStyles((theme) => ({
 export default function Home(){
   const classes = useStyles();  
   const description = "En esta sección puede consultar el rendimiento académico de los alumnos.";
+  const navigate = useNavigate();
   const dispatch = useDispatch();
   const users = useSelector(state => state.slices.usersList);
 
@@ -146,9 +148,17 @@ export default function Home(){
   }
 
   // Select Student
-  const [studentID, setStudentID] = useState(Number);
+  const [studentID, setStudentID] = useState(-1);
   const handleSelectStudent= (e) => setStudentID(e.target.value.id);
-  const handleNext = () => console.log(studentID);
+  const handleNext = () => {
+    if(studentID > 0)
+      navigate(`${studentID}`);
+    else{
+      setOpen(true);
+      setAlert(false);
+      setAlertContent("Alumno sin seleccionar");
+    }
+  };
 
   useEffect(() => {
     dispatch(acquireUsers());
@@ -167,9 +177,7 @@ export default function Home(){
           </Typography><br/>
         </Box>
 
-        {/* Generic Alert */}
-        {open && ( showAlert(alert, alertContent) )}
-
+        {/* Input Search */}
         <Box sx={{display: "flex", gap: 5, marginTop: 5, marginBottom: 3}}>
           <form onSubmit={handleSearch}>
             <InputText
@@ -187,22 +195,27 @@ export default function Home(){
           <Button title="Buscar" onClick={handleSearch} endIcon={<PersonSearchIcon/>} />
         </Box>
 
+        {/* Generic Alert */}
+        {open && ( showAlert(alert, alertContent) )}
+
+        {/* Search Found */}
         {flag && (
           <Box className={classes.resultSearch} sx={{}}>
             <Typography className={classes.title} variant="h6" sx={{fontWeight: "bold"}}>Resultados encontrados</Typography>
             <List sx={{ width: '100%',}}>
-              {studentsFound.map((person) => (
-                <ListItem key={person.id} onClick={() => {console.log(person)}}>
+              {studentsFound.map(({id, fullName}) => (
+                <ListItem key={id} onClick={() => {navigate(`${id}`);}} button>
                   <ListItemAvatar>
                     <Avatar> <PersonIcon /> </Avatar>
                   </ListItemAvatar>
-                  <ListItemText primary={person.fullName} secondary={person.id} />
+                  <ListItemText primary={fullName} secondary={id} />
                 </ListItem>
               ))}
             </List>
           </Box>
         )}
 
+        {/* Select Student */}
         <Box className={classes.selectStudent}>
           <Typography className={classes.title} variant="h6" sx={{fontWeight: "bold"}}>Seleccionar Alumno</Typography>
           <InputSelect
