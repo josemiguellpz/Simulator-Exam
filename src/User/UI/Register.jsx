@@ -234,6 +234,18 @@ export default function Register() {
     }
   }
 
+  const handleClear = () => {
+    setData({
+      role: "",
+      matricula: "",
+      name: "",
+      lastName: "",
+      email: "",
+      password: "",
+      password2: "",
+    });
+  }
+
   useEffect(() => {
     const load = async () => {
       setLoading(true)
@@ -365,11 +377,17 @@ export default function Register() {
                     widthText={200}
                     />
                 </Box>
-                <Button
-                  title="Enviar"
-                  type="submit"
-                  onClick={handleRegister}
-                />
+                <Box sx={{display: "flex", gap: 3}}>
+                  <Button
+                    title="Limpiar"
+                    onClick={handleClear}
+                  />
+                  <Button
+                    title="Enviar"
+                    type="submit"
+                    onClick={handleRegister}
+                  />
+                </Box>
               </Box>
             </form>
           )}
@@ -438,11 +456,17 @@ export default function Register() {
                     widthText={200}
                     />
                 </Box>
-                <Button
-                  title="Enviar"
-                  type="submit"
-                  onClick={null}
-                />
+                <Box sx={{display: "flex", gap: 3}}>
+                  <Button
+                    title="Limpiar"
+                    onClick={handleClear}
+                  />
+                  <Button
+                    title="Enviar"
+                    type="submit"
+                    onClick={handleRegister}
+                  />
+                </Box>
               </Box>
             </form>
           )}
