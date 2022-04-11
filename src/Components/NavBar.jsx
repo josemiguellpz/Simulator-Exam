@@ -12,8 +12,6 @@ import ListItem from '@mui/material/ListItem';
 import IconButton from '@mui/material/IconButton';
 import Typography from '@mui/material/Typography';
 
-/* import Brightness4Icon from '@mui/icons-material/Brightness4';
-import Brightness7Icon from '@mui/icons-material/Brightness7'; */
 import InsightsIcon from '@mui/icons-material/Insights';
 import AddBoxIcon from '@mui/icons-material/AddBox';
 import DeleteIcon from '@mui/icons-material/Delete';
@@ -29,7 +27,7 @@ import MenuIcon from '@mui/icons-material/Menu';
 // import QuizIcon from '@mui/icons-material/Quiz';
 import Login from './ModalLogin';
 
-import { deleteUser, deleteAllSubtopicList, deleteAllQuestionList } from '../Redux/Slices';
+import { deleteUser, deleteAllSubtopicList, deleteAllQuestionList, deleteAllTopicList, deleteAnswers, deleteExam } from '../Redux/Slices';
 import { useDispatch, /* useSelector */ } from 'react-redux';
 
 const useStyles = makeStyles((theme) =>({
@@ -105,10 +103,6 @@ export default function NavBar(){
   const [open, setOpen] = useState(false);
   const band = () => setOpen(!open);
   
-  //Mode Dark
-  /* const [mode, setMode] = useState(false); 
-  const changeMode = () => setMode(!mode); */
-  
   // Modal Login
   const [modal, setModal] = useState(false);
   const handleOpen = () => setModal(true);
@@ -123,14 +117,17 @@ export default function NavBar(){
   }, []);
   
   const handleLogout = () => {
+    localStorage.removeItem("id");
     dispatch(deleteUser());
+    dispatch(deleteAllTopicList())
     dispatch(deleteAllSubtopicList());
     dispatch(deleteAllQuestionList());
+    dispatch(deleteAnswers());
+    dispatch(deleteExam());
     navigate("/");
     window.location.reload(false);
   }
 
-  /* TODO: Modo Nocturno y enlaces */
   return(
     <AppBar className={classes.background} position="static" >
     <Container>
@@ -207,16 +204,6 @@ export default function NavBar(){
               </MenuItem>
             </Box>
           )}
-          {/* <MenuItem onClick={changeMode}>
-            {mode ? 
-              <Box sx={{display: "flex", gap: .5}}>
-                <Brightness4Icon/> 
-              </Box>
-            : <Box sx={{display: "flex", gap: .5}}>
-                <Brightness7Icon/> 
-              </Box>
-            }
-          </MenuItem> */}
         </Box>
 
         <Box className={classes.mobile}>
@@ -302,18 +289,6 @@ export default function NavBar(){
                   </ListItem>
                 </Box>
               )}
-              {/* <ListItem button className={classes.drawerItem} onClick={changeMode}>
-                {mode ? 
-                  <Box sx={{display: "flex", gap: .5}}>
-                    <Brightness4Icon/> 
-                    <Typography>Aspecto: Oscuro</Typography>
-                  </Box>
-                : <Box sx={{display: "flex", gap: .5}}>
-                    <Brightness7Icon/> 
-                    <Typography>Aspecto: Claro</Typography>
-                  </Box>
-                }
-              </ListItem> */}
             </List>
           </Drawer>
           <Login open={modal} handleClose={handleClose}/> 

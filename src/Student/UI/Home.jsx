@@ -7,13 +7,12 @@ import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 
 import Class from '../../Assets/class.jpg';
+import Classroom from '../../Assets/classroom.jpg';
 import LoadingSpinner from '../../Components/LoadingSpinner';
 import Button from '../../Components/ButtonSimple';
-import StudentModel from '../Domain/Student.model';
 
 import { useDispatch, useSelector } from 'react-redux';
-import { acquireUser, getModel } from '../../Redux/Slices';
-import {getUser} from '../../Axios/Provider';
+import { acquireUser } from '../../Redux/Slices';
 
 const useStyles = makeStyles((theme) => ({
   root:{
@@ -25,10 +24,14 @@ const useStyles = makeStyles((theme) => ({
       flexDirection: "column",
       height: "calc(100vh + 150px)",
     },
+    [theme.breakpoints.down("sm")]:{
+      flexDirection: "column",
+      height: "calc(100vh + 50px)",
+    },
   },
   info:{
-    width: "500px",
-    height: "250px",
+    width: 500,
+    height: 300,
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
@@ -36,7 +39,13 @@ const useStyles = makeStyles((theme) => ({
     marginLeft: 50,
     [theme.breakpoints.down("md")]:{
       marginTop: 70,
-      zIndex: 1,
+      marginLeft: 0,
+    },
+    [theme.breakpoints.down("sm")]:{
+      width: 500,
+      height: 400,
+      marginTop: 70,
+      marginLeft: 0,
     },
   },
   title:{
@@ -45,50 +54,75 @@ const useStyles = makeStyles((theme) => ({
   images:{
     width: 600,
     height: 300,
-    marginLeft: 100,
+    marginLeft: 70,
     objectFit: "cover",
     borderRadius: "6px",
     boxShadow: "0px 15px 25px rgba(0,0,0,0.50)",
+    animation: "$slide",
+    animationDuration: "5s",
+    animationIterationCount: "infinite",
+    animationPlayState: "running",
+    animationDirection: "alternate-reverse",
+    animationTimingFunction: "linear",
+    animationDelay: "5s",
     [theme.breakpoints.down("md")]:{
       width: 500,
-      marginLeft: 50,
-      marginTop: 50,
-      marginButtom: 50,
+      marginTop: 20,
+      marginLeft: 0,
+    },
+    [theme.breakpoints.down("sm")]:{
+      width: 400,
+      height: 250,
+      marginBottom: 50,
+      marginLeft: 0,
     },
   },
+  "@keyframes slide": ({Class, Classroom}) => ({
+    "0%":{
+      backgroundImage: `url(${Class})`,
+    },
+    "25%":{
+      backgroundImage: `url(${Classroom})`,
+    },
+    "50%":{
+      backgroundImage: `url(${Class})`,
+    },
+    "75%":{
+      backgroundImage: `url(${Classroom})`,
+    },
+    "100%":{
+      backgroundImage: `url(${Class})`,
+    }
+  }),
 }));
 
 export default function Home() {
-  localStorage.setItem("role", "student")
-  const matricula = localStorage.getItem("id");
-  const classes = useStyles();
+  const classes = useStyles({Class, Classroom});
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const info = useSelector(state => state.users.data);
   const [loading, setLoading] = useState(false);
-  const [student, setStudent] = useState(new StudentModel());
+  const student = useSelector(state => state.slices.user);
   
   useEffect(() => {
+    const matricula = localStorage.getItem('id');
     const load = async () => {
-      setLoading(true)
-      const response = await getUser(matricula);
-      const {role, name, lastName, carrer} = response.data.info;
-      setStudent(new StudentModel(role, name, lastName, carrer));
-      dispatch(acquireUser());
-      console.log("SELECTOR", info)
-      setLoading(false);
+      setLoading(true);
+      await setTimeout(function(){
+        dispatch(acquireUser(matricula))
+        setLoading(false)
+      }, 2000);
     }
     load()
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-  
+
   if(loading) return <LoadingSpinner />
     
   return(
     <>
       <Box className={classes.root}>
         <Box className={classes.info}>
-          <Typography className={classes.title} variant="h4" sx={{fontWeight: "bold",}}>
+          <Typography className={classes.title} variant="h4" sx={{fontWeight: "bold", textAlign: "center"}}>
             ¡Bienvenido {student.name} {student.lastName}!
           </Typography><br/>
           <Typography variant="h6" >

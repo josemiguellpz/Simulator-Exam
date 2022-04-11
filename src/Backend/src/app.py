@@ -1,3 +1,4 @@
+from unittest import result
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 import json
@@ -8,7 +9,7 @@ from db import getConnectionDB
       1.- Create enviroment:  virtualenv -p python3 env
       2.- Dependencies:       pip install flask, flask_cors, pymysql, flask_mysql
       3.- Active enviroment:  .\env\Scripts\active
-      4.- Execution:          .\src\Backend\src\app.py
+      4.- Execution:          python .\src\Backend\src\app.py
 """
 
 app=Flask(__name__)
@@ -99,7 +100,14 @@ def user(matricula):
           role = "student"
         else:
           role = "teacher"
-        user = {'id': matricula, 'role': role, 'name': data[0][1], 'lastName': data[0][2], 'carrer': data[0][3], 'email': data[0][4] }
+        user = {
+          'id': matricula, 
+          'role': role, 
+          'name': data[0][1], 
+          'lastName': data[0][2], 
+          'carrer': data[0][3], 
+          'email': data[0][4],
+        }
         return jsonify({'status': True, 'user': user}) 
       elif request.method == 'POST':
         password = request.get_json()
@@ -132,19 +140,26 @@ def topics():
     with conexion.cursor() as cursor:
       if request.method == 'GET':
         topics = []
-        item = {}
         cursor.execute("SELECT id_tema, nombre_tema FROM tema") #LIMIT 0,6
         response = cursor.fetchall()
         conexion.close()
         for element in response:
-          item = { 'id': element[0], 'value': element[1] } # Contains: id_tema and nombre_tema
-          topics.append(item)
+          item = { 
+            'id': element[0], 
+            'value': element[1] 
+          } 
+          topics.append(item) # Contains: id_tema and nombre_tema
         return jsonify({'status': True, 'topics': topics})
       elif request.method == 'POST':
         topic, subtopic = request.json.values()
         cursor.execute("CALL insertTopic (%s, %s);", (topic, subtopic)) # Procedure Return id_tema, nombre_tema, id_subtema, nombre_subtema
         result = cursor.fetchall()
-        ids = { 'topicID': result[0][0], 'topic': result[0][1], 'subtopicID': result[0][3], 'subtopic': result[0][4] }
+        ids = { 
+          'topicID': result[0][0], 
+          'topic': result[0][1], 
+          'subtopicID': result[0][3], 
+          'subtopic': result[0][4],
+        }
         conexion.commit()
         conexion.close()
         return jsonify({'status': True, 'info': "Tema registrado", 'ids': ids})
@@ -171,19 +186,26 @@ def subtopics(topicID):
     with conexion.cursor() as cursor:
       if request.method == 'GET':
         subtopics = []
-        # item = {} 
         cursor.execute("SELECT id_subtema, nombre_subtema FROM subtema WHERE id_tema = %s", topicID)
         response = cursor.fetchall()
         for element in response:
-          item = { 'id': element[0], 'value': element[1] } # Contains: id_subtema and nombre_subtema
-          subtopics.append(item)
+          item = {
+            'id': element[0], 
+            'value': element[1] 
+          } 
+          subtopics.append(item) # Contains: id_subtema and nombre_subtema
         conexion.close()
         return jsonify({'subtopics': subtopics})
       elif request.method == 'POST':
         topic, subtopic = request.json.values()
         cursor.execute("CALL insertSubtopic (%s, %s);", (topicID, subtopic)) # Procedure Return id_subtema
         result = cursor.fetchall()
-        result = { 'topicID': int(topicID), 'topic': topic, 'subtopicID': result[0][0], 'subtopic': subtopic }
+        result = { 
+          'topicID': int(topicID), 
+          'topic': topic, 
+          'subtopicID': result[0][0], 
+          'subtopic': subtopic,
+        }
         conexion.commit()
         conexion.close()
         return jsonify({'status': True, 'info':"Subtema registrado", 'topic': result})
@@ -205,7 +227,12 @@ def subtopic(topicID, subtopicID):
         topic, subtopic = request.json.values()
         cursor.execute("UPDATE tema SET nombre_tema = %s WHERE id_tema = %s", (topic, topicID))
         cursor.execute("UPDATE subtema SET nombre_subtema = %s WHERE id_tema = %s and id_subtema = %s", (subtopic, topicID, subtopicID))
-        result = {'topicID': topicID, 'topic': topic, 'subtopicID': subtopicID, 'subtopic': subtopic}
+        result = {
+          'topicID': topicID, 
+          'topic': topic, 
+          'subtopicID': subtopicID, 
+          'subtopic': subtopic
+        }
         conexion.commit()
         conexion.close()
         return jsonify({'status': True, 'info':"Tema modificado", 'topic': result})
@@ -219,17 +246,40 @@ def questions(topicID, subtopicID):
     with conexion.cursor() as cursor:
       if request.method == 'GET':
         questions = []
-        cursor.execute("SELECT id_pregunta, pregunta, correcta, incorrecta1, incorrecta2, incorrecta3, argumento FROM pregunta WHERE id_tema = %s and id_subtema = %s", (topicID, subtopicID))
+        cursor.execute(
+        """ 
+          SELECT 
+            id_pregunta, 
+            pregunta, 
+            correcta, 
+            incorrecta1, 
+            incorrecta2, 
+            incorrecta3, 
+            argumento 
+          FROM pregunta 
+          WHERE id_tema = %s and id_subtema = %s; 
+        """, (topicID, subtopicID))
         result = cursor.fetchall()
         for element in result:
-          item = {'id': int(element[0]), 'question': element[1], 'correct': element[2], 'incorrect1': element[3], 'incorrect2': element[4], 'incorrect3': element[5], 'argument': element[6]}
+          item = {
+            'id':     int(element[0]), 
+            'question':   element[1], 
+            'correct':    element[2], 
+            'incorrect1': element[3], 
+            'incorrect2': element[4], 
+            'incorrect3': element[5], 
+            'argument':   element[6]
+          }
           questions.append(item)
         return jsonify({'questions': questions})
       elif request.method == 'POST':
         question, correct, incorrect1, incorrect2, incorrect3, argument = request.json.values()
         cursor.execute("CALL insertQuestion(%s, %s, %s, %s, %s, %s, %s, %s);", (topicID, subtopicID, question, correct, incorrect1, incorrect2, incorrect3, argument)) # Return id_pregunta
         questionID  =  cursor.fetchall()
-        quest = {'id': questionID[0][0], 'quest': question}
+        quest = {
+          'id': questionID[0][0], 
+          'quest': question
+        }
         conexion.commit()
         conexion.close()
         return jsonify({'status': True, 'info':"Pregunta registrada", 'quest': quest})
@@ -242,28 +292,184 @@ def question(topicID, subtopicID, questionID):
     conexion = getConnectionDB()              
     with conexion.cursor() as cursor:
       if request.method == 'GET':
-        cursor.execute("SELECT pregunta, correcta, incorrecta1, incorrecta2, incorrecta3, argumento FROM pregunta WHERE id_tema = %s and id_subtema = %s and id_pregunta = %s;", (topicID, subtopicID, questionID))
+        cursor.execute(
+        """ 
+          SELECT 
+            pregunta, 
+            correcta, 
+            incorrecta1, 
+            incorrecta2, 
+            incorrecta3, 
+            argumento 
+          FROM pregunta 
+          WHERE id_tema = %s and id_subtema = %s and id_pregunta = %s; 
+        """, (topicID, subtopicID, questionID))
         result = cursor.fetchall()
         dataQuestion = {
-          'question':   result[0][0], 'correct':    result[0][1], 'incorrect1': result[0][2], 
-          'incorrect2': result[0][3], 'incorrect3': result[0][4], 'argument':   result[0][5],
+          'question':   result[0][0], 
+          'correct':    result[0][1], 
+          'incorrect1': result[0][2], 
+          'incorrect2': result[0][3], 
+          'incorrect3': result[0][4], 
+          'argument':   result[0][5],
         }
         conexion.close()
         return jsonify({'dataQuestion': dataQuestion})
       elif request.method == 'PUT':
         question, correct, incorrect1, incorrect2, incorrect3, argument = request.json.values()
-        cursor.execute("UPDATE pregunta SET pregunta = %s, correcta = %s, incorrecta1 = %s, incorrecta2 = %s, incorrecta3 = %s, argumento = %s WHERE id_tema = %s and id_subtema = %s and id_pregunta = %s;", (question, correct, incorrect1, incorrect2, incorrect3, argument, topicID, subtopicID, questionID))
-        quest = {'id': int(questionID), 'quest': question}
+        cursor.execute(
+        """ 
+          UPDATE 
+            pregunta 
+          SET 
+            pregunta = %s, 
+            correcta = %s, 
+            incorrecta1 = %s, 
+            incorrecta2 = %s, 
+            incorrecta3 = %s, 
+            argumento = %s 
+          WHERE id_tema = %s and id_subtema = %s and id_pregunta = %s; 
+        """, (question, correct, incorrect1, incorrect2, incorrect3, argument, topicID, subtopicID, questionID))
+        quest = {
+          'id':    int(questionID), 
+          'quest': question
+        }
         conexion.commit()
         conexion.close()
         return jsonify({'status': True, 'info':"Pregunta modificada", 'quest': quest})
       elif request.method == 'DELETE':
-        cursor.execute("DELETE FROM pregunta WHERE id_tema = %s and id_subtema = %s and id_pregunta = %s;", (topicID, subtopicID, questionID))
+        cursor.execute(
+        """ 
+          DELETE FROM 
+            pregunta 
+          WHERE 
+            id_tema = %s and id_subtema = %s and id_pregunta = %s; 
+        """, (topicID, subtopicID, questionID))
         conexion.commit()
         conexion.close()
         return jsonify({'status': True, 'info':"Pregunta eliminada"})
   except Exception as ex:
     return jsonify({'message': ex, 'status': False})
+
+@app.route('/getTopics', methods=['GET'])
+def getTopics():
+  # Group subtopics with their topic
+  try:
+    conexion = getConnectionDB()
+    with conexion.cursor() as cursor:
+      topics = []
+      subtopics = []
+      cursor.execute("SELECT * FROM tema INNER JOIN subtema ON tema.id_tema = subtema.id_tema;")
+      result = cursor.fetchall()
+      i = 0
+      aux = result[0][0] # Aux: id_tema
+      lastItem = len(result)-1
+      while( i != len(result)):
+        if aux == result[i][0]: # Same Topic
+          subtopic = {
+            'subtopicID': result[i][3], 
+            'subtopic':   result[i][4]
+          }
+          subtopics.append(subtopic)
+          aux = result[i][0]
+        if aux != result[i][0]: # Save Topic and Refresh Subtopics
+          i-=1
+          topic = {
+            'topicID': result[i][0], 
+            'topic':   result[i][1], 
+            'subtopics': subtopics
+          }
+          topics.append(topic)
+          subtopics = []
+          aux = result[i+1][0]
+        if i == lastItem: # Last Item in Result
+          topic = {
+            'topicID': result[i][0], 
+            'topic':   result[i][1], 
+            'subtopics': subtopics
+          }
+          topics.append(topic)
+        i+=1
+      return jsonify({'topics': topics})
+  except Exception as ex:
+    return jsonify({'info': ex, 'status': False})
+
+@app.route('/exam/<topicID>', methods=['GET'])
+def getExam(topicID):
+  # Return exam with their random questions 
+  try:
+    conexion = getConnectionDB()
+    with conexion.cursor() as cursor:
+      exam = []
+      cursor.execute('''
+        SELECT 
+          subtema.id_subtema,
+          subtema.nombre_subtema,
+          pregunta.id_pregunta,
+          pregunta.pregunta,
+          pregunta.correcta,
+          pregunta.incorrecta1,
+          pregunta.incorrecta2,
+          pregunta.incorrecta3,
+          pregunta.argumento
+        FROM pregunta INNER JOIN subtema 
+        WHERE subtema.id_subtema = pregunta.id_subtema AND pregunta.id_tema = %s 
+        ORDER BY RAND() LIMIT 15;''', topicID)
+      result = cursor.fetchall()
+      for i in result:
+        item = {
+          'subtopicID': i[0], 
+          'subtopic':   i[1], 
+          'questionID': i[2], 
+          'question':   i[3], 
+          'correct':    i[4], 
+          'incorrect1': i[5], 
+          'incorrect2': i[6], 
+          'incorrect3': i[7], 
+          'argument':   i[8],
+        }
+        exam.append(item)
+      return jsonify({'exam': exam})
+  except Exception as err:
+    return jsonify({'info': err, 'status': False})
+
+@app.route('/histories', methods=['POST'])
+def histories():
+  try:
+    conexion = getConnectionDB()
+    with conexion.cursor() as cursor:
+      matricula, topicID, corrects, incorrects, qualification = request.json.values()
+      cursor.execute("CALL insertHistory(%s, %s, %s, %s, %s);", (matricula, topicID, corrects, incorrects, qualification)) # Procedure Returns id_historial
+      result = cursor.fetchall()
+      conexion.commit()
+      conexion.close()
+      return jsonify({'historyID': result[0][0]})
+  except Exception as err:
+    return jsonify({'info':err, 'status': False})  
+
+@app.route('/histories/<historyID>', methods=['PUT'])
+def history(historyID):
+  try:
+    conexion = getConnectionDB()
+    with conexion.cursor() as cursor:
+      if request.method == 'PUT':
+        topicID, corrects, incorrects, qualification = request.json.values()
+        cursor.execute(
+        """ 
+          UPDATE historial
+          SET 
+            num_correctas = %s,
+            num_incorrectas = %s,
+            calificacion = %s,
+            fecha = CURRENT_TIMESTAMP()
+          WHERE
+            id_historial = %s and id_tema = %s
+        """, (corrects, incorrects, qualification, historyID, topicID))
+        conexion.commit()
+        conexion.close()
+        return jsonify({'historyID': historyID})
+  except Exception as err:
+    return jsonify({'info':err, 'status': False})  
 
 if __name__ == '__main__':
   app.run(debug=True)

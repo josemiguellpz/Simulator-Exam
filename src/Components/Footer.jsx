@@ -37,7 +37,7 @@ export default function Footer() {
       <Box className={classes.background}>
         <Box className={classes.contact}>
           <Typography>
-            Contacto
+            Benemérita Universidad Autónoma De Puebla
           </Typography>
           <Typography>
             Av San Claudio, Blvrd 14 Sur, Cdad. Universitaria, 72592 Puebla, Pue
