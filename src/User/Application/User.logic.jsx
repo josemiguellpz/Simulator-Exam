@@ -68,7 +68,7 @@ export function UserRegister({
   if(role === "Docente")
     carrer = ""
 
-  const user = new UserModel(role, matricula, name, lastName, email, password, carrer)
+  const user = new UserModel(role, matricula, name, lastName, email.toLowerCase(), password, carrer)
   return RegisterUser(user);
 }
 
