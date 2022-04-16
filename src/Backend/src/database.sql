@@ -97,22 +97,24 @@ END //
 /* DATA TEST */
 
 INSERT INTO usuario (matricula, nombre, apellido, email, password, carrera, rol) values (201772797, 'José Miguel', 'López', 'josemiguel.lml@gmail.com', aes_encrypt('Jose1234', '#irn15'), '', 'Docente');
-INSERT INTO usuario (matricula, nombre, apellido, email, password, carrera, rol) values (201772798, 'Miguel', 'Aguilera', 'josemiguel_3093@hotmail.com', aes_encrypt('Jose1234', '#irn15'), 'Ingeniería en Ciencias de la Computación', 'Alumno');
+INSERT INTO usuario (matricula, nombre, apellido, email, password, carrera, rol) values 
+(201772798, 'Miguel', 'Aguilera', 'josemiguel_3093@hotmail.com', aes_encrypt('Jose1234', '#irn15'), 'Ingeniería en Ciencias de la Computación', 'Alumno'),
+(201504170, 'Mariana', 'López Soto', 'mariana.lopsot@alumno.buap.mx', aes_encrypt('', '#irn15'), 'Ingeniería en Ciencias de la Computación', 'Alumno');
 SELECT matricula, aes_decrypt(password, '#irn15') FROM usuario;
 SELECT rol, aes_decrypt(password, '#irn15') FROM usuario WHERE matricula = 201772797;
 
-INSERT INTO tema (nombre_tema) values ('Introducción a Ingeniería de Software'),
+INSERT INTO tema (nombre_tema) VALUES ('Introducción a Ingeniería de Software'),
 ('Modelos de Procesos de Desarrollo de Software'),
 ('Gestion de Proyectos Software');
 
-INSERT INTO subtema (id_tema, nombre_subtema) values 
+INSERT INTO subtema (id_tema, nombre_subtema) VALUES 
 (1, "Conceptos Básicos"),
 (1, "Fundamentos de Ingeniería de Software"),
 (2, "Modelos de Ciclo de Vida"),
 (3, "Estructuración"),
 (3, "Gestión de Recursos");
 
-INSERT INTO pregunta (id_tema, id_subtema, pregunta, correcta, incorrecta1, incorrecta2, incorrecta3, argumento) values
+INSERT INTO pregunta (id_tema, id_subtema, pregunta, correcta, incorrecta1, incorrecta2, incorrecta3, argumento) VALUES
 (1, 1, "Disciplina de la ingenieria que se interesa por todos los aspectos de la produccion de software.", "Ingenieria de Software", "Ingenieria Web", "Ingenieria Ambiental", "Ingenieria de productos", "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis placerat pharetra risus quis porttitor. Fusce volutpat libero sit amet tellus dictum suscipit. Phasellus vulputate nisi sem, at ullamcorper est vestibulum ac. Aliquam efficitur est vitae consequat sollicitudin. Etiam orci lectus, accumsan non lobortis at, viverra consectetur magna. Etiam finibus lacinia euismod. Aliquam ut mi quam. "),
 (1, 1, "Conjunto de etapas, actividades y tareas para alcanzar un objetivo que implica un trabajo no inmediato a un plazo relativamente largo.", "Proyecto", "Proceso", "Producto", "Personas", " Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis placerat pharetra risus quis porttitor. Fusce volutpat libero sit amet tellus dictum suscipit. Phasellus vulputate nisi sem, at ullamcorper est vestibulum ac. Aliquam efficitur est vitae consequat sollicitudin. Etiam orci lectus, accumsan non lobortis at, viverra consectetur magna. Etiam finibus lacinia euismod. Aliquam ut mi quam. "),
 (1, 1, "Conjunto de actividades tecnicas y administrativas realizadas durante el desarrollo, mantenimiento y retiro de software.", "Proceso", "Persona", "Proyecto", "Producto", "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis placerat pharetra risus quis porttitor. Fusce volutpat libero sit amet tellus dictum suscipit. Phasellus vulputate nisi sem, at ullamcorper est vestibulum ac. Aliquam efficitur est vitae consequat sollicitudin. Etiam orci lectus, accumsan non lobortis at, viverra consectetur magna. Etiam finibus lacinia euismod. Aliquam ut mi quam. "),
@@ -158,6 +160,25 @@ INSERT INTO pregunta (id_tema, id_subtema, pregunta, correcta, incorrecta1, inco
 (3, 5, 'Se basa en la comportamiento natural de un problema y organiza los miembros del equipo para trabajar el problema con poca comunicacion activa entre ellos.', 'Paradigma Sincronizado', 'Paradigma Abierto', 'Paradigma Aleatorio', 'Paradigma Cerrado', "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis placerat pharetra risus quis porttitor. Fusce volutpat libero sit amet tellus dictum suscipit. Phasellus vulputate nisi sem, at ullamcorper est vestibulum ac. Aliquam efficitur est vitae consequat sollicitudin. Etiam orci lectus, accumsan non lobortis at, viverra consectetur magna. Etiam finibus lacinia euismod. Aliquam ut mi quam. "),
 (3, 5, 'Es un conjunto de actividades tecnicas y administrativas realizadas durante la adquisicion, desarrollo, mantenimiento y retiro del software.', 'Proceso', 'Producto', 'Hito', 'Modelo', "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis placerat pharetra risus quis porttitor. Fusce volutpat libero sit amet tellus dictum suscipit. Phasellus vulputate nisi sem, at ullamcorper est vestibulum ac. Aliquam efficitur est vitae consequat sollicitudin. Etiam orci lectus, accumsan non lobortis at, viverra consectetur magna. Etiam finibus lacinia euismod. Aliquam ut mi quam. "),
 (3, 5, 'Son datos visibles al cliente, impone limitaciones en el sistema que se desea construir. Todo esto define un:', 'Problema', 'Producto', 'Requisito', 'Ninguno', "Lorem ipsum dolor sit amet, consectetur adipiscing elit. Duis placerat pharetra risus quis porttitor. Fusce volutpat libero sit amet tellus dictum suscipit. Phasellus vulputate nisi sem, at ullamcorper est vestibulum ac. Aliquam efficitur est vitae consequat sollicitudin. Etiam orci lectus, accumsan non lobortis at, viverra consectetur magna. Etiam finibus lacinia euismod. Aliquam ut mi quam. ");
+
+INSERT INTO historial (matricula, id_tema, num_correctas, num_incorrectas, calificacion, fecha) VALUES
+(201504170, 1, 14,  1, 93.3, CURRENT_TIMESTAMP()),
+(201504170, 1,  9,  6,   60, CURRENT_TIMESTAMP()),
+(201504170, 1, 11,  4, 73.3, CURRENT_TIMESTAMP()),
+(201504170, 2,  5, 10, 33.3, CURRENT_TIMESTAMP()),
+(201504170, 2, 12,  3,   80, CURRENT_TIMESTAMP()),
+(201504170, 3,  8,  7, 53.3, CURRENT_TIMESTAMP()),
+(201504170, 3, 13,  2, 86.6, CURRENT_TIMESTAMP()),
+(201504170, 3, 15,  0,  100, CURRENT_TIMESTAMP()),
+(201815141, 1, 10,  5, 66.6, CURRENT_TIMESTAMP()),
+(201815141, 1, 13,  2, 86.6, CURRENT_TIMESTAMP()),
+(201815141, 3, 14,  1, 93.3, CURRENT_TIMESTAMP()),
+(201815141, 3,  8,  7, 53.3, CURRENT_TIMESTAMP()),
+(201772798, 1, 11,  4, 73.3, CURRENT_TIMESTAMP()),
+(201772798, 1, 14,  1, 93.3, CURRENT_TIMESTAMP()),
+(201772798, 2,  9,  6,   60, CURRENT_TIMESTAMP()),
+(201772798, 2, 13,  2, 86.6, CURRENT_TIMESTAMP()),
+(201772798, 2,  3, 12,   20, CURRENT_TIMESTAMP());
 
 DROP TABLE tema, subtema, pregunta;
 

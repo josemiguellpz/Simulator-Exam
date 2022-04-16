@@ -1,4 +1,3 @@
-from unittest import result
 from flask import Flask, request, jsonify
 from flask_cors import CORS
 import json
@@ -469,7 +468,64 @@ def history(historyID):
         conexion.close()
         return jsonify({'historyID': historyID})
   except Exception as err:
-    return jsonify({'info':err, 'status': False})  
+    return jsonify({'info':err, 'status': False})
 
+@app.route('/histories/students/<matricula>/topics/<topicID>', methods=['GET'])
+def getHistory(matricula, topicID):
+  try:
+    conexion = getConnectionDB()
+    with conexion.cursor() as cursor:
+      history = []
+      average = []
+      averageQualification = 0
+      averageCorrects = 0
+      averageIncorrects = 0
+      cursor.execute(
+      """ 
+        SELECT 
+          COUNT(id_historial) as Attempts
+        FROM historial 
+        WHERE matricula = %s and id_tema = %s ; 
+      """, (matricula, topicID))
+      result = cursor.fetchall()
+      attempts = result[0][0]
+      if attempts == 0:
+        average.append(0)
+        average.append(0)
+        average.append(0)
+      else:
+        cursor.execute(
+        """ 
+          SELECT
+            id_historial,
+            num_correctas,
+            num_incorrectas,
+            calificacion,
+            fecha
+          FROM historial
+          WHERE matricula = %s and id_tema = %s ;
+        """, (matricula, topicID))
+        result = cursor.fetchall()
+        for element in result:
+          averageCorrects = averageCorrects + element[1]
+          averageIncorrects = averageIncorrects + element[2]
+          averageQualification = averageQualification + element[3]
+          item = {
+            'historyID': element[0],
+            'corrects': element[1],
+            'incorrects': element[2],
+            'qualification': element[3],
+            'date': element[4],
+          }
+          history.append(item)
+        average.append(round((averageQualification/attempts)/10, 1))
+        average.append(round(averageCorrects/attempts, 1))
+        average.append(round(averageIncorrects/attempts, 1))
+      conexion.commit()
+      conexion.close()
+      return jsonify({'attempts': attempts,'history': history, 'average': average})
+  except Exception as err:
+    return jsonify({'info':err, 'status': False})
+    
 if __name__ == '__main__':
   app.run(debug=True)

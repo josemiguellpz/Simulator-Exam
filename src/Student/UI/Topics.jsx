@@ -99,10 +99,6 @@ export default function TopicsStudent() {
   // eslint-disable-next-line react-hooks/exhaustive-deps
   },[])
 
-  /* window.onbeforeunload = function() {
-    return '¿Desea recargar la página web?';
-  }; */
-
   return(
     <>
       <Box className={classes.root}>
@@ -166,7 +162,7 @@ export default function TopicsStudent() {
           handleButton={
             ()=>{
               handleCloseModal(); 
-              handleGoToExam()
+              handleGoToExam();
             }
           }
           open={open} 

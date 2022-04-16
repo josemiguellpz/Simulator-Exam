@@ -6,16 +6,9 @@ const ThemePalette = {
     contrastText: "#000000",
     back: "#E3FAF6",
   },
-  /* primary: {
-    main: "#ffffff",
-    light: "#E3FAF6",
-    dark: "#222222",
-    contrastText: "#000000",
-    back: "#E3FAF6",
-  }, */
   secondary: {
     main: "#8c52ff",
-    light: "#D7F6F9",
+    light: "#ddd4e5",
     dark: "#6300bb",
     contrastText: "#ffffff",
     back: "#BFEBF7",

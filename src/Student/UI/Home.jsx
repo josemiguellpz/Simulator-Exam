@@ -108,8 +108,8 @@ export default function Home() {
     const load = async () => {
       setLoading(true);
       await setTimeout(function(){
-        dispatch(acquireUser(matricula))
-        setLoading(false)
+        dispatch(acquireUser(matricula));
+        setLoading(false);
       }, 2000);
     }
     load()

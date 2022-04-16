@@ -1,4 +1,4 @@
-import { postOne, putOne } from "../../Axios/Provider";
+import { postOne, putOne, getOne } from "../../Axios/Provider";
 
 export function RegisterDataExam(data){
   const body = JSON.stringify(data);
@@ -8,4 +8,8 @@ export function RegisterDataExam(data){
 export function UpdateDataExam(historyID, data){
   const body = JSON.stringify(data);
   return putOne(`/histories/${historyID}`, body);
+}
+
+export function GetHistory(matricula, topicID){
+  return getOne(`/histories/students/${matricula}/topics/${topicID}`);
 }

@@ -39,6 +39,7 @@ function App() {
         <Route index path="/student/topics" element={<TopicsStudent/>}/>
         <Route index path="/student/topics/exam/t-id=0:topicID/name=:topic" element={<Exam/>}/>
         <Route index path="/student/historial" element={<HistorialStudent/>}/>
+        <Route index path="/student/historial/exam/t-id=0:topicID/name=:topic" element={<Exam/>}/>
         
         <Route index path="/teacher/" element={<HomeTeacher/>}/>
         <Route index path="/teacher/topics-up/" element={<TopicsUp/>}/>

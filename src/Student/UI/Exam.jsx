@@ -243,7 +243,7 @@ export default function Exam(){
               </Typography> 
               <Grid container spacing={3}>
                 <Grid item xs={6} md={8}>
-                  <Item><b> Alumno: {student.name} {student.lastName} </b></Item>
+                  <Item><b> Alumno(a): {student.name} {student.lastName} </b></Item>
                 </Grid>
                 <Grid item xs={6} md={4}>
                   <Item><b> Matricula: {matricula} </b></Item>
