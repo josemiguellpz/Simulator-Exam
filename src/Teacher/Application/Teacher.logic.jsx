@@ -1,4 +1,5 @@
-import {RegisterTopic, DeleteTopic, RegisterSubtopic, DeleteSubtopic, RegisterQuestion, GetQuestion, DeleteQuestion, UpdateQuestion, UpdateTopicAndSubtopic, SearchStudents} from '../Infrastructure/Teacher.service';
+import { confirmPassword, validatePassword } from '../../User/Domain/User.model';
+import {RegisterTopic, DeleteTopic, RegisterSubtopic, DeleteSubtopic, RegisterQuestion, GetQuestion, DeleteQuestion, UpdateQuestion, UpdateTopicAndSubtopic, SearchStudents, GetHistorial, UpdateStudent, DeleteStudent} from '../Infrastructure/Teacher.service';
 
 export function UserSearch(dataSearch){
   if(dataSearch === ""){
@@ -179,4 +180,27 @@ export function QuestionUpdate(newQuestion, topicID, subtopicID, questionID){
 
 export function QuestionDelete(topicID, subtopicID, questionID){
   return DeleteQuestion(topicID, subtopicID, questionID);
+}
+
+export function HistorialGet(matricula, topicID){
+  return GetHistorial(matricula, topicID);
+}
+
+export function StudentUpdate(matricula, password, password2){
+  
+  /* Validations */
+  const objectPassword = validatePassword(password);
+  if (!objectPassword.data.status) return objectPassword;
+
+  const objectPasswordRepeat = confirmPassword(password, password2);
+  if (!objectPasswordRepeat.data.status) return objectPasswordRepeat;
+
+  const data = {
+    password: password,
+  };
+  return UpdateStudent(matricula, data);
+}
+
+export function StudentDelete(matricula){
+  return DeleteStudent(matricula);
 }

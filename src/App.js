@@ -23,6 +23,7 @@ import TopicsDown from "./Teacher/UI/TopicsDown";
 import TopicsEdit from "./Teacher/UI/TopicsEdit";
 import ViewStudents from "./Teacher/UI/ViewStudents";
 import Performance from './Teacher/UI/Performance';
+import StudentEdit from './Teacher/UI/StudentEdit';
 
 function App() {
   return (
@@ -47,6 +48,7 @@ function App() {
         <Route index path="/teacher/topics-edit/" element={<TopicsEdit/>}/>
         <Route index path="/teacher/students/" element={<ViewStudents/>}/>
         <Route index path="/teacher/students/:studentID" element={<Performance/>}/>
+        <Route index path="/teacher/students/:studentID/edit" element={<StudentEdit/>}/>
         
         <Route path="*" element={<Error/>}/>
       </Routes>

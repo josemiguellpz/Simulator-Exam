@@ -1,19 +1,19 @@
 const ThemePalette = {
-  primary: {
+  primary: { /* User */
     main: "#0fa600",
     light: "#b4fdaa",
     dark: "#3ad126",
     contrastText: "#000000",
     back: "#E3FAF6",
   },
-  secondary: {
+  secondary: { /* Student */
     main: "#8c52ff",
     light: "#ddd4e5",
     dark: "#6300bb",
     contrastText: "#ffffff",
     back: "#BFEBF7",
   },
-  tertiary: {
+  tertiary: { /* Teacher */
     main: "#5271ff",
     light: "#D7F6F9",
     dark: "#004abb",

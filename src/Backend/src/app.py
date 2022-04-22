@@ -81,7 +81,7 @@ def users():
   except Exception as ex:
     return jsonify({'info': ex, 'status': False})
 
-@app.route('/users/<matricula>', methods=['GET', 'POST']) # GET user / POST: login 
+@app.route('/users/<matricula>', methods=['GET', 'POST', 'PUT', 'DELETE']) # GET user / POST: login 
 def user(matricula):
   try:
     conexion = getConnectionDB()
@@ -127,6 +127,21 @@ def user(matricula):
         else:
           status = False
           info = "Matrícula ingresada no existe"
+      elif request.method == 'PUT':
+        recieve = request.get_data()
+        data = recieve.decode('utf-8')
+        print(data)
+        password = str(data)[13:len(data)-2]
+        print(password)
+        cursor.execute("UPDATE usuario SET password = AES_ENCRYPT(%s, %s) WHERE matricula = %s ", (password, KEYWORD, matricula))
+        conexion.commit()
+        conexion.close()
+        return jsonify({'status': True, 'info': "Datos actualizados"})
+      elif request.method == 'DELETE':
+        cursor.execute("DELETE FROM usuario WHERE matricula = %s", (matricula))
+        conexion.commit()
+        conexion.close()
+        return jsonify({'status': True, 'info': "Estudiante eliminado"})
     conexion.close()
     return jsonify({'status': status, 'info': info, 'role': role, 'id': id})
   except Exception as ex:

@@ -44,3 +44,16 @@ export function DeleteSubtopic(topicID, subtopicID){
 export function DeleteQuestion(topicID, subtopicID, questionID){
   return deleteOne(`/topics/${topicID}/subtopics/${subtopicID}/questions/${questionID}`);
 }
+
+export function GetHistorial(matricula, topicID){
+  return getOne(`/histories/students/${matricula}/topics/${topicID}`);
+}
+
+export function UpdateStudent(matricula, data){
+  const body = JSON.stringify(data);
+  return putOne(`/users/${matricula}`, body);
+}
+
+export function DeleteStudent(matricula){
+  return deleteOne(`/users/${matricula}`);
+}

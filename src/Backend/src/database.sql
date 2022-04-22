@@ -99,7 +99,10 @@ END //
 INSERT INTO usuario (matricula, nombre, apellido, email, password, carrera, rol) values (201772797, 'José Miguel', 'López', 'josemiguel.lml@gmail.com', aes_encrypt('Jose1234', '#irn15'), '', 'Docente');
 INSERT INTO usuario (matricula, nombre, apellido, email, password, carrera, rol) values 
 (201772798, 'Miguel', 'Aguilera', 'josemiguel_3093@hotmail.com', aes_encrypt('Jose1234', '#irn15'), 'Ingeniería en Ciencias de la Computación', 'Alumno'),
-(201504170, 'Mariana', 'López Soto', 'mariana.lopsot@alumno.buap.mx', aes_encrypt('', '#irn15'), 'Ingeniería en Ciencias de la Computación', 'Alumno');
+(201504170, 'Mariana', 'López Soto', 'mariana.lopsot@alumno.buap.mx', aes_encrypt('150417Mm', '#irn15'), 'Ingeniería en Ciencias de la Computación', 'Alumno');
+(201815141, 'Samantha', 'Martínez González', 'samantha.mtz@alumno.buap.mx', aes_encrypt('Sam@78mxt0', '#irn15'), 'Licenciatura en Ciencias de la Computación', 'Alumno');
+
+INSERT INTO usuario (matricula, nombre, apellido, email, password, carrera, rol) values (123456789, 'Alumno', 'Prueba', 'alumno@buap.mx', aes_encrypt('Alumno1234', '#irn15'), 'Licenciatura en Ciencias de la Computación', 'Alumno');
 SELECT matricula, aes_decrypt(password, '#irn15') FROM usuario;
 SELECT rol, aes_decrypt(password, '#irn15') FROM usuario WHERE matricula = 201772797;
 
@@ -181,6 +184,9 @@ INSERT INTO historial (matricula, id_tema, num_correctas, num_incorrectas, calif
 (201772798, 2,  3, 12,   20, CURRENT_TIMESTAMP());
 
 DROP TABLE tema, subtema, pregunta;
+
+/* UPDATE PASSWORD */
+UPDATE usuario SET password = AES_ENCRYPT('Mari1234', '#irn15') WHERE matricula = 201504170 
 
 /* SEARCH STUDENT */
 SELECT matricula, IF (nombre LIKE '%leal%' OR apellido LIKE '%leal%', CONCAT(nombre, ' ', apellido), null) AS alumno FROM usuario WHERE rol = 'Alumno';
