@@ -1,5 +1,6 @@
 import React, {useState, useEffect} from 'react';
 import { makeStyles, styled } from "@mui/styles";
+import { green, red } from '@mui/material/colors';
 import TipsAndUpdatesIcon from '@mui/icons-material/TipsAndUpdates';
 import Typography from '@mui/material/Typography';
 import Table from '@mui/material/Table';
@@ -14,11 +15,12 @@ import MenuItem from '@mui/material/MenuItem';
 import Alert from '@mui/material/Alert';
 import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
+import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 
 import InputSelect from '../../Components/InputSelect';
 import Button from '../../Components/ButtonSimple';
 
-import { TopicDelete, SubtopicDelete, QuestionDelete } from '../Application/Teacher.logic';
+import { TopicDelete, SubtopicDelete, QuestionDelete, QuestionGet, ImageDelete } from '../Application/Teacher.logic';
 import {acquireTopics, acquireSubtopics, acquireQuestions, deleteItemQuestionList, deleteAllSubtopicList, deleteAllQuestionList} from '../../Redux/Slices';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -100,6 +102,41 @@ const useStyles = makeStyles((theme) => ({
       width: 400,
     },
   },
+  viewQuest:{
+    width: 800,
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    gap: 10,
+    justifyContent: "center",
+    borderRadius: "30px",
+    background: "#fff",
+    boxShadow: "0px 4px 4px rgba(0, 0, 0, 0.25), 4px 0px 5px rgba(0, 0, 0, 0.25);",
+    paddingTop: 30,
+    paddingBottom: 30,
+    paddingLeft: 20,
+    paddingRight: 20,
+    marginBottom: 30,
+    margin: "auto",
+    [theme.breakpoints.down("md")]:{
+      width: 600,
+    },
+    [theme.breakpoints.down("sm")]:{
+      width: 400,
+    },
+  },
+  answers:{
+    display: 'flex',
+    alignItems: 'center',
+    flexWrap: 'wrap',
+    gap: 1,
+  },
+  previewImg:{
+    width: 400,
+    height: 200,
+    objectFit: "fill",
+    backgroundSize:"cover",
+  },
   buttonsTable:{
     display: "flex",
     gap: 4,
@@ -123,7 +160,6 @@ export default function TopicsDown(){
   const [open, setOpen] = useState(false);
   const [alert, setAlert] = useState(false);
   const [alertContent, setAlertContent] = useState('');
-  
   const showAlert = (alert, alertContent) => {
     return(
       <>
@@ -194,6 +230,10 @@ export default function TopicsDown(){
     setCurrentTopic({ ...currentTopic, 'topicID': e.target.value.id, 'topic': e.target.value.value });
   }
 
+  // View Card Quest
+  const [viewQuest, setViewQuest] = useState(false);
+  const [quest, setQuest] = useState({});
+  const [previewImg, setPreviewImg] = useState(null);
   
   const handleChange = () => {
     if(Object.keys(currentTopic).length <= 2){
@@ -240,6 +280,7 @@ export default function TopicsDown(){
 
   async function handleDeleteQuestion(questionID){
     const {topicID, subtopicID} = currentTopic;
+    await ImageDelete(questionID);
     const response = await QuestionDelete(topicID, subtopicID, questionID);
     const {status, info} = response.data;
     setOpen(true);
@@ -249,11 +290,26 @@ export default function TopicsDown(){
       dispatch(deleteItemQuestionList(questionID));
   }
 
+  async function handleGetQuestion(questionID){
+    const {topicID, subtopicID} = currentTopic;
+    const response = await QuestionGet(topicID, subtopicID, questionID);
+    const { dataQuestion } = response.data;
+    setQuest(dataQuestion);
+    // If exist image
+    if(dataQuestion.img_name)
+      setPreviewImg(require(`../../Assets/exam-images/${dataQuestion.img_name}`).default);
+    else
+      setPreviewImg(null);
+  }
+
   const handleCancel = () =>{
     dispatch(acquireTopics());         // Refresh TopicList in Store
     dispatch(deleteAllQuestionList()); // Delete QuestionList in Store
     dispatch(deleteAllSubtopicList()); // Delete SubtopicList in Store
     setCurrentTopic({});               // Refresh State
+    setViewQuest(false);
+    setQuest({});
+    setPreviewImg(null);
     setBand(false);
   }
 
@@ -359,6 +415,42 @@ export default function TopicsDown(){
               />
             </Box>
 
+            {viewQuest && (
+              <Box className={classes.viewQuest}>
+                <Box sx={{width: "100%"}}>
+                  <Typography className={classes.title}>
+                    <b> Pregunta </b>
+                  </Typography>
+                  <Typography sx={{ textAlign:"justify"}}>
+                    {quest.question}
+                  </Typography> 
+                  
+                  <Box className={classes.answers}>
+                    <CheckCircleIcon sx={{ color: green[500] }}/> {quest.correct}
+                  </Box>
+                  <Box className={classes.answers}>
+                    <CloseIcon sx={{ color: red[500] }}/> {quest.incorrect1}
+                  </Box>
+                  <Box className={classes.answers}>
+                    <CloseIcon sx={{ color: red[500] }}/> {quest.incorrect2}
+                  </Box>
+                  <Box className={classes.answers}>
+                    <CloseIcon sx={{ color: red[500] }}/> {quest.incorrect3}
+                  </Box>
+                </Box>
+
+                <Typography sx={{width: "100%", textAlign: "justify"}}>
+                  <b> Argumentación </b> <br /> 
+                  {quest.argument} <br />
+                </Typography>
+                {previewImg ? 
+                  (<img src={previewImg} className={classes.previewImg} alt="preview-img"/>) 
+                : 
+                  <Typography><b> Sin imagen </b></Typography>
+                }
+              </Box>
+            )}
+
             <TableContainer component={Paper}>
             <Table>
               <TableHead>
@@ -379,23 +471,14 @@ export default function TopicsDown(){
                       </Typography>
                       <Box className={classes.buttonsTable}>
                         <Button
+                          title="Ver"
+                          onClick={() => {setViewQuest(true); handleGetQuestion(row.id);}}
+                        />
+                        <Button
                           title="Eliminar"
-                          onClick={() => {handleDeleteQuestion(row.id)}}
-                          />
+                          onClick={() => {handleDeleteQuestion(row.id); setViewQuest(false);}}
+                        />
                       </Box>
-                    </StyledTableCell>
-                    <StyledTableCell scope="row" sx={{display: "flex", alignItems: "baseline"}}>
-                      <Typography sx={{fontSize: "1rem",}}>
-                        Respuesta Correcta: <br/> {row.correct} <br /> <br />
-                        Respuesta Incorrecta: <br/> {row.incorrect1}  <br /> <br />
-                      {/* <li>
-                        <li>Respuesta Incorrecta: <br/> {row.incorrect2} </li> <br />
-                      </li>
-                      <li>
-                        <li>Respuesta Incorrecta: <br/> {row.incorrect3} </li> <br />
-                      </li> */}
-                      Argumento: <br/> {row.argument}
-                      </Typography>
                     </StyledTableCell>
                   </StyledTableRow>
                 ))}

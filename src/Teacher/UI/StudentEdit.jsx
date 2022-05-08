@@ -8,6 +8,7 @@ import IconButton from '@mui/material/IconButton';
 import CloseIcon from '@mui/icons-material/Close';
 import RefreshIcon from '@mui/icons-material/Refresh';
 import DeleteIcon from '@mui/icons-material/Delete';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
 
 import Button from '../../Components/ButtonSimple';
 import ModalConfirm from '../../Components/ModalConfirm';
@@ -149,7 +150,13 @@ export default function StudentEdit(){
           Gestión del usuario para restaurar contraseña y eliminar usuario. 
         </Typography>
       </Box>
-      
+      <Box sx={{marginTop: 2}}>
+        <Button
+          title="Volver"
+          onClick={()=>{navigate(-1)}}
+          startIcon={<ArrowBackIcon/>}
+        />
+      </Box>
       {/* Generic Alert */}
       {open && ( showAlert(alert, alertContent) )}
       

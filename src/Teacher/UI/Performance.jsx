@@ -320,7 +320,7 @@ export default function Performance(){
                   data={data}
                   />
               </Box>
-              <Button title="Consultar otro tema" onClick={()=>{setBand(true)}} />
+              <Button title="Consultar otro tema" onClick={()=>{setCurrentTopic({}); setBand(true);}} />
               <Box className={classes.table}>
                 <TableContainer component={Paper}>
                   <Table>

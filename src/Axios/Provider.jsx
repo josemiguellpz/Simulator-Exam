@@ -12,6 +12,17 @@ function getConfig() {
   return config;
 }
 
+function getConfigFormData() {
+  const token = localStorage.getItem("token");
+  const config = {
+    headers: {
+      Authorization: token,
+      'Content-Type': 'multipart/form-data',
+    },
+  };
+  return config;
+}
+
 export async function postOne(source, body){
   const config = getConfig();
   const route = `${url}/${source}`;
@@ -72,3 +83,8 @@ export async function getQuestions(source){
   return await axios.get(route, config);
 }
 
+export async function putImages(source, body){
+  const config = getConfigFormData();
+  const route = `${url}/${source}`;
+  return await axios.put(route, body, config);
+}

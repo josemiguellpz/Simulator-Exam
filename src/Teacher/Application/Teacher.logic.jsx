@@ -1,5 +1,5 @@
 import { confirmPassword, validatePassword } from '../../User/Domain/User.model';
-import {RegisterTopic, DeleteTopic, RegisterSubtopic, DeleteSubtopic, RegisterQuestion, GetQuestion, DeleteQuestion, UpdateQuestion, UpdateTopicAndSubtopic, SearchStudents, GetHistorial, UpdateStudent, DeleteStudent} from '../Infrastructure/Teacher.service';
+import {RegisterTopic, DeleteTopic, RegisterSubtopic, DeleteSubtopic, RegisterQuestion, GetQuestion, DeleteQuestion, UpdateQuestion, UpdateTopicAndSubtopic, SearchStudents, GetHistorial, UpdateStudent, DeleteStudent, UploadImage, DeleteImage} from '../Infrastructure/Teacher.service';
 
 export function UserSearch(dataSearch){
   if(dataSearch === ""){
@@ -175,7 +175,15 @@ export function QuestionGet(topicID, subtopicID, questionID){
 }
 
 export function QuestionUpdate(newQuestion, topicID, subtopicID, questionID){
-  return UpdateQuestion(newQuestion, topicID, subtopicID, questionID);
+  const dataQuestion = {
+    question:   newQuestion.question, 
+    correct:    newQuestion.correct, 
+    incorrect1: newQuestion.incorrect1, 
+    incorrect2: newQuestion.incorrect2, 
+    incorrect3: newQuestion.incorrect3, 
+    argument:   newQuestion.argument
+  };
+  return UpdateQuestion(dataQuestion, topicID, subtopicID, questionID);
 }
 
 export function QuestionDelete(topicID, subtopicID, questionID){
@@ -203,4 +211,12 @@ export function StudentUpdate(matricula, password, password2){
 
 export function StudentDelete(matricula){
   return DeleteStudent(matricula);
+}
+
+export function ImageUpload(questionID, formData){
+  return UploadImage(questionID, formData);
+}
+
+export function ImageDelete(questionID){
+  return DeleteImage(questionID);
 }

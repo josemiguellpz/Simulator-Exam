@@ -1,5 +1,7 @@
+import os
 from flask import Flask, request, jsonify
 from flask_cors import CORS
+from werkzeug.utils import secure_filename
 import json
 from db import getConnectionDB
 
@@ -13,6 +15,9 @@ from db import getConnectionDB
 
 app=Flask(__name__)
 CORS(app)
+
+EXAM_IMG_FOLDER = 'C:\\Users\\josemiguel\\Desktop\\ReactProjects\\Simulator-Exam\\src\\Assets\\exam-images'
+app.config['EXAM_IMG_FOLDER'] = EXAM_IMG_FOLDER
 
 KEYWORD="#irn15" #Auth for password
 
@@ -186,6 +191,13 @@ def topic(topicID):
     conexion = getConnectionDB()              
     with conexion.cursor() as cursor:
       if request.method == 'DELETE':
+        #Delete all images
+        cursor.execute("SELECT imagen FROM pregunta WHERE id_tema = %s", (topicID))
+        result = cursor.fetchall()
+        for name_img in result:
+          if name_img[0]:
+            os.remove(EXAM_IMG_FOLDER+"\\"+name_img[0])
+        #Delete topic
         cursor.execute("DELETE FROM tema WHERE id_tema = %s", topicID)
         conexion.commit()
         conexion.close()
@@ -232,6 +244,13 @@ def subtopic(topicID, subtopicID):
     conexion = getConnectionDB()              
     with conexion.cursor() as cursor:
       if request.method == 'DELETE':
+        #Delete all images
+        cursor.execute("SELECT imagen FROM pregunta WHERE id_tema = %s and id_subtema = %s", (topicID, subtopicID))
+        result = cursor.fetchall()
+        for name_img in result:
+          if name_img[0]:
+            os.remove(EXAM_IMG_FOLDER+"\\"+name_img[0])
+        #Delete all subtopics
         cursor.execute("DELETE FROM subtema WHERE id_tema = %s and id_subtema = %s", (topicID, subtopicID))
         conexion.commit()
         conexion.close()
@@ -300,6 +319,35 @@ def questions(topicID, subtopicID):
   except Exception as ex:
     return jsonify({'message': ex, 'status': False})
 
+@app.route('/exam/images/<questionID>', methods=['PUT', 'DELETE'])
+def uploadImg(questionID):
+  #Get file-img and save in folder
+  try:
+    conexion = getConnectionDB()
+    with conexion.cursor() as cursor:
+      cursor.execute("SELECT imagen FROM pregunta WHERE id_pregunta = %s", (questionID))
+      result =  cursor.fetchall()
+      current_img = result[0][0]
+      if request.method == 'PUT':
+        #Verify image
+        if current_img:
+          os.remove(EXAM_IMG_FOLDER+"\\"+current_img)
+        #Save image
+        file = request.files['img']
+        current_img = questionID+'-'+file.filename
+        img_name = secure_filename(questionID+'-'+file.filename)
+        file.save(os.path.join(app.config['EXAM_IMG_FOLDER'], img_name))
+        cursor.execute("UPDATE pregunta SET imagen = %s WHERE id_pregunta = %s;", (img_name, questionID))
+        conexion.commit()
+        conexion.close()
+        return jsonify({'status': True})
+      elif request.method == 'DELETE':
+        if current_img:
+          os.remove(EXAM_IMG_FOLDER+"\\"+current_img)
+        return jsonify({'status': True})
+  except Exception as ex:
+    return jsonify({'message': ex, 'status': False})
+
 @app.route('/topics/<topicID>/subtopics/<subtopicID>/questions/<questionID>', methods=['GET', 'PUT', 'DELETE'])
 def question(topicID, subtopicID, questionID):
   try:
@@ -314,7 +362,8 @@ def question(topicID, subtopicID, questionID):
             incorrecta1, 
             incorrecta2, 
             incorrecta3, 
-            argumento 
+            argumento,
+            imagen 
           FROM pregunta 
           WHERE id_tema = %s and id_subtema = %s and id_pregunta = %s; 
         """, (topicID, subtopicID, questionID))
@@ -326,6 +375,7 @@ def question(topicID, subtopicID, questionID):
           'incorrect2': result[0][3], 
           'incorrect3': result[0][4], 
           'argument':   result[0][5],
+          'img_name':   result[0][6],
         }
         conexion.close()
         return jsonify({'dataQuestion': dataQuestion})

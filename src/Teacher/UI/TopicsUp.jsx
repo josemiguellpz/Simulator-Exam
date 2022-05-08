@@ -19,7 +19,7 @@ import InputSelect from '../../Components/InputSelect';
 import InputText from '../../Components/InputText';
 import Button from '../../Components/ButtonSimple';
 
-import {TopicRegister, QuestionRegister, QuestionUpdate, QuestionGet, QuestionDelete, SubtopicRegister} from '../Application/Teacher.logic';
+import {TopicRegister, QuestionRegister, QuestionUpdate, QuestionGet, QuestionDelete, SubtopicRegister, ImageUpload} from '../Application/Teacher.logic';
 import {acquireTopics, acquireSubtopics, addItemQuestionList, updateItemQuestionList, deleteItemQuestionList, deleteAllQuestionList,} from '../../Redux/Slices';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -95,6 +95,11 @@ const useStyles = makeStyles((theme) => ({
     flexDirection: "column",
     alignItems: "center",
     gap: 20,
+  },
+  previewImg:{
+    width: 380,
+    height: 100,
+    objectFit: "cover",
   },
   selectForQuestions:{
     width: 550,
@@ -214,11 +219,22 @@ export default function TopicsUp(){
     incorrect3: "",
     argument: "",
   });
+  const [imageFile, setImageFile] = useState(null);
+  const [previewImg, setPreviewImg] = useState(null);
   const [update, setUpdate] = useState(true); // Disable Button "Actualizar"
   const handleNewTopic    = (e) => setNewTopic({ ...newTopic, [e.target.name]: e.target.value });
   const handleNewSubtopic = (e) => setNewSubtopic({...newSubtopic, [e.target.name]: e.target.value});
   const handleNewQuestion = (e) => setQuestion({ ...newQuestion, [e.target.name]: e.target.value });
-  const handleClear = (e) => setQuestion({...newQuestion, question: "", correct: "", incorrect1: "", incorrect2: "", incorrect3: "", argument: "",});
+  const handleImageFile = (e) => {
+    setImageFile(e.target.files[0]);
+    setPreviewImg(URL.createObjectURL(e.target.files[0]));
+  };
+  const handleClear = (e) => {
+    setQuestion({...newQuestion, question: "", correct: "", incorrect1: "", incorrect2: "", incorrect3: "", argument: "",});
+    setImageFile(null);
+    setPreviewImg(null);
+    document.getElementById("img-file").value = "";
+  }
 
   const handleChange = () => {
     /* Validation InputSelect */
@@ -271,6 +287,14 @@ export default function TopicsUp(){
     setAlert(status);
     setAlertContent(info);
     if(status){
+      if(imageFile){
+        const formData = new FormData();
+        formData.append("img", imageFile);
+        await ImageUpload(quest.id, formData); //Send image file to server
+      }
+      setImageFile(null);
+      setPreviewImg(null);
+      document.getElementById("img-file").value = "";
       dispatch(addItemQuestionList(quest));
       setUpdate(true);
       handleChange();
@@ -286,6 +310,11 @@ export default function TopicsUp(){
     setAlert(status);
     setAlertContent(info);
     if(status){
+      if(imageFile){
+        const formData = new FormData();
+        formData.append("img", imageFile);
+        await ImageUpload(quest.id, formData); //Send image file to server
+      }
       dispatch(updateItemQuestionList(quest));
       setUpdate(true);
       handleChange();
@@ -306,6 +335,7 @@ export default function TopicsUp(){
   }
 
   async function handleEdit (questionID){
+    setPreviewImg(null);
     const {topicID, subtopicID} = currentTopic;
     const response = await QuestionGet(topicID, subtopicID, questionID);
     const {dataQuestion} = response.data;
@@ -317,8 +347,17 @@ export default function TopicsUp(){
       incorrect2: dataQuestion.incorrect2,
       incorrect3: dataQuestion.incorrect3,
       argument: dataQuestion.argument,
-    })
-    setUpdate(false);
+      img_name: dataQuestion.img_name
+    });
+    if(dataQuestion.img_name){
+      /* Preview image */
+      try{
+        setPreviewImg(require(`../../Assets/exam-images/${dataQuestion.img_name}`).default);
+      }catch(err){
+        console.log(err);
+      }
+    }
+    setUpdate(false); //Enable button Update
     handleChange();
   }
   
@@ -546,6 +585,14 @@ export default function TopicsUp(){
                   multiline
                   widthText={380}
                 />
+                <input 
+                  name="imageFile"
+                  id="img-file"
+                  type="file"
+                  onChange={handleImageFile} 
+                  accept="image/*"
+                />
+                {previewImg && (<img src={previewImg} className={classes.previewImg} alt="preview-img"/>)}
                 <Box className={classes.buttonsQuestion} sx={{display: "flex", gap: 1}}>
                   <Button
                     title="Agregar"

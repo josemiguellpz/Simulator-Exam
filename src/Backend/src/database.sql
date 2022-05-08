@@ -40,6 +40,7 @@ CREATE TABLE pregunta(
   incorrecta2     text not null,
   incorrecta3     text not null,
   argumento       text not null,
+  imagen          text,
   primary key (id_pregunta),
   foreign key (id_tema) references tema(id_tema) on update cascade on delete cascade,
   foreign key (id_subtema) references subtema(id_subtema) on update cascade on delete cascade

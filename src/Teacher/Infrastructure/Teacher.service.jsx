@@ -1,4 +1,4 @@
-import { postOne, getOne, putOne, deleteOne } from "../../Axios/Provider";
+import { postOne, getOne, putOne, deleteOne, putImages } from "../../Axios/Provider";
 
 export function SearchStudents(data){
   return getOne(`/search/students/${data}`)
@@ -33,6 +33,10 @@ export function UpdateQuestion(newQuestion, topicID, subtopicID, questionID){
   return putOne(`/topics/${topicID}/subtopics/${subtopicID}/questions/${questionID}`, body);
 }
 
+export function UploadImage(questionID, formData){
+  return putImages(`/exam/images/${questionID}`, formData);
+}
+
 export function DeleteTopic(topicID){
   return deleteOne(`/topics/${topicID}`);
 }
@@ -43,6 +47,10 @@ export function DeleteSubtopic(topicID, subtopicID){
 
 export function DeleteQuestion(topicID, subtopicID, questionID){
   return deleteOne(`/topics/${topicID}/subtopics/${subtopicID}/questions/${questionID}`);
+}
+
+export function DeleteImage(questionID){
+  return deleteOne(`/exam/images/${questionID}`);
 }
 
 export function GetHistorial(matricula, topicID){
