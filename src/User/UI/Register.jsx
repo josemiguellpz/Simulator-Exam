@@ -441,7 +441,7 @@ export default function Register() {
                     type="password"
                     name="password"
                     label="Contraseña"
-                    placeholder="Ingrese su matrícula"
+                    placeholder="Ingrese su contraseña"
                     value={data.password}
                     onChange={handleInputChange}
                     widthText={200}
@@ -450,7 +450,7 @@ export default function Register() {
                     type="password"
                     name="password2"
                     label="Confirmar Contraseña"
-                    placeholder="Ingrese su matrícula nuevamente"
+                    placeholder="Ingrese su contraseña nuevamente"
                     value={data.password2}
                     onChange={handleInputChange}
                     widthText={200}

@@ -167,7 +167,7 @@ const useStyles = makeStyles((theme) => ({
 
 export default function HistorialStudent() {
   const classes = useStyles();
-  const description = "En esta sección puedes consultar tus resultados de cada examen que realizas, selecciona un tema para ver más información o realiza un nuevo intento. Tus resultados no afectan tu califación final, recuerda que tu docente profesor tambien puede observar tu progreso.";
+  const description = "En esta sección puedes consultar tus resultados de cada examen que realizas, selecciona un tema para ver más información o realiza un nuevo intento. Tus resultados no afectan tu calificación final, recuerda que tu docente profesor tambien puede observar tu progreso.";
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const topics = useSelector(state => state.slices.topicsList);

@@ -475,7 +475,8 @@ def getExam(topicID):
           pregunta.incorrecta1,
           pregunta.incorrecta2,
           pregunta.incorrecta3,
-          pregunta.argumento
+          pregunta.argumento,
+          pregunta.imagen
         FROM pregunta INNER JOIN subtema 
         WHERE subtema.id_subtema = pregunta.id_subtema AND pregunta.id_tema = %s 
         ORDER BY RAND() LIMIT 15;''', topicID)
@@ -491,6 +492,7 @@ def getExam(topicID):
           'incorrect2': i[6], 
           'incorrect3': i[7], 
           'argument':   i[8],
+          'name_img':   i[9]
         }
         exam.append(item)
       return jsonify({'exam': exam})

@@ -73,6 +73,27 @@ const useStyles = makeStyles((theme) => ({
       width: 440,
     },
   },
+  box_img:{
+    margin: "auto",
+    width: 700,
+    [theme.breakpoints.down("md")]:{
+      width: 620,
+    },
+    [theme.breakpoints.down("sm")]:{
+      width: 400,
+    },
+  },
+  previewImg:{
+    maxWidth: 700,
+    objectFit: "cover",
+    backgroundSize: "cover",
+    [theme.breakpoints.down("md")]:{
+      maxWidth: 620,
+    },
+    [theme.breakpoints.down("sm")]:{
+      maxWidth: 400,
+    },
+  },
   results:{
     width: 1000,
     display: "flex",
@@ -107,6 +128,15 @@ const useStyles = makeStyles((theme) => ({
     alignItems: 'center',
     flexWrap: 'wrap',
     gap: 1,
+  },
+  review:{
+    width: 1000,
+    [theme.breakpoints.down("md")]:{
+      width: 700,
+    },
+    [theme.breakpoints.down("sm")]:{
+      width: 500,
+    },
   },
 }));
 
@@ -200,6 +230,14 @@ export default function Exam(){
                         </Divider> <br />
                         <Typography className={classes.title} sx={{fontWeight: "bold",}}>Pregunta</Typography> <br />
                         <Typography className={classes.question} sx={{ textAlign:"justify"}}>{current.question}</Typography> <br /> 
+                        {current.name_img && (
+                          <Box className={classes.box_img} sx={{}}>
+                            <img 
+                              src={require(`../../Assets/exam-images/${current.name_img}`).default} 
+                              className={classes.previewImg}
+                              alt="preview-img"/>
+                          </Box>
+                        )}
                         <RadioGroup
                           name="quiz"
                           value={value}
@@ -271,7 +309,7 @@ export default function Exam(){
               />
             </Box>
             
-            <Box sx={{marginBottom: 5}}>
+            <Box className={classes.review} sx={{marginBottom: 5}}>
               <Typography className={classes.title} variant="h5">
                 <b> Retroalimentación: {topic}</b>
               </Typography> <br />
@@ -288,6 +326,15 @@ export default function Exam(){
                       {i+1}.- {current.question}
                     </Typography> <br /> 
                     
+                    {current.name_img && (
+                      <Box className={classes.box_img} sx={{}}>
+                        <img 
+                          src={require(`../../Assets/exam-images/${current.name_img}`).default} 
+                          className={classes.previewImg}
+                          alt="preview-img"/>
+                      </Box>
+                    )}
+
                     <Box className={classes.answers}>
                       <CheckCircleIcon sx={{ color: green[500] }}/> {current.correct}
                     </Box>

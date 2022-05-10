@@ -3,29 +3,22 @@ import { makeStyles } from "@mui/styles";
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 import Error from '../../Assets/error.jpg';
+import Button from '../../Components/ButtonSimple';
+import ArrowBackIcon from '@mui/icons-material/ArrowBack';
+import { useNavigate } from "react-router-dom";
 
 const useStyles = makeStyles((theme) => ({
   root:{
-    /* border: "solid 1px", */
     width: "100%",
-    height: "calc(100vh - 64px)",
     display: "flex",
-    flexDirection: "column",
     alignItems: "center",
-    paddingTop: 100,
+    flexDirection: "column",
   },
-  info:{
-    width: "500px",
-    height: "250px",
+  components:{
     display: "flex",
     flexDirection: "column",
     alignItems: "center",
-    gap: 15,
-    marginLeft: 50,
-    [theme.breakpoints.down("md")]:{
-      marginTop: 100,
-      zIndex: 1,
-    },
+    gap: 10,
   },
   title:({role}) => ({
     color: 
@@ -44,15 +37,36 @@ const useStyles = makeStyles((theme) => ({
 
 export default function PageNotFound() {
   const role = localStorage.getItem("role");
+  const navigate = useNavigate();
   const classes = useStyles({role});
+
+  const handleReturn = () => {
+    if (role === 'user') 
+      navigate('/');
+    if (role === 'student') 
+      navigate('student/');
+    if (role === 'teacher') 
+      navigate('teacher/');
+  }
+
   return(
     <>
       <Box className={classes.root}>
-        <Typography className={classes.title} variant="h4" sx={{fontWeight: "bold",}}> 
-          Pagina no encontrada
-        </Typography>
-        <Typography variant="h6"> Algo salio mal</Typography>
-        <img className={classes.img} src={Error} alt="img-error"/>
+        <Box className={classes.components} sx={{marginTop: "10vh", marginBottom: "10vh"}}>
+          <Typography className={classes.title} variant="h4" sx={{fontWeight: "bold"}}> 
+            Pagina no encontrada
+          </Typography> <br />
+          <Typography className={classes.title} variant="h4" sx={{fontWeight: "bold"}}> 
+            Algo salio mal, intentalo de nuevo o comunicate con tu docente.
+          </Typography> <br />
+          <img className={classes.img} src={Error} alt="img-error"/>
+          <Button
+            title="Volver"
+            onClick={handleReturn}
+            size="large"
+            endIcon={<ArrowBackIcon/>}
+            />          
+        </Box>
       </Box>
     </>
   );

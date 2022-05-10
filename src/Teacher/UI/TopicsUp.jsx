@@ -298,6 +298,7 @@ export default function TopicsUp(){
       dispatch(addItemQuestionList(quest));
       setUpdate(true);
       handleChange();
+      //handleClear();
     }
   }
 
