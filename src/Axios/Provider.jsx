@@ -1,11 +1,11 @@
 import axios from "axios";
-const url = "http://localhost:5000";
+const url = process.env.REACT_APP_URL_API_BACKEND;
+const token = sessionStorage.getItem('token');
 
 function getConfig() {
-  const token = localStorage.getItem("token");
   const config = {
     headers: {
-      Authorization: token,
+      Authorization: "Bearer " + token,
       'Content-Type': 'application/json',
     },
   };
@@ -13,10 +13,9 @@ function getConfig() {
 }
 
 function getConfigFormData() {
-  const token = localStorage.getItem("token");
   const config = {
     headers: {
-      Authorization: token,
+      Authorization: "Bearer " + token,
       'Content-Type': 'multipart/form-data',
     },
   };

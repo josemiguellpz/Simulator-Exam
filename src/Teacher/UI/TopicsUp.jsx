@@ -97,9 +97,10 @@ const useStyles = makeStyles((theme) => ({
     gap: 20,
   },
   previewImg:{
-    width: 380,
-    height: 100,
-    objectFit: "cover",
+    width: 400,
+    height: 200,
+    objectFit: "fill",
+    backgroundSize:"cover",
   },
   selectForQuestions:{
     width: 550,

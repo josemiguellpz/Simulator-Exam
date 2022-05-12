@@ -94,6 +94,12 @@ const useStyles = makeStyles((theme) => ({
     alignItems: "center",
     gap: 20,
   },
+  previewImg:{
+    width: 400,
+    height: 200,
+    objectFit: "fill",
+    backgroundSize:"cover",
+  },
   topics:{
     width: 550,
     display: "flex",

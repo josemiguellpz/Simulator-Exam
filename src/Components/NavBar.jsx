@@ -24,11 +24,10 @@ import TopicIcon from '@mui/icons-material/Topic';
 import EditIcon from '@mui/icons-material/Edit';
 import HomeIcon from '@mui/icons-material/Home';
 import MenuIcon from '@mui/icons-material/Menu';
-// import QuizIcon from '@mui/icons-material/Quiz';
 import Login from './ModalLogin';
 
 import { deleteUser, deleteAllSubtopicList, deleteAllQuestionList, deleteAllTopicList, deleteAnswers, deleteExam } from '../Redux/Slices';
-import { useDispatch, /* useSelector */ } from 'react-redux';
+import { useDispatch } from 'react-redux';
 
 const useStyles = makeStyles((theme) =>({
   background:({role}) => ({
@@ -93,7 +92,6 @@ const useStyles = makeStyles((theme) =>({
 }))
 
 export default function NavBar(){
-  // localStorage.setItem("role", "user");
   //const {role} = useSelector(state => state.slices.user);
   const role = localStorage.getItem("role");
   const dispatch = useDispatch();
@@ -118,6 +116,7 @@ export default function NavBar(){
   
   const handleLogout = () => {
     localStorage.removeItem("id");
+    sessionStorage.removeItem("token");
     dispatch(deleteUser());
     dispatch(deleteAllTopicList())
     dispatch(deleteAllSubtopicList());

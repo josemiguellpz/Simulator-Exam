@@ -64,9 +64,10 @@ export default function ModalLogin({
   async function handleLogin(e) {
     e.preventDefault();
     const response = await UserLogin(data);
-    const {status, info, role, id} = response.data;
+    const {status, info, role, id, token} = response.data;
     if(status){ // Success
       dispatch(acquireUser(id));
+      sessionStorage.setItem('token', token);
       if(role === "Docente"){
         localStorage.setItem("role", "teacher")
         navigate("/teacher/")

@@ -1,58 +1,62 @@
 import os
+import json
+import datetime
 from flask import Flask, request, jsonify
 from flask_cors import CORS
+from flask_jwt_extended import JWTManager, create_access_token, jwt_required
 from werkzeug.utils import secure_filename
-import json
 from db import getConnectionDB
 
 """ RUN BACKEND """
 """ Steps:
       1.- Create enviroment:  virtualenv -p python3 env
-      2.- Dependencies:       pip install flask, flask_cors, pymysql, flask_mysql
+      2.- Dependencies:       pip install flask, flask_cors, pymysql, flask_mysql, flask-jwt-extended, python-dotenv
       3.- Active enviroment:  .\env\Scripts\active
       4.- Execution:          python .\src\Backend\src\app.py
 """
 
+#Create Flask APP
 app=Flask(__name__)
 CORS(app)
 
-EXAM_IMG_FOLDER = 'C:\\Users\\josemiguel\\Desktop\\ReactProjects\\Simulator-Exam\\src\\Assets\\exam-images'
+#Setup the Flask-JWT-Extended extension
+app.config["JWT_SECRET_KEY"] = os.environ.get('FLASK_JWT')
+jwt = JWTManager(app)
+
+#Config Folder-Img
+EXAM_IMG_FOLDER = os.environ.get('ROUTE_FOLDER_IMG')
 app.config['EXAM_IMG_FOLDER'] = EXAM_IMG_FOLDER
 
-KEYWORD="#irn15" #Auth for password
+#Auth for password
+KEYWORD=os.environ.get('KEYWORD_MYSQL')
 
-@app.route('/search/students/<reference>', methods=['GET'])
-def searchStudents(reference):
+#Static Routes
+@app.route('/topics', methods=['GET'])
+def view_topics_for_user():
   try:
-    conexion = getConnectionDB()
+    conexion = getConnectionDB()              
     with conexion.cursor() as cursor:
       if request.method == 'GET':
-        students = []
-        query = "SELECT matricula, IF (nombre LIKE '%{0}%' OR apellido LIKE '%{0}%', CONCAT(nombre, ' ', apellido), null) AS alumno FROM usuario WHERE rol = 'Alumno';".format(reference)
-        cursor.execute(query)
-        result = cursor.fetchall()
-        for item in result:
-          if (item[1] != None):
-            item = {'id': item[0], 'fullName': item[1]}
-            students.append(item)
-        return jsonify({'status': True, 'students': students})
+        topics = []
+        cursor.execute("SELECT id_tema, nombre_tema FROM tema") #LIMIT 0,6
+        response = cursor.fetchall()
+        conexion.close()
+        for element in response:
+          item = { 
+            'id': element[0], 
+            'value': element[1] 
+          } 
+          topics.append(item) # Contains: id_tema and nombre_tema
+        return jsonify({'status': True, 'topics': topics})
   except Exception as ex:
-    return jsonify({'info': ex, 'status': False})
+    return jsonify({'message': ex, 'status': False})
 
-@app.route('/users', methods=['GET','POST'])
-def users():
+@app.route('/users', methods=['POST'])
+def register_users():
   try:
     conexion = getConnectionDB()
     with conexion.cursor() as cursor:
-      if request.method == 'GET':
-        users = []
-        cursor.execute("SELECT matricula, nombre, apellido, email, carrera FROM usuario WHERE rol = 'Alumno'")
-        result = cursor.fetchall()
-        for element in result:
-          item = {'id': element[0], 'name': element[1], 'lastName': element[2], 'email': element[3], 'carrer': element[4],}
-          users.append(item)
-        return jsonify({'users': users})
-      elif request.method == 'POST':
+      if request.method == 'POST':
         role, matricula, name, lastName, email, password, carrer = request.json.values()
         status = False
         info = "Algo salio mal"
@@ -86,15 +90,59 @@ def users():
   except Exception as ex:
     return jsonify({'info': ex, 'status': False})
 
-@app.route('/users/<matricula>', methods=['GET', 'POST', 'PUT', 'DELETE']) # GET user / POST: login 
-def user(matricula):
+@app.route('/users/<matricula>', methods=['POST'])
+def login(matricula):
+  # If exist user then return token, role: str, id: int
   try:
     conexion = getConnectionDB()
-    # Default response
-    status = None
-    info = ""
-    role = None
-    id = None
+    with conexion.cursor() as cursor:
+      if request.method == 'POST':
+        password = request.get_json()
+        # Find matrícula
+        query = 'SELECT rol, aes_decrypt(password, %s) FROM usuario WHERE matricula = %s'
+        cursor.execute(query, (KEYWORD, matricula))
+        rows = cursor.fetchall()
+        conexion.close()
+        if (rows): # If exist data
+          role_Store = rows[0][0]
+          pass_Store = rows[0][1].decode("utf-8") #String in binary then decode
+          if (str(pass_Store) == str(password)):
+            role = str(role_Store)
+            id = matricula
+            token = create_access_token(identity=matricula, expires_delta=datetime.timedelta(minutes=40))
+            return jsonify({'status': True, 'info': "", 'role': role, 'id': id, 'token': token})
+          else:
+            return jsonify({'status': False, 'info': "Contraseña incorrecta", 'role': None, 'id': None, 'token': None})    
+        else:
+          return jsonify({'status': False, 'info': "Matrícula ingresada no existe", 'role': None, 'id': None, 'token': None})
+  except Exception as ex:
+    return jsonify({'message': ex, 'status': False})
+
+#Routes with Authorization
+@app.route('/users', methods=['GET'])
+@jwt_required()
+def get_users():
+  # return students as users: list
+  try:
+    conexion = getConnectionDB()
+    with conexion.cursor() as cursor:
+      if request.method == 'GET':
+        users = []
+        cursor.execute("SELECT matricula, nombre, apellido, email, carrera FROM usuario WHERE rol = 'Alumno'")
+        result = cursor.fetchall()
+        for element in result:
+          item = {'id': element[0], 'name': element[1], 'lastName': element[2], 'email': element[3], 'carrer': element[4],}
+          users.append(item)
+        return jsonify({'users': users})
+  except Exception as ex:
+    return jsonify({'info': ex, 'status': False})
+
+@app.route('/users/<matricula>', methods=['GET', 'PUT', 'DELETE'])
+@jwt_required()
+def user(matricula):
+  # Read, update and delete an specific student
+  try:
+    conexion = getConnectionDB()
     with conexion.cursor() as cursor:
       if request.method == 'GET':
         query = 'SELECT rol, nombre, apellido, carrera, email FROM usuario WHERE matricula = %s'
@@ -112,32 +160,12 @@ def user(matricula):
           'carrer': data[0][3], 
           'email': data[0][4],
         }
+        conexion.close()
         return jsonify({'status': True, 'user': user}) 
-      elif request.method == 'POST':
-        password = request.get_json()
-        # Find matrícula
-        query = 'SELECT rol, aes_decrypt(password, %s) FROM usuario WHERE matricula = %s'
-        cursor.execute(query, (KEYWORD, matricula))
-        rows = cursor.fetchall()
-        if (rows): # If exist data
-          role_Store = rows[0][0]
-          pass_Store = rows[0][1].decode("utf-8") #String in binary then decode
-          if (str(pass_Store) == str(password)):
-            status = True
-            role = str(role_Store)
-            id = matricula
-          else:
-            status = False
-            info = "Contraseña incorrecta"
-        else:
-          status = False
-          info = "Matrícula ingresada no existe"
       elif request.method == 'PUT':
         recieve = request.get_data()
         data = recieve.decode('utf-8')
-        print(data)
         password = str(data)[13:len(data)-2]
-        print(password)
         cursor.execute("UPDATE usuario SET password = AES_ENCRYPT(%s, %s) WHERE matricula = %s ", (password, KEYWORD, matricula))
         conexion.commit()
         conexion.close()
@@ -147,29 +175,18 @@ def user(matricula):
         conexion.commit()
         conexion.close()
         return jsonify({'status': True, 'info': "Estudiante eliminado"})
-    conexion.close()
-    return jsonify({'status': status, 'info': info, 'role': role, 'id': id})
   except Exception as ex:
     return jsonify({'message': ex, 'status': False})
 
-@app.route('/topics', methods=['GET', 'POST'])
+@app.route('/topics', methods=['POST'])
+@jwt_required()
 def topics():
+  # Register topic and subtopic
+  # return topicID: int, subtopicID: int
   try:
     conexion = getConnectionDB()              
     with conexion.cursor() as cursor:
-      if request.method == 'GET':
-        topics = []
-        cursor.execute("SELECT id_tema, nombre_tema FROM tema") #LIMIT 0,6
-        response = cursor.fetchall()
-        conexion.close()
-        for element in response:
-          item = { 
-            'id': element[0], 
-            'value': element[1] 
-          } 
-          topics.append(item) # Contains: id_tema and nombre_tema
-        return jsonify({'status': True, 'topics': topics})
-      elif request.method == 'POST':
+      if request.method == 'POST':
         topic, subtopic = request.json.values()
         cursor.execute("CALL insertTopic (%s, %s);", (topic, subtopic)) # Procedure Return id_tema, nombre_tema, id_subtema, nombre_subtema
         result = cursor.fetchall()
@@ -186,7 +203,9 @@ def topics():
     return jsonify({'message': ex, 'status': False})
 
 @app.route('/topics/<topicID>', methods=['DELETE'])
+@jwt_required()
 def topic(topicID):
+  # Delete topic with its subtopics and questions
   try:
     conexion = getConnectionDB()              
     with conexion.cursor() as cursor:
@@ -206,7 +225,9 @@ def topic(topicID):
     return jsonify({'message': ex, 'status': False})
 
 @app.route('/topics/<topicID>/subtopics', methods=['GET', 'POST'])
+@jwt_required()
 def subtopics(topicID):
+  # Register subtopics in specific topic
   try:
     conexion = getConnectionDB()              
     with conexion.cursor() as cursor:
@@ -239,7 +260,9 @@ def subtopics(topicID):
     return jsonify({'message': ex, 'status': False})
 
 @app.route('/topics/<topicID>/subtopics/<subtopicID>', methods=['DELETE', 'PUT'])
+@jwt_required()
 def subtopic(topicID, subtopicID):
+  # Delete and update specific subtopic
   try:
     conexion = getConnectionDB()              
     with conexion.cursor() as cursor:
@@ -273,7 +296,9 @@ def subtopic(topicID, subtopicID):
     return jsonify({'message': ex, 'status': False})
 
 @app.route('/topics/<topicID>/subtopics/<subtopicID>/questions', methods=['GET', 'POST'])
+@jwt_required()
 def questions(topicID, subtopicID):
+  # Read and register questions an specific topic 
   try:
     conexion = getConnectionDB()
     with conexion.cursor() as cursor:
@@ -320,6 +345,7 @@ def questions(topicID, subtopicID):
     return jsonify({'message': ex, 'status': False})
 
 @app.route('/exam/images/<questionID>', methods=['PUT', 'DELETE'])
+@jwt_required()
 def uploadImg(questionID):
   #Get file-img and save in folder
   try:
@@ -349,7 +375,9 @@ def uploadImg(questionID):
     return jsonify({'message': ex, 'status': False})
 
 @app.route('/topics/<topicID>/subtopics/<subtopicID>/questions/<questionID>', methods=['GET', 'PUT', 'DELETE'])
+@jwt_required()
 def question(topicID, subtopicID, questionID):
+  # Read, update and delete an specific question
   try:
     conexion = getConnectionDB()              
     with conexion.cursor() as cursor:
@@ -416,8 +444,10 @@ def question(topicID, subtopicID, questionID):
     return jsonify({'message': ex, 'status': False})
 
 @app.route('/getTopics', methods=['GET'])
+@jwt_required()
 def getTopics():
   # Group subtopics with their topic
+  # return topics: list
   try:
     conexion = getConnectionDB()
     with conexion.cursor() as cursor:
@@ -459,6 +489,7 @@ def getTopics():
     return jsonify({'info': ex, 'status': False})
 
 @app.route('/exam/<topicID>', methods=['GET'])
+@jwt_required()
 def getExam(topicID):
   # Return exam with their random questions 
   try:
@@ -500,7 +531,10 @@ def getExam(topicID):
     return jsonify({'info': err, 'status': False})
 
 @app.route('/histories', methods=['POST'])
+@jwt_required()
 def histories():
+  # Insert exam data into historial table
+  # return historyID: int
   try:
     conexion = getConnectionDB()
     with conexion.cursor() as cursor:
@@ -514,7 +548,10 @@ def histories():
     return jsonify({'info':err, 'status': False})  
 
 @app.route('/histories/<historyID>', methods=['PUT'])
+@jwt_required()
 def history(historyID):
+  # Update data in table historial and return same historyID  
+  # historyID: int
   try:
     conexion = getConnectionDB()
     with conexion.cursor() as cursor:
@@ -538,7 +575,11 @@ def history(historyID):
     return jsonify({'info':err, 'status': False})
 
 @app.route('/histories/students/<matricula>/topics/<topicID>', methods=['GET'])
+@jwt_required()
 def getHistory(matricula, topicID):
+  # Generates statistical results
+  # matricula, topicID: int
+  # return attempts: int, history: list, average: list
   try:
     conexion = getConnectionDB()
     with conexion.cursor() as cursor:
@@ -593,6 +634,28 @@ def getHistory(matricula, topicID):
       return jsonify({'attempts': attempts,'history': history, 'average': average})
   except Exception as err:
     return jsonify({'info':err, 'status': False})
-    
+
+@app.route('/search/students/<reference>', methods=['GET'])
+@jwt_required()
+def searchStudents(reference):
+  # Find similar Students
+  # references: str
+  # return students: list
+  try:
+    conexion = getConnectionDB()
+    with conexion.cursor() as cursor:
+      if request.method == 'GET':
+        students = []
+        query = "SELECT matricula, IF (nombre LIKE '%{0}%' OR apellido LIKE '%{0}%', CONCAT(nombre, ' ', apellido), null) AS alumno FROM usuario WHERE rol = 'Alumno';".format(reference)
+        cursor.execute(query)
+        result = cursor.fetchall()
+        for item in result:
+          if (item[1] != None):
+            item = {'id': item[0], 'fullName': item[1]}
+            students.append(item)
+        return jsonify({'status': True, 'students': students})
+  except Exception as ex:
+    return jsonify({'info': ex, 'status': False})
+
 if __name__ == '__main__':
   app.run(debug=True)
