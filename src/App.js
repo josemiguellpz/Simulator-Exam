@@ -3,6 +3,8 @@ import {
   BrowserRouter,
   Route,
   Routes,
+  Outlet,
+  Navigate
 } from "react-router-dom";
 import NavBar from "./Components/NavBar";
 import Footer from "./Components/Footer";
@@ -26,6 +28,19 @@ import Performance from './Teacher/UI/Performance';
 import StudentEdit from './Teacher/UI/StudentEdit';
 
 function App() {
+
+  const PrivateRoutesStudent = () => {
+    if ((sessionStorage.getItem('token') !== null) && (localStorage.getItem('role') === 'student'))
+      return <Outlet/>
+    else return <Navigate to='/' />
+  }
+
+  const PrivateRoutesTeacher = () => {
+    if ((sessionStorage.getItem('token') !== null) && (localStorage.getItem('role') === 'teacher'))
+      return <Outlet/>
+    else return <Navigate to='/' />
+  }
+
   return (
     <>
     <BrowserRouter>
@@ -36,19 +51,23 @@ function App() {
         <Route index path="/topics" element={<Topics/>}/>
         <Route index path="/register" element={<Register/>}/>
 
-        <Route index path="/student/" element={<HomeStudent/>}/>
-        <Route index path="/student/topics" element={<TopicsStudent/>}/>
-        <Route index path="/student/topics/exam/t-id=0:topicID/name=:topic" element={<Exam/>}/>
-        <Route index path="/student/historial" element={<HistorialStudent/>}/>
-        <Route index path="/student/historial/exam/t-id=0:topicID/name=:topic" element={<Exam/>}/>
+        <Route element={ <PrivateRoutesStudent/> }>
+          <Route index path="/student/" element={<HomeStudent/>}/>
+          <Route index path="/student/topics" element={<TopicsStudent/>}/>
+          <Route index path="/student/topics/exam/t-id=0:topicID/name=:topic" element={<Exam/>}/>
+          <Route index path="/student/historial" element={<HistorialStudent/>}/>
+          <Route index path="/student/historial/exam/t-id=0:topicID/name=:topic" element={<Exam/>}/>
+        </Route>
         
-        <Route index path="/teacher/" element={<HomeTeacher/>}/>
-        <Route index path="/teacher/topics-up/" element={<TopicsUp/>}/>
-        <Route index path="/teacher/topics-down/" element={<TopicsDown/>}/>
-        <Route index path="/teacher/topics-edit/" element={<TopicsEdit/>}/>
-        <Route index path="/teacher/students/" element={<ViewStudents/>}/>
-        <Route index path="/teacher/students/:studentID" element={<Performance/>}/>
-        <Route index path="/teacher/students/:studentID/edit" element={<StudentEdit/>}/>
+        <Route element={ <PrivateRoutesTeacher/> }>
+          <Route index path="/teacher/" element={<HomeTeacher/>}/>
+          <Route index path="/teacher/topics-up/" element={<TopicsUp/>}/>
+          <Route index path="/teacher/topics-down/" element={<TopicsDown/>}/>
+          <Route index path="/teacher/topics-edit/" element={<TopicsEdit/>}/>
+          <Route index path="/teacher/students/" element={<ViewStudents/>}/>
+          <Route index path="/teacher/students/:studentID" element={<Performance/>}/>
+          <Route index path="/teacher/students/:studentID/edit" element={<StudentEdit/>}/>
+        </Route>
         
         <Route path="*" element={<Error/>}/>
       </Routes>

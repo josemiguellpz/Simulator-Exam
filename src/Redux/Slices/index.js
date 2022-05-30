@@ -77,15 +77,15 @@ export default Slices.reducer; //to Store
 export const {
   setUser,
   setUsers,
-  setTopicsList, 
+  setTopicsList,
   setSubtopicsList,
   setQuestionsList,
   setExam,
   setAnswers,
-  addItemQuestionList, 
-  updateItemQuestionList, 
+  addItemQuestionList,
+  updateItemQuestionList,
   deleteUser,
-  deleteItemQuestionList, 
+  deleteItemQuestionList,
   deleteAllTopicList,
   deleteAllQuestionList,
   deleteAllSubtopicList,
@@ -177,6 +177,5 @@ export const acquireExam = (topicID) => async (dispatch) => {
       item.push(correct)
     array.push(item);
   });
-  console.log(data);
   dispatch(setAnswers(array));
 }

@@ -179,8 +179,10 @@ export default function Exam(){
   },[])
 
   function handleCheckAnswer(){
-    if(value === exam[index].correct)
-      setPoints(points+1)
+    if(value === exam[index].correct){
+      setPoints(points+1);
+      ExamUpdate(historyID, topicID, points+1, incorrects-1, qualification);  
+    }
     setIndex(index+1);
     setValue('');
   };
@@ -338,8 +340,11 @@ export default function Exam(){
                     <Box className={classes.answers}>
                       <CheckCircleIcon sx={{ color: green[500] }}/> {current.correct}
                     </Box>
+                    
                     <Box className={classes.answers}>
-                      <CloseIcon sx={{ color: red[500] }}/> {current.incorrect1}
+                      <Box>
+                        <CloseIcon sx={{ color: red[500] }}/> {current.incorrect1}
+                      </Box>
                     </Box>
                     <Box className={classes.answers}>
                       <CloseIcon sx={{ color: red[500] }}/> {current.incorrect2}

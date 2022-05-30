@@ -76,7 +76,12 @@ const useStyles = makeStyles((theme) => ({
 export default function TopicsStudent() {
   const classes = useStyles();
   const description = "Para realizar la simulación del examen (15 reactivos) elige un tema para ser evaluado, puedes realizar varios intentos cuantas veces sea necesario. Al terminar tu evaluación podrás visualizar tus resultados además de consultarlos en el apartado de Rendimiento. Para dudas o aclaraciones contacta a tu profesor docente.";
-  const tip = "¡Importante! No abandonar, refrescar o recargar la página durante el examen. Su calificación podría verse afectada.";
+  const instructions = [
+    { id: 1, tip: "¡Importante! No abandonar, refrescar o recargar la página durante el examen. Su calificación podría verse afectada." },
+    { id: 2, tip: "Por favor no abandones el examen ya que no puedes reanudarlo más adelante." },
+    { id: 3, tip: "Cada que acierte una pregunta se va registrando su progreso hasta concluir el examen." },
+    { id: 4, tip: "Si la sesión expira a mitad de examen, se le asgina una calificación hasta donde se quedó. En estos casos contacta a tu docente." },
+  ];
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const topics = useSelector(state => state.slices.topicsList);
@@ -110,9 +115,14 @@ export default function TopicsStudent() {
           <Typography variant="h6" sx={{textAlign: "justify"}}>
             {description}<br/>
           </Typography><br/>
-          <Typography className={classes.tip} variant="h7">
-            <TipsAndUpdatesIcon/> <b> {tip} </b> <br/>
+          <Typography className={classes.tip} variant="h6">
+            <TipsAndUpdatesIcon/> <b> Indicaciones </b> <br/>
           </Typography><br/>
+          <Box>
+            {instructions.map((tip) => (
+              <Typography key={tip.id} className={classes.title}> <b> {tip.id}.- {tip.tip} </b> </Typography>
+            ))}
+          </Box>
         </Box>
 
         <Box className={classes.topics}>

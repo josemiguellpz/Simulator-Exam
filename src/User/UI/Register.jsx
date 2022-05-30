@@ -219,7 +219,6 @@ export default function Register() {
       data.role="Alumno";
     else
       data.role="Docente";
-    console.log(data)
     const response = await UserRegister(data);
     const {status, info} = response.data;
     if(status){ // Success

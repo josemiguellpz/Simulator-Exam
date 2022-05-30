@@ -129,6 +129,7 @@ export default function Home() {
             <ArrowRightIcon/> Realiza exámanes en todo momento.<br/>
             <ArrowRightIcon/> Accede el temario disponible.<br/>
             <ArrowRightIcon/> Consulta tu rendimiento académico.<br/>
+            <ArrowRightIcon/> Inicio de sesión de 2hrs aproximadamente.<br/>
           </Typography><br/>
           <Button
             title="Comenzar Ahora"

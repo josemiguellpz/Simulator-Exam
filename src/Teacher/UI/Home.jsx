@@ -129,6 +129,7 @@ export default function Home(){
             <ArrowRightIcon/> Agrega nuevo contenido.<br/>
             <ArrowRightIcon/> Actualiza el temario.<br/>
             <ArrowRightIcon/> Consulta el rendimiento académico de los estudiantes.<br/>
+            <ArrowRightIcon/> Inicio de sesión de 2hrs aproximadamente. <br/>
           </Typography><br/>
           <Button
             title="Buscar Alumnos"

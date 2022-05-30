@@ -19,7 +19,7 @@ import InputSelect from '../../Components/InputSelect';
 import InputText from '../../Components/InputText';
 import Button from '../../Components/ButtonSimple';
 
-import {TopicRegister, QuestionRegister, QuestionUpdate, QuestionGet, QuestionDelete, SubtopicRegister, ImageUpload} from '../Application/Teacher.logic';
+import {TopicRegister, QuestionRegister, QuestionUpdate, QuestionGet, QuestionDelete, SubtopicRegister, ImageUpload, ImageDelete} from '../Application/Teacher.logic';
 import {acquireTopics, acquireSubtopics, addItemQuestionList, updateItemQuestionList, deleteItemQuestionList, deleteAllQuestionList,} from '../../Redux/Slices';
 import { useDispatch, useSelector } from 'react-redux';
 
@@ -325,6 +325,7 @@ export default function TopicsUp(){
 
   async function handleDeleteQuestion(questionID){
     const {topicID, subtopicID} = currentTopic;
+    await ImageDelete(questionID);
     const response = await QuestionDelete(topicID, subtopicID, questionID);
     const {status, info} = response.data;
     setOpen(true);

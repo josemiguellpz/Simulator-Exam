@@ -69,14 +69,14 @@ export default function ModalLogin({
       dispatch(acquireUser(id));
       sessionStorage.setItem('token', token);
       if(role === "Docente"){
-        localStorage.setItem("role", "teacher")
-        navigate("/teacher/")
-        localStorage.setItem("id", id)
+        localStorage.setItem("role", "teacher");
+        navigate("/teacher/");
+        localStorage.setItem("id", id);
         window.location.reload(false);
       }else{
-        localStorage.setItem("role", "student")
-        navigate("/student/")
-        localStorage.setItem("id", id)
+        localStorage.setItem("role", "student");
+        navigate("/student/");
+        localStorage.setItem("id", id);
         window.location.reload(false);
       }
       open = false

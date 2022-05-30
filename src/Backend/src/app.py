@@ -109,7 +109,7 @@ def login(matricula):
           if (str(pass_Store) == str(password)):
             role = str(role_Store)
             id = matricula
-            token = create_access_token(identity=matricula, expires_delta=datetime.timedelta(minutes=40))
+            token = create_access_token(identity=matricula, expires_delta=datetime.timedelta(hours=2))
             return jsonify({'status': True, 'info': "", 'role': role, 'id': id, 'token': token})
           else:
             return jsonify({'status': False, 'info': "Contraseña incorrecta", 'role': None, 'id': None, 'token': None})    
